@@ -32,38 +32,50 @@
 
 /**
  * --------------------------------------------------------------------------------
- * Loading Edoger PHP Framework Start Script File.
+ * The Edoger PHP Framework Root Directory.
  * --------------------------------------------------------------------------------
  * 
- * This will create and initialize the framework runtime environment and application 
- * running environment.
+ * This is the initial search directory for automatic loader.
  */
-require __DIR__ . '/../edoger/launcher.php';
+const EDOGER_ROOT = __DIR__;
 
 
 /**
  * --------------------------------------------------------------------------------
- * Create An Application.
+ * Registered Automatic Loader.
  * --------------------------------------------------------------------------------
- *
- * This will create an application based on a given configuration file, if create 
- * the application failure, it will cause the system to throw an exception. This 
- * profile is very important, please make sure that the configuration options are 
- * correct.
+ * 
+ * Automatic loader is responsible for loading the various components provided by 
+ * the framework.
  */
-edoger() -> app() -> create(
+spl_autoload_register(
 
-	//	This is the configuration file path for your application.
-	__DIR__ . '/../application/config/app.php'
-	);
+	function(string $class){
+
+		//	Create the class file path.
+		$path = preg_replace(
+			['/\\\\/', '/Edoger/'],
+			['/', EDOGER_ROOT],
+			$class
+			) . '.php';
+
+		if (file_exists($path)) {
+			require $path;
+		}
+		
+	}, true, true);
 
 
 /**
  * --------------------------------------------------------------------------------
- * Start This Application.
+ * Gets The Framework Kernel Instance Object.
  * --------------------------------------------------------------------------------
+ * 
+ * This should be the preferred method of scheduling framework in the application.
  *
- * If the application does not work correctly, please check the running log of the 
- * framework.
+ * @return Edoger\Core\Kernel
  */
-edoger() -> app() -> run();
+function edoger()
+{
+	return Edoger\Core\Kernel::getInstance();
+}
