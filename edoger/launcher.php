@@ -77,5 +77,5 @@ spl_autoload_register(
  */
 function edoger()
 {
-	return Edoger\Core\Kernel::getInstance();
+	return Edoger\Core\Kernel::core();
 }

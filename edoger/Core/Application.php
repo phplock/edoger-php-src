@@ -31,64 +31,70 @@
  */
 namespace Edoger\Core;
 
+
 /**
  * ================================================================================
- * Kernel Of Edoger Framework.
+ * Some Description.
  *
- * All of the frame components are registered in this core.
+ * 
  * ================================================================================
  */
-final class Kernel
+final class Application
 {
-	private static $sharedData = [];
+	/**
+	 * ----------------------------------------------------------------------------
+	 * What is it ?
+	 * ----------------------------------------------------------------------------
+	 *
+	 * @var type
+	 */
+	private static $kernel;
 
 	/**
 	 * ----------------------------------------------------------------------------
-	 * Get The Kernel Version.
+	 * What is it ?
 	 * ----------------------------------------------------------------------------
-	 * 
-	 * @return string
+	 *
+	 * @var type
 	 */
-	public static function version()
+	private static $shared;
+	
+	/**
+	 * ----------------------------------------------------------------------------
+	 * What is it ?
+	 * ----------------------------------------------------------------------------
+	 *
+	 * @return type
+	 */
+	public function __construct(Kernel &$kernel, array &$shared)
 	{
-		return '1.0.0';
+		self::$kernel 	= &$kernel;
+		self::$shared 	= &$shared;
+
+		$shared['application'] = &$this;
 	}
 
 	/**
 	 * ----------------------------------------------------------------------------
-	 * Creates And Returns The Edoger Kernel Instance.
+	 * What is it ?
 	 * ----------------------------------------------------------------------------
 	 *
-	 * This instance will only be created once.
-	 * 
-	 * @return Edoger\Core\Kernel
+	 * @return type
 	 */
-	public static function core()
+	public function create(string $configFile)
 	{
-		static $kernel = null;
 
-		if (is_null($kernel)) {
-			$kernel = new self();
-		}
-
-		return $kernel;
 	}
 
 	/**
 	 * ----------------------------------------------------------------------------
-	 * Creates And Returns The Edoger Application Instance.
+	 * What is it ?
 	 * ----------------------------------------------------------------------------
 	 *
-	 * @return Edoger\Core\Application
+	 * @return type
 	 */
-	public function app()
+	public function run()
 	{
-		static $application = null;
 
-		if (!$application) {
-			$application = new Application($this, self::$sharedData);
-		}
-
-		return $application;
 	}
 }
