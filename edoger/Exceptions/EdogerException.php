@@ -29,75 +29,54 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE 
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-namespace Edoger\Core;
+namespace Edoger\Exceptions;
+
+use Exception;
+use Edoger\Core\Logger;
+use Edoger\Interfaces\EdogerExceptionInterface;
 
 /**
  * ================================================================================
- * Kernel Of Edoger Framework.
+ * Some Description.
  *
- * All of the frame components are registered in this core.
+ * 
  * ================================================================================
  */
-final class Kernel
+class EdogerException extends Exception implements EdogerExceptionInterface
 {
 	/**
 	 * ----------------------------------------------------------------------------
-	 * Shared component.
+	 * What is it ?
 	 * ----------------------------------------------------------------------------
 	 *
-	 * All system components are here to create a self reference.
-	 * 
-	 * @var array
-	 */
-	private static $shared = [];
-
-	/**
-	 * ----------------------------------------------------------------------------
-	 * Get The Kernel Version.
-	 * ----------------------------------------------------------------------------
-	 * 
 	 * @return string
 	 */
-	public static function version()
+	public function __construct(string $message)
 	{
-		return '1.0.0';
+		parent::__construct($message, 500);
 	}
 
 	/**
 	 * ----------------------------------------------------------------------------
-	 * Creates And Returns The Edoger Kernel Instance.
+	 * What is it ?
 	 * ----------------------------------------------------------------------------
 	 *
-	 * This instance will only be created once.
-	 * 
-	 * @return Edoger\Core\Kernel
+	 * @return string
 	 */
-	public static function core()
+	public function getLog()
 	{
-		static $kernel = null;
-
-		if (is_null($kernel)) {
-			$kernel = new self();
-		}
-
-		return $kernel;
+		return "{$this -> message} in {$this -> file} line {$this -> line}";
 	}
 
 	/**
 	 * ----------------------------------------------------------------------------
-	 * Creates And Returns The Edoger Application Instance.
+	 * What is it ?
 	 * ----------------------------------------------------------------------------
 	 *
-	 * @return Edoger\Core\Application
+	 * @return integer
 	 */
-	public function app()
+	public function getLevel()
 	{
-		static $application = null;
-
-		if (!$application) {
-			$application = new Application($this, self::$shared);
-		}
-
-		return $application;
+		return Logger::ALERT;
 	}
 }

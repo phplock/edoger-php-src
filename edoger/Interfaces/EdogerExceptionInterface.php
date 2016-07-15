@@ -29,75 +29,32 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE 
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-namespace Edoger\Core;
+namespace Edoger\Interfaces;
 
 /**
  * ================================================================================
- * Kernel Of Edoger Framework.
+ * Some Description.
  *
- * All of the frame components are registered in this core.
+ * 
  * ================================================================================
  */
-final class Kernel
+interface EdogerExceptionInterface
 {
 	/**
 	 * ----------------------------------------------------------------------------
-	 * Shared component.
+	 * What is it ?
 	 * ----------------------------------------------------------------------------
 	 *
-	 * All system components are here to create a self reference.
-	 * 
-	 * @var array
-	 */
-	private static $shared = [];
-
-	/**
-	 * ----------------------------------------------------------------------------
-	 * Get The Kernel Version.
-	 * ----------------------------------------------------------------------------
-	 * 
 	 * @return string
 	 */
-	public static function version()
-	{
-		return '1.0.0';
-	}
+	public function getLog();
 
 	/**
 	 * ----------------------------------------------------------------------------
-	 * Creates And Returns The Edoger Kernel Instance.
+	 * What is it ?
 	 * ----------------------------------------------------------------------------
 	 *
-	 * This instance will only be created once.
-	 * 
-	 * @return Edoger\Core\Kernel
+	 * @return integer
 	 */
-	public static function core()
-	{
-		static $kernel = null;
-
-		if (is_null($kernel)) {
-			$kernel = new self();
-		}
-
-		return $kernel;
-	}
-
-	/**
-	 * ----------------------------------------------------------------------------
-	 * Creates And Returns The Edoger Application Instance.
-	 * ----------------------------------------------------------------------------
-	 *
-	 * @return Edoger\Core\Application
-	 */
-	public function app()
-	{
-		static $application = null;
-
-		if (!$application) {
-			$application = new Application($this, self::$shared);
-		}
-
-		return $application;
-	}
+	public function getLevel();
 }
