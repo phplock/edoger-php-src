@@ -40,5 +40,213 @@ namespace Edoger\Library;
  */
 class Curl
 {
-	
+	/**
+	 * ----------------------------------------------------------------------------
+	 * What is it ?
+	 * ----------------------------------------------------------------------------
+	 *
+	 * @var integer
+	 */
+	protected $errno = 0;
+
+	/**
+	 * ----------------------------------------------------------------------------
+	 * What is it ?
+	 * ----------------------------------------------------------------------------
+	 *
+	 * @var string
+	 */
+	protected $errstr = '';
+
+	/**
+	 * ----------------------------------------------------------------------------
+	 * What is it ?
+	 * ----------------------------------------------------------------------------
+	 *
+	 * @var array
+	 */
+	protected $options = [];
+
+	/**
+	 * ----------------------------------------------------------------------------
+	 * What is it ?
+	 * ----------------------------------------------------------------------------
+	 *
+	 * @var string
+	 */
+	protected $hostname = '';
+
+	/**
+	 * ----------------------------------------------------------------------------
+	 * What is it ?
+	 * ----------------------------------------------------------------------------
+	 *
+	 * @var array
+	 */
+	protected $cookies = [];
+
+	/**
+	 * ----------------------------------------------------------------------------
+	 * What is it ?
+	 * ----------------------------------------------------------------------------
+	 *
+	 * @var resource
+	 */
+	protected $curl = null;
+
+	/**
+	 * ----------------------------------------------------------------------------
+	 * What is it ?
+	 * ----------------------------------------------------------------------------
+	 *
+	 * @param string $hostname The server host name.
+	 * @param array  $cookies  The curl global options.
+	 * @return void
+	 */
+	public function __construct(string $hostname, array $cookies = [])
+	{
+		$this -> hostname = $hostname;
+
+		$this -> options[CURLOPT_COOKIEFILE] 		= '';
+		$this -> options[CURLOPT_RETURNTRANSFER] 	= true;
+		if (empty($cookies)) {
+			$this -> options[CURLOPT_COOKIE] = '';
+		} else {
+			$this -> options[CURLOPT_COOKIE] = http_build_query($cookies, '', '; ');
+		}
+
+		$this -> initCurl();
+	}
+
+	/**
+	 * ----------------------------------------------------------------------------
+	 * What is it ?
+	 * ----------------------------------------------------------------------------
+	 *
+	 * @return void
+	 */
+	public function __destruct()
+	{
+		$this -> close();
+	}
+
+	/**
+	 * ----------------------------------------------------------------------------
+	 * What is it ?
+	 * ----------------------------------------------------------------------------
+	 *
+	 * @return Edoger\Library\Curl
+	 */
+	public function close()
+	{
+		if ($this -> curl) {
+			curl_close($this -> curl);
+			$this -> curl = null;
+		}
+
+		return $this;
+	}
+
+	/**
+	 * ----------------------------------------------------------------------------
+	 * What is it ?
+	 * ----------------------------------------------------------------------------
+	 *
+	 * @return Edoger\Library\Curl
+	 */
+	public function option(int $key, $value)
+	{
+		if ($value === null) {
+			if (isset($this -> options[$key])) {
+				unset($this -> options[$key]);
+			}
+		} else {
+			$this -> options[$key] = $value;
+		}
+
+		return $this;
+	}
+
+	/**
+	 * ----------------------------------------------------------------------------
+	 * What is it ?
+	 * ----------------------------------------------------------------------------
+	 *
+	 * @return integer
+	 */
+	public function errorCode()
+	{
+		return $this -> errno;
+	}
+
+	/**
+	 * ----------------------------------------------------------------------------
+	 * What is it ?
+	 * ----------------------------------------------------------------------------
+	 *
+	 * @return string
+	 */
+	public function errorMessage()
+	{
+		return $this -> errstr;
+	}
+
+	/**
+	 * ----------------------------------------------------------------------------
+	 * What is it ?
+	 * ----------------------------------------------------------------------------
+	 *
+	 * @param  string   $method    The curl request method.
+	 * @param  string   $uri       The curl request uri.
+	 * @param  array    $query     Additional request parameters.
+	 * @param  callable $callback  Upon completion of the request, the callback 
+	 *                             function should be called immediately.
+	 * @param  mixed    $arguments Additional arguments for the callback function.
+	 * @param  bool     $reload    Whether to use the new curl session?
+	 * @return mixed
+	 */
+	protected function send(string $method, string $uri, array $query, callable $callback, $arguments, bool $reload)
+	{
+		static $ch = null;
+
+		if ($reload && $ch) {
+			curl_close($ch);
+			$ch = null;
+		}
+
+		$this -> errno 	= 0;
+		$this -> errstr = '';
+
+		if ($ch === null) {
+			$ch = curl_init();
+			if ($ch === false) {
+				$ch = null;
+
+
+				return false;
+			}
+		}
+
+		
+	}
+
+	/**
+	 * ----------------------------------------------------------------------------
+	 * What is it ?
+	 * ----------------------------------------------------------------------------
+	 *
+	 * @return boolean
+	 */
+	protected function initCurl()
+	{
+		$this -> close() -> curl = curl_init();
+		if ($this -> curl === false) {
+			
+			$this -> errno 	= 0;
+			$this -> errstr = '';
+			return false;
+		}
+
+		return true;
+	}
 }
