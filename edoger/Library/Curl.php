@@ -33,220 +33,212 @@ namespace Edoger\Library;
 
 /**
  * ================================================================================
- * Some Description.
+ * A library for sending simple Curl requests (POST/GET only).
  *
- * 
+ * Using this library can send a HTTP request to the back-end server and get the 
+ * corresponding response, while automatically processing the corresponding cookie 
+ * so that you don't have to worry about losing the session.
  * ================================================================================
  */
 class Curl
 {
 	/**
 	 * ----------------------------------------------------------------------------
-	 * What is it ?
-	 * ----------------------------------------------------------------------------
-	 *
-	 * @var integer
-	 */
-	protected $errno = 0;
-
-	/**
-	 * ----------------------------------------------------------------------------
-	 * What is it ?
-	 * ----------------------------------------------------------------------------
-	 *
-	 * @var string
-	 */
-	protected $errstr = '';
-
-	/**
-	 * ----------------------------------------------------------------------------
-	 * What is it ?
+	 * The curl setup options.
 	 * ----------------------------------------------------------------------------
 	 *
 	 * @var array
 	 */
-	protected $options = [];
+	private $options = [];
 
 	/**
 	 * ----------------------------------------------------------------------------
-	 * What is it ?
-	 * ----------------------------------------------------------------------------
-	 *
-	 * @var string
-	 */
-	protected $hostname = '';
-
-	/**
-	 * ----------------------------------------------------------------------------
-	 * What is it ?
+	 * The cookie data.
 	 * ----------------------------------------------------------------------------
 	 *
 	 * @var array
 	 */
-	protected $cookies = [];
+	private $cookies = [];
 
 	/**
 	 * ----------------------------------------------------------------------------
-	 * What is it ?
+	 * Initialization of an curl request object.
 	 * ----------------------------------------------------------------------------
 	 *
-	 * @var resource
-	 */
-	protected $curl = null;
-
-	/**
-	 * ----------------------------------------------------------------------------
-	 * What is it ?
-	 * ----------------------------------------------------------------------------
-	 *
-	 * @param string $hostname The server host name.
-	 * @param array  $cookies  The curl global options.
+	 * @param  string 	$hostname 	The server host name.
+	 * @param  array 	$cookies 	The cookie data with curl request.
 	 * @return void
 	 */
 	public function __construct(string $hostname, array $cookies = [])
 	{
-		$this -> hostname = $hostname;
-
 		$this -> options[CURLOPT_COOKIEFILE] 		= '';
 		$this -> options[CURLOPT_RETURNTRANSFER] 	= true;
+		$this -> options[CURLOPT_CONNECTTIMEOUT] 	= 30;
+		$this -> options[CURLOPT_TIMEOUT] 			= 60;
+		$this -> options[CURLOPT_HTTP_VERSION] 		= CURL_HTTP_VERSION_1_1;
+		$this -> options[CURLOPT_URL] 				= $hostname;
+
 		if (empty($cookies)) {
-			$this -> options[CURLOPT_COOKIE] = '';
-		} else {
-			$this -> options[CURLOPT_COOKIE] = http_build_query($cookies, '', '; ');
+			$this -> cookies = $cookies;
 		}
-
-		$this -> initCurl();
 	}
 
 	/**
 	 * ----------------------------------------------------------------------------
-	 * What is it ?
+	 * Set request header information.
 	 * ----------------------------------------------------------------------------
-	 *
-	 * @return void
+	 * 
+	 * @param  array 	$header 	The request header array.
+	 * @return $this
 	 */
-	public function __destruct()
+	public function setHeader(array $header)
 	{
-		$this -> close();
-	}
-
-	/**
-	 * ----------------------------------------------------------------------------
-	 * What is it ?
-	 * ----------------------------------------------------------------------------
-	 *
-	 * @return Edoger\Library\Curl
-	 */
-	public function close()
-	{
-		if ($this -> curl) {
-			curl_close($this -> curl);
-			$this -> curl = null;
-		}
-
+		$this -> options[CURLOPT_HTTPHEADER] = $header;
 		return $this;
 	}
 
 	/**
 	 * ----------------------------------------------------------------------------
-	 * What is it ?
+	 * Set request User-Agent information.
+	 * ----------------------------------------------------------------------------
+	 * 
+	 * @param  string 	$userAgent 	The user-agent string.
+	 * @return $this
+	 */
+	public function setUserAgent(string $userAgent)
+	{
+		$this -> options[CURLOPT_USERAGENT] = $userAgent;
+		return $this;
+	}
+
+	/**
+	 * ----------------------------------------------------------------------------
+	 * Send an HTTP request, and return the result of the response.
 	 * ----------------------------------------------------------------------------
 	 *
-	 * @return Edoger\Library\Curl
+	 * Method returns an index array containing four elements, of which the first 
+	 * element in response to the result (if an error occurs, it will be false), 
+	 * the second element is an HTTP response code, the third element is the error 
+	 * code. The four elements is describing the error.
+	 * 
+	 * @param  array 	$options 	The curl setup options.
+	 * @return array
 	 */
-	public function option(int $key, $value)
+	protected function send(array $options)
 	{
-		if ($value === null) {
-			if (isset($this -> options[$key])) {
-				unset($this -> options[$key]);
+		$result = [false, 0, 0, ''];
+
+		$ch = curl_init();
+		if ($ch === false) {
+			$result[2] = 102401;
+			$result[3] = 'Failed To Initialize Curl Session';
+		} else {
+			if (!empty($this -> cookies)) {
+				$options[CURLOPT_COOKIE] = http_build_query($this -> cookies, '', '; ');
 			}
-		} else {
-			$this -> options[$key] = $value;
+			if (curl_setopt_array($ch, $options)) {
+				$result[0] 	= curl_exec($ch);
+				$result[1] 	= curl_getinfo($ch, CURLINFO_HTTP_CODE);
+				$cookies 	= curl_getinfo($ch, CURLINFO_COOKIELIST);
+				if (!empty($cookies)) {
+					$now = time();
+					foreach ($cookies as $v) {
+						$v = preg_split('/\t/', $v);
+						if ($v[4] && $v[4] <= $now) {
+							if (isset($this -> cookies[$v[5]])) {
+								unset($this -> cookies[$v[5]]);
+							}
+						} else {
+							$this -> cookies[$v[5]] = $v[6];
+						}
+					}
+				}
+				$result[2] = curl_errno($ch);
+				$result[3] = curl_error($ch);
+			} else {
+				$result[2] = 102402;
+				$result[3] = 'Failed To Set The Curl Options';
+			}
+			curl_close($ch);
 		}
 
-		return $this;
+		return $result;
 	}
 
 	/**
 	 * ----------------------------------------------------------------------------
-	 * What is it ?
+	 * Send a 'GET' request to the server.
 	 * ----------------------------------------------------------------------------
 	 *
-	 * @return integer
-	 */
-	public function errorCode()
-	{
-		return $this -> errno;
-	}
-
-	/**
-	 * ----------------------------------------------------------------------------
-	 * What is it ?
-	 * ----------------------------------------------------------------------------
+	 * Callback function should accept five parameters: the first parameter is the 
+	 * server response data (if an error occurs, this parameter is set to false), 
+	 * the second parameter is server response code and the third parameter is an 
+	 * error code (if there are no mistakes, this parameter will be set to 0), the 
+	 * fourth parameter is describing the error (if there are no mistakes, this 
+	 * parameter will be set to an empty string), the fifth parameter is pass 
+	 * additional parameters.
 	 *
-	 * @return string
-	 */
-	public function errorMessage()
-	{
-		return $this -> errstr;
-	}
-
-	/**
-	 * ----------------------------------------------------------------------------
-	 * What is it ?
-	 * ----------------------------------------------------------------------------
-	 *
-	 * @param  string   $method    The curl request method.
-	 * @param  string   $uri       The curl request uri.
-	 * @param  array    $query     Additional request parameters.
-	 * @param  callable $callback  Upon completion of the request, the callback 
-	 *                             function should be called immediately.
-	 * @param  mixed    $arguments Additional arguments for the callback function.
-	 * @param  bool     $reload    Whether to use the new curl session?
+	 * The return value of the callback function is used as the return value of the 
+	 * method.
+	 * 
+	 * @param  string   $uri 	Requested path or file.
+	 * @param  callable $action Completed callback function.
+	 * @param  array    $query  Request parameter.
+	 * @param  mixed 	$arg    Additional arguments for the callback function.
 	 * @return mixed
 	 */
-	protected function send(string $method, string $uri, array $query, callable $callback, $arguments, bool $reload)
+	public function get(string $uri, callable $action, array $query = [], $arg = null)
 	{
-		static $ch = null;
-
-		if ($reload && $ch) {
-			curl_close($ch);
-			$ch = null;
+		$options = $this -> options;
+		$options[CURLOPT_URL] .= $uri;
+		$options[CURLOPT_HTTPGET] = true;
+		if (!empty($query)) {
+			$options[CURLOPT_URL] .= '?' . http_build_query($query, '', '&');
 		}
 
-		$this -> errno 	= 0;
-		$this -> errstr = '';
+		$data 	= $this -> send($options);
+		$data[] = $arg;
 
-		if ($ch === null) {
-			$ch = curl_init();
-			if ($ch === false) {
-				$ch = null;
-
-
-				return false;
-			}
-		}
-
-		
+		return call_user_func_array($action, $data);
 	}
 
 	/**
 	 * ----------------------------------------------------------------------------
-	 * What is it ?
+	 * Send a 'POST' request to the server.
 	 * ----------------------------------------------------------------------------
 	 *
-	 * @return boolean
+	 * Callback function should accept five parameters: the first parameter is the 
+	 * server response data (if an error occurs, this parameter is set to false), 
+	 * the second parameter is server response code and the third parameter is an 
+	 * error code (if there are no mistakes, this parameter will be set to 0), the 
+	 * fourth parameter is describing the error (if there are no mistakes, this 
+	 * parameter will be set to an empty string), the fifth parameter is pass 
+	 * additional parameters.
+	 *
+	 * The return value of the callback function is used as the return value of the 
+	 * method.
+	 *
+	 * If the argument is passed in the request, the value of the 'Content-Type' will 
+	 * be set to 'multipart/form-data'.
+	 * 
+	 * @param  string   $uri 	Requested path or file.
+	 * @param  callable $action Completed callback function.
+	 * @param  array    $query  Request parameter.
+	 * @param  mixed 	$arg    Additional arguments for the callback function.
+	 * @return mixed
 	 */
-	protected function initCurl()
+	public function post(string $uri, callable $action, array $query = [], $arg = null)
 	{
-		$this -> close() -> curl = curl_init();
-		if ($this -> curl === false) {
-			
-			$this -> errno 	= 0;
-			$this -> errstr = '';
-			return false;
+		$options = $this -> options;
+		$options[CURLOPT_URL] .= $uri;
+		$options[CURLOPT_POST] = true;
+		if (!empty($query)) {
+			$options[CURLOPT_POSTFIELDS] = $query;
 		}
 
-		return true;
+		$data 	= $this -> send($options);
+		$data[] = $arg;
+
+		return call_user_func_array($action, $data);
 	}
 }
