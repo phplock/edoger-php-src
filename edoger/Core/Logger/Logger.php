@@ -197,7 +197,7 @@ final class Logger
 	 */
 	public function debug(string $message)
 	{
-		$this -> log(self::DEBUG, $message);
+		$this -> log(self::LEVEL_DEBUG, $message);
 		return $this;
 	}
 
@@ -211,7 +211,7 @@ final class Logger
 	 */
 	public function info(string $message)
 	{
-		$this -> log(self::INFO, $message);
+		$this -> log(self::LEVEL_INFO, $message);
 		return $this;
 	}
 
@@ -225,7 +225,7 @@ final class Logger
 	 */
 	public function notice(string $message)
 	{
-		$this -> log(self::NOTICE, $message);
+		$this -> log(self::LEVEL_NOTICE, $message);
 		return $this;
 	}
 
@@ -239,7 +239,7 @@ final class Logger
 	 */
 	public function warning(string $message)
 	{
-		$this -> log(self::WARNING, $message);
+		$this -> log(self::LEVEL_WARNING, $message);
 		return $this;
 	}
 
@@ -253,7 +253,7 @@ final class Logger
 	 */
 	public function error(string $message)
 	{
-		$this -> log(self::ERROR, $message);
+		$this -> log(self::LEVEL_ERROR, $message);
 		return $this;
 	}
 
@@ -267,7 +267,7 @@ final class Logger
 	 */
 	public function critical(string $message)
 	{
-		$this -> log(self::CRITICAL, $message);
+		$this -> log(self::LEVEL_CRITICAL, $message);
 		return $this;
 	}
 
@@ -281,7 +281,7 @@ final class Logger
 	 */
 	public function alert(string $message)
 	{
-		$this -> log(self::ALERT, $message);
+		$this -> log(self::LEVEL_ALERT, $message);
 		return $this;
 	}
 
@@ -295,7 +295,7 @@ final class Logger
 	 */
 	public function emergency(string $message)
 	{
-		$this -> log(self::EMERGENCY, $message);
+		$this -> log(self::LEVEL_EMERGENCY, $message);
 		return $this;
 	}
 }
