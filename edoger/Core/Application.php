@@ -95,6 +95,6 @@ final class Application
 	 */
 	public function run()
 	{
-
+		echo 'Hello Edoger';
 	}
 }

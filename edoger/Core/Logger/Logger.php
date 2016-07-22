@@ -173,7 +173,7 @@ final class Logger
 		$date 	= date('Y-m-d H:i:s');
 		$name 	= self::$levelToStringMap[$level] ?? 'UNKNOWN';
 
-		$log 	= "[{$data}][{$name}][{$this -> passageway}]{$message}";
+		$log 	= "[{$date}][{$name}][{$this -> passageway}]{$message}";
 
 		self::$logQueue[] = [$level, $log];
 
