@@ -1,5 +1,4 @@
 <?php
-<?php
 /**
  * Edoger PHP Framework (EdogerPHP)
  * 
