@@ -1,5 +1,4 @@
 <?php
-<?php
 /**
  * Edoger PHP Framework (EdogerPHP)
  * 
@@ -30,7 +29,9 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE 
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-namespace Edoger\Core\Logger;
+namespace Edoger\Core\Logger\Handlers;
+
+use Edoger\Core\Logger\LoggerHandlerInterface;
 
 /**
  * ================================================================================
@@ -39,8 +40,39 @@ namespace Edoger\Core\Logger;
  * 
  * ================================================================================
  */
-interface LoggerHandlerInterface
+class FileHandler implements LoggerHandlerInterface 
 {
+	/**
+	 * ----------------------------------------------------------------------------
+	 * What is it ?
+	 * ----------------------------------------------------------------------------
+	 *
+	 * @var string
+	 */
+	private $file;
+
+	/**
+	 * ----------------------------------------------------------------------------
+	 * What is it ?
+	 * ----------------------------------------------------------------------------
+	 *
+	 * @var integer
+	 */
+	private $level;
+	
+	/**
+	 * ----------------------------------------------------------------------------
+	 * What is it ?
+	 * ----------------------------------------------------------------------------
+	 *
+	 * @return void
+	 */
+	public function __construct(string $file, int $level)
+	{
+		$this -> file 	= $file;
+		$this -> level 	= $level;
+	}
+
 	/**
 	 * ----------------------------------------------------------------------------
 	 * What is it ?
@@ -48,5 +80,12 @@ interface LoggerHandlerInterface
 	 *
 	 * @return boolean
 	 */
-	public function save(int $level, string $log);
+	public function save(int $level, string $log)
+	{
+		if (($level & $this -> level) === $level) {
+			return error_log($log . PHP_EOL, 3, $this -> file);
+		} else {
+			return false;
+		}
+	}
 }
