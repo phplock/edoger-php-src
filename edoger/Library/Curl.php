@@ -134,7 +134,9 @@ class Curl
 			$result[3] = 'Failed To Initialize Curl Session';
 		} else {
 			if (!empty($this -> cookies)) {
-				$options[CURLOPT_COOKIE] = http_build_query($this -> cookies, '', '; ');
+				$options[CURLOPT_COOKIE] = http_build_query(
+					$this -> cookies, '', '; '
+					);
 			}
 			if (curl_setopt_array($ch, $options)) {
 				$result[0] 	= curl_exec($ch);
