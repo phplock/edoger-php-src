@@ -102,6 +102,8 @@ final class Kernel
 		return $kernel;
 	}
 
+
+
 	/**
 	 * ----------------------------------------------------------------------------
 	 * 
@@ -133,5 +135,17 @@ final class Kernel
 	public function app()
 	{
 		return self::$application;
+	}
+
+	/**
+	 * ----------------------------------------------------------------------------
+	 * Get The Edoger Application Configuration Manager Instance.
+	 * ----------------------------------------------------------------------------
+	 *
+	 * @return Edoger\Core\Config
+	 */
+	public function config()
+	{
+		return self::$config;
 	}
 }

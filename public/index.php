@@ -54,7 +54,7 @@ require __DIR__ . '/../edoger/launcher.php';
 edoger() -> create(
 
 	//	This is the configuration file path for your application.
-	__DIR__ . '/../application/config/application.php'
+	__DIR__ . '/../config/application.php'
 	);
 
 

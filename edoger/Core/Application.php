@@ -50,22 +50,9 @@ final class Application
 	 * What is it ?
 	 * ----------------------------------------------------------------------------
 	 *
-	 * @var type
+	 * @var Edoger\Core\Kernel
 	 */
-	private static $kernel;
-
-	/**
-	 * ----------------------------------------------------------------------------
-	 * What is it ?
-	 * ----------------------------------------------------------------------------
-	 *
-	 * @var type
-	 */
-	private static $shared;
-
-	private static $log;
-
-	private static $pool = [];
+	private $kernel;
 	
 	/**
 	 * ----------------------------------------------------------------------------
@@ -76,41 +63,17 @@ final class Application
 	 */
 	public function __construct(Kernel &$kernel)
 	{
-		self::$kernel 	= &$kernel;
-		self::$shared 	= &$shared;
+		$config = $kernel -> config() -> get('application');
 
-		$shared['application'] 		= &$this;
-		$shared['applicationPool'] 	= &self::$pool;
-	}
-
-	/**
-	 * ----------------------------------------------------------------------------
-	 * What is it ?
-	 * ----------------------------------------------------------------------------
-	 *
-	 * @return type
-	 */
-	public function create(string $configFile)
-	{
-		static $created = false;
-
-		if (!$created) {
-			$created = true;
-
-			if (!file_exists($configFile)) {
-				throw new EdogerException(
-					"The configuration file {$configFile} does not exist", 5002
-					);
-			}
-
-			$configuration = require $configFile;
+		if (!is_dir($config['root'])) {
 			
-			self::$kernel -> initialize(
-				new Config($configuration),
-				new App($configuration['application_name'])
-				);
-
+			//	
 		}
+
+		
+
+		
+		$this -> kernel = &$kernel;
 	}
 
 	/**
