@@ -53,6 +53,8 @@ final class Application
 	 * @var Edoger\Core\Kernel
 	 */
 	private $kernel;
+
+	private $rootDir;
 	
 	/**
 	 * ----------------------------------------------------------------------------
@@ -70,9 +72,9 @@ final class Application
 			//	
 		}
 
-		
+		$this -> rootDir = $config['root'];
 
-		
+
 		$this -> kernel = &$kernel;
 	}
 
@@ -85,6 +87,6 @@ final class Application
 	 */
 	public function run()
 	{
-		echo 'Hello Edoger';
+		require $this -> rootDir . '/routes.php';
 	}
 }
