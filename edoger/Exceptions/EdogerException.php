@@ -51,9 +51,9 @@ class EdogerException extends Exception implements EdogerExceptionInterface
 	 *
 	 * @return string
 	 */
-	public function __construct(string $message)
+	public function __construct(string $message, int $code = 5000)
 	{
-		parent::__construct($message, 500);
+		parent::__construct($message, $code);
 	}
 
 	/**

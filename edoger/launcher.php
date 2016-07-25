@@ -51,10 +51,10 @@ const EDOGER_ROOT = __DIR__;
 spl_autoload_register(
 
 	function(string $class){
-
+		
 		//	Create the class file path.
 		$path = preg_replace(
-			['/\\\\/', '/Edoger/'],
+			['/\\\\/', '/^Edoger/'],
 			['/', EDOGER_ROOT],
 			$class
 			) . '.php';

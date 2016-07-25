@@ -72,16 +72,12 @@ final class Config
 	public function get($key, $def = null)
 	{
 		if (isset($this -> config[$key])) {
-
 			return $this -> config[$key];
 		} else {
-
 			if (empty($this -> config)) {
 				return $def;
 			}
-
 			$config = $this -> config;
-
 			foreach (explode('.', $key) as $query) {
 				if (isset($config[$query])) {
 					$config = $config[$query];
@@ -90,7 +86,6 @@ final class Config
 					break;
 				}
 			}
-
 			return $config;
 		}
 	}

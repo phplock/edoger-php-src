@@ -31,6 +31,8 @@
  */
 namespace Edoger\Core;
 
+use Edoger\Exceptions\EdogerException;
+
 /**
  * ================================================================================
  * Kernel Of Edoger Framework.
@@ -42,14 +44,21 @@ final class Kernel
 {
 	/**
 	 * ----------------------------------------------------------------------------
-	 * Shared component.
+	 * 
 	 * ----------------------------------------------------------------------------
 	 *
-	 * All system components are here to create a self reference.
-	 * 
-	 * @var array
+	 * @var Edoger\Core\Config
 	 */
-	private static $shared = [];
+	private static $config = null;
+
+	/**
+	 * ----------------------------------------------------------------------------
+	 * 
+	 * ----------------------------------------------------------------------------
+	 *
+	 * @var Edoger\Core\App\App
+	 */
+	private static $application = null;
 
 	/**
 	 * ----------------------------------------------------------------------------
@@ -65,6 +74,18 @@ final class Kernel
 
 	/**
 	 * ----------------------------------------------------------------------------
+	 * 
+	 * ----------------------------------------------------------------------------
+	 * 
+	 * @return void
+	 */
+	private function __construct()
+	{
+		//	
+	}
+
+	/**
+	 * ----------------------------------------------------------------------------
 	 * Creates And Returns The Edoger Kernel Instance.
 	 * ----------------------------------------------------------------------------
 	 *
@@ -75,29 +96,42 @@ final class Kernel
 	public static function core()
 	{
 		static $kernel = null;
-
 		if (is_null($kernel)) {
 			$kernel = new self();
 		}
-
 		return $kernel;
 	}
 
 	/**
 	 * ----------------------------------------------------------------------------
-	 * Creates And Returns The Edoger Application Instance.
+	 * 
+	 * ----------------------------------------------------------------------------
+	 * 
+	 * @return void
+	 */
+	public function create(string $file)
+	{
+		if (!file_exists($file)) {
+			throw new EdogerException(
+				"The configuration file {$file} does not exist", 5001
+				);
+		}
+
+		$configuration = require $file;
+
+		self::$config 		= new Config($configuration);
+		self::$application 	= new Application($this);
+	}
+
+	/**
+	 * ----------------------------------------------------------------------------
+	 * Get The Edoger Application Instance.
 	 * ----------------------------------------------------------------------------
 	 *
 	 * @return Edoger\Core\Application
 	 */
 	public function app()
 	{
-		static $application = null;
-
-		if (!$application) {
-			$application = new Application($this, self::$shared);
-		}
-
-		return $application;
+		return self::$application;
 	}
 }

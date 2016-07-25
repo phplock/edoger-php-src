@@ -31,6 +31,10 @@
  */
 namespace Edoger\Core;
 
+use Edoger\Core\App\App;
+use Edoger\Core\Log\Logger;
+use Edoger\Core\Log\Handlers\FileHandler;
+use Edoger\Exceptions\EdogerException;
 
 /**
  * ================================================================================
@@ -58,6 +62,10 @@ final class Application
 	 * @var type
 	 */
 	private static $shared;
+
+	private static $log;
+
+	private static $pool = [];
 	
 	/**
 	 * ----------------------------------------------------------------------------
@@ -66,12 +74,13 @@ final class Application
 	 *
 	 * @return type
 	 */
-	public function __construct(Kernel &$kernel, array &$shared)
+	public function __construct(Kernel &$kernel)
 	{
 		self::$kernel 	= &$kernel;
 		self::$shared 	= &$shared;
 
-		$shared['application'] = &$this;
+		$shared['application'] 		= &$this;
+		$shared['applicationPool'] 	= &self::$pool;
 	}
 
 	/**
@@ -83,7 +92,25 @@ final class Application
 	 */
 	public function create(string $configFile)
 	{
+		static $created = false;
 
+		if (!$created) {
+			$created = true;
+
+			if (!file_exists($configFile)) {
+				throw new EdogerException(
+					"The configuration file {$configFile} does not exist", 5002
+					);
+			}
+
+			$configuration = require $configFile;
+			
+			self::$kernel -> initialize(
+				new Config($configuration),
+				new App($configuration['application_name'])
+				);
+
+		}
 	}
 
 	/**

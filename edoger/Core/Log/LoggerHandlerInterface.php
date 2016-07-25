@@ -29,41 +29,23 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE 
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
+namespace Edoger\Core\Log;
 
 /**
- * --------------------------------------------------------------------------------
- * Loading Edoger PHP Framework Start Script File.
- * --------------------------------------------------------------------------------
+ * ================================================================================
+ * Some Description.
+ *
  * 
- * This will create and initialize the framework runtime environment and application 
- * running environment.
+ * ================================================================================
  */
-require __DIR__ . '/../edoger/launcher.php';
-
-
-/**
- * --------------------------------------------------------------------------------
- * Create An Application.
- * --------------------------------------------------------------------------------
- *
- * This will create an application based on a given configuration file, if create 
- * the application failure, it will cause the system to throw an exception. This 
- * profile is very important, please make sure that the configuration options are 
- * correct.
- */
-edoger() -> create(
-
-	//	This is the configuration file path for your application.
-	__DIR__ . '/../application/config/application.php'
-	);
-
-
-/**
- * --------------------------------------------------------------------------------
- * Start This Application.
- * --------------------------------------------------------------------------------
- *
- * If the application does not work correctly, please check the running log of the 
- * framework.
- */
-edoger() -> app() -> run();
+interface LoggerHandlerInterface
+{
+	/**
+	 * ----------------------------------------------------------------------------
+	 * What is it ?
+	 * ----------------------------------------------------------------------------
+	 *
+	 * @return boolean
+	 */
+	public function save(int $level, string $log);
+}
