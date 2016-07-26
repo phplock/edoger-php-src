@@ -29,11 +29,8 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE 
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-namespace Edoger\Exceptions;
+namespace Edoger\Core\Http;
 
-use Exception;
-use Edoger\Core\Logger;
-use Edoger\Interfaces\EdogerExceptionInterface;
 
 /**
  * ================================================================================
@@ -42,41 +39,74 @@ use Edoger\Interfaces\EdogerExceptionInterface;
  * 
  * ================================================================================
  */
-class EdogerException extends Exception implements EdogerExceptionInterface
+class Server
 {
 	/**
 	 * ----------------------------------------------------------------------------
 	 * What is it ?
 	 * ----------------------------------------------------------------------------
 	 *
-	 * @return string
+	 * @var type
 	 */
-	public function __construct(string $message, int $code = 5000)
+	private $server = [];
+	
+	/**
+	 * ----------------------------------------------------------------------------
+	 * [__construct description]
+	 * ----------------------------------------------------------------------------
+	 *
+	 * 
+	 */
+	public function __construct()
 	{
-		parent::__construct($message, $code);
+		if (!empty($_SERVER)) {
+			$this -> server = $_SERVER;
+		}
 	}
 
 	/**
 	 * ----------------------------------------------------------------------------
-	 * What is it ?
+	 * [query description]
 	 * ----------------------------------------------------------------------------
-	 *
-	 * @return string
+	 * 
+	 * @param  string $key [description]
+	 * @param  [type] $def [description]
+	 * @return [type]      [description]
 	 */
-	public function getLog()
+	public function query(string $key, $def = null)
 	{
-		return "{$this -> message} in {$this -> file} line {$this -> line}";
+		return $this -> server[$key] ?? $def;
 	}
 
 	/**
 	 * ----------------------------------------------------------------------------
-	 * What is it ?
+	 * [search description]
 	 * ----------------------------------------------------------------------------
-	 *
-	 * @return integer
+	 * 
+	 * @param  string $key [description]
+	 * @param  [type] $def [description]
+	 * @return [type]      [description]
 	 */
-	public function getLevel()
+	public function search(string $key, $def = null)
 	{
-		return Logger::ALERT;
+		foreach (explode('|', $key) as $query) {
+			if (isset($this -> server[$query])) {
+				return $this -> server[$query];
+			}
+		}
+		return $def;
+	}
+
+	/**
+	 * ----------------------------------------------------------------------------
+	 * [exists description]
+	 * ----------------------------------------------------------------------------
+	 * 
+	 * @param  string $key [description]
+	 * @return [type]      [description]
+	 */
+	public function exists(string $key)
+	{
+		return isset($this -> server[$key]);
 	}
 }

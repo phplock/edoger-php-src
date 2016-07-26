@@ -32,119 +32,122 @@
 namespace Edoger\Core;
 
 /**
- * ================================================================================
- * Some Description.
- *
  * 
- * ================================================================================
  */
-final class Route
+final class Cookie
 {
 	/**
 	 * ----------------------------------------------------------------------------
 	 * What is it ?
 	 * ----------------------------------------------------------------------------
 	 *
-	 * @var string
+	 * @var type
 	 */
-	private static $uri 		= '/';
+	private static $kernel;
 
 	/**
 	 * ----------------------------------------------------------------------------
 	 * What is it ?
 	 * ----------------------------------------------------------------------------
 	 *
-	 * @var array
+	 * @var type
 	 */
-	private static $sections 	= [];
+	private static $source = [];
 
 	/**
 	 * ----------------------------------------------------------------------------
 	 * What is it ?
 	 * ----------------------------------------------------------------------------
 	 *
-	 * @var integer
+	 * @var type
 	 */
-	private static $length 		= 0;
+	private static $cookies = [];
 
 	/**
 	 * ----------------------------------------------------------------------------
 	 * What is it ?
 	 * ----------------------------------------------------------------------------
 	 *
-	 * @var string
+	 * @var type
 	 */
-	private static $method 		= '';
+	private static $key;
 
 	/**
 	 * ----------------------------------------------------------------------------
 	 * What is it ?
 	 * ----------------------------------------------------------------------------
 	 *
-	 * @var integer
+	 * @var type
 	 */
-	private static $port 		= 0;
+	private static $prefix;
 
-	/**
-	 * ----------------------------------------------------------------------------
-	 * What is it ?
-	 * ----------------------------------------------------------------------------
-	 *
-	 * @return type
-	 */
-	public function __construct(string $uri, string $method, int $port)
+	private static $options = [];
+
+
+	public function __construct(Kernel &$kernel)
 	{
-		if ($uri !== '/') {
-			self::$uri 		= $uri;
-			self::$sections = preg_split('/\//', $uri, 0, PREG_SPLIT_NO_EMPTY);
-			self::$length 	= count(self::$sections);
-		}
+		self::$kernel = &$kernel;
 
-		self::$method 	= $method;
-		self::$port 	= $port;
-	}
+		$config = $kernel -> config() -> get('cookie');
 
-	/**
-	 * ----------------------------------------------------------------------------
-	 * What is it ?
-	 * ----------------------------------------------------------------------------
-	 *
-	 * @return type
-	 */
-	public static function parseUri(string $uri)
-	{
-		if ($uri === '/') {
-			if (self::$length) {
-				return false;
-			} else {
-				return [];
-			}
-		} else {
+		self::$prefix 	= $config['security_prefix'];
+		self::$key 		= $config['key'];
 
-			$nodes 		= preg_split('/\//', $uri, 0, PREG_SPLIT_NO_EMPTY);
+		self::$options['expire'] 	= $config['expire'];
+		self::$options['path'] 		= $config['path'];
+		self::$options['domain'] 	= $config['domain'];
+		self::$options['secure'] 	= $config['secure'];
+		self::$options['httponly'] 	= $config['httponly'];
 
-			$patterns 	= [];
-			$keys 		= [];
-
-			foreach ($nodes as $node) {
-				if (preg_match('/^\:(\w+)(\??)$/', $node, $m)) {
-					$patterns[] = $m[2] ? '([\w\-]+)' : '([\w\-]*)';
-					$keys[] 	= $m[1];
-				} else {
-					$patterns[] = preg_quote($v);
-				}
-			}
-
-			$pattern = '/^' . join('\/', $patterns) . '$/';
-			$subject = join('/', array_pad($this -> sections, count($nodes), ''));
-
-			if (preg_match($pattern, $subject, $matches)) {
-				return array_combine($keys, array_slice($matches, 1));
-			} else {
-				return false;
+		if (!empty($_COOKIE)) {
+			foreach ($_COOKIE as $key => $value) {
+				
 			}
 		}
 	}
 
-	
+	public function fetch(string $key, $def = null)
+	{
+		return self::$cookies[$key] ?? $def;
+	}
+
+	public function exists(string $key)
+	{
+		return isset(self::$cookies[$key]);
+	}
+
+	public function equal(string $key, $value)
+	{
+		return $this -> fetch($key) === $value;
+	}
+
+	public function send(string $key, string $value, array $option = [])
+	{
+
+	}
+
+	public function interim(string $key, string $value, array $option = [])
+	{
+
+	}
+
+	public function forever(string $key, string $value, array $option = [])
+	{
+		
+	}
+
+	public function safe(string $key, string $value, array $option = [])
+	{
+
+	}
+
+	public function forget(string $key)
+	{
+
+	}
+
+	public function source()
+	{
+
+	}
 }

@@ -34,28 +34,29 @@ namespace Edoger\Core;
 
 /**
  * ================================================================================
- * Some Description.
+ * Application Configuration Options Manager.
  *
- * 
+ * The manager is able to efficiently search for all configuration options.
  * ================================================================================
  */
 final class Config
 {
 	/**
 	 * ----------------------------------------------------------------------------
-	 * What is it ?
+	 * All configuration options.
 	 * ----------------------------------------------------------------------------
 	 *
-	 * @var type
+	 * @var array
 	 */
 	private $config = [];
 	
 	/**
 	 * ----------------------------------------------------------------------------
-	 * What is it ?
+	 * Initialization manager instance, the configuration options data is bound to 
+	 * an instance.
 	 * ----------------------------------------------------------------------------
-	 *
-	 * @return type
+	 * @param  array 	$config 	The configuration options.
+	 * @return void
 	 */
 	public function __construct(array $config)
 	{
@@ -64,24 +65,22 @@ final class Config
 
 	/**
 	 * ----------------------------------------------------------------------------
-	 * What is it ?
+	 * Gets the value of the specified configuration option.
 	 * ----------------------------------------------------------------------------
 	 *
+	 * @param  string 	$key 	Name of configuration options.
+	 * @param  mixed 	$def 	The default value.
 	 * @return mixed
 	 */
-	public function get($key, $def = null)
+	public function get(string $key, $def = null)
 	{
 		if (isset($this -> config[$key])) {
-
 			return $this -> config[$key];
 		} else {
-
 			if (empty($this -> config)) {
 				return $def;
 			}
-
 			$config = $this -> config;
-
 			foreach (explode('.', $key) as $query) {
 				if (isset($config[$query])) {
 					$config = $config[$query];
@@ -90,19 +89,19 @@ final class Config
 					break;
 				}
 			}
-
 			return $config;
 		}
 	}
 
 	/**
 	 * ----------------------------------------------------------------------------
-	 * What is it ?
+	 * Detecting whether there is a configuration option.
 	 * ----------------------------------------------------------------------------
 	 *
+	 * @param  string 	$key 	Name of configuration options.
 	 * @return boolean
 	 */
-	public function has($key)
+	public function has(string $key)
 	{
 		return $this -> get($key) !== null;
 	}

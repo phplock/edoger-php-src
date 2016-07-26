@@ -31,6 +31,10 @@
  */
 namespace Edoger\Core;
 
+use Edoger\Core\App\App;
+use Edoger\Core\Log\Logger;
+use Edoger\Core\Log\Handlers\FileHandler;
+use Edoger\Exceptions\EdogerException;
 
 /**
  * ================================================================================
@@ -46,18 +50,18 @@ final class Application
 	 * What is it ?
 	 * ----------------------------------------------------------------------------
 	 *
-	 * @var type
+	 * @var Edoger\Core\Kernel
 	 */
-	private static $kernel;
+	private $kernel;
 
 	/**
 	 * ----------------------------------------------------------------------------
 	 * What is it ?
 	 * ----------------------------------------------------------------------------
 	 *
-	 * @var type
+	 * @var Edoger\Core\Kernel
 	 */
-	private static $shared;
+	private $rootDir;
 	
 	/**
 	 * ----------------------------------------------------------------------------
@@ -66,24 +70,19 @@ final class Application
 	 *
 	 * @return type
 	 */
-	public function __construct(Kernel &$kernel, array &$shared)
+	public function __construct(Kernel &$kernel)
 	{
-		self::$kernel 	= &$kernel;
-		self::$shared 	= &$shared;
+		$config = $kernel -> config() -> get('application');
 
-		$shared['application'] = &$this;
-	}
+		if (!is_dir($config['root'])) {
+			
+			//	
+		}
 
-	/**
-	 * ----------------------------------------------------------------------------
-	 * What is it ?
-	 * ----------------------------------------------------------------------------
-	 *
-	 * @return type
-	 */
-	public function create(string $configFile)
-	{
+		$this -> rootDir = $config['root'];
 
+
+		$this -> kernel = &$kernel;
 	}
 
 	/**
@@ -95,6 +94,6 @@ final class Application
 	 */
 	public function run()
 	{
-		echo 'Hello Edoger';
+		require $this -> rootDir . '/routes.php';
 	}
 }

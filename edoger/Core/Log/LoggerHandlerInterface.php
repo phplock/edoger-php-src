@@ -29,9 +29,7 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE 
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-namespace Edoger\Core\Logger\Handlers;
-
-use Edoger\Core\Logger\LoggerHandlerInterface;
+namespace Edoger\Core\Log;
 
 /**
  * ================================================================================
@@ -40,39 +38,8 @@ use Edoger\Core\Logger\LoggerHandlerInterface;
  * 
  * ================================================================================
  */
-class FileHandler implements LoggerHandlerInterface 
+interface LoggerHandlerInterface
 {
-	/**
-	 * ----------------------------------------------------------------------------
-	 * What is it ?
-	 * ----------------------------------------------------------------------------
-	 *
-	 * @var string
-	 */
-	private $file;
-
-	/**
-	 * ----------------------------------------------------------------------------
-	 * What is it ?
-	 * ----------------------------------------------------------------------------
-	 *
-	 * @var integer
-	 */
-	private $level;
-	
-	/**
-	 * ----------------------------------------------------------------------------
-	 * What is it ?
-	 * ----------------------------------------------------------------------------
-	 *
-	 * @return void
-	 */
-	public function __construct(string $file, int $level)
-	{
-		$this -> file 	= $file;
-		$this -> level 	= $level;
-	}
-
 	/**
 	 * ----------------------------------------------------------------------------
 	 * What is it ?
@@ -80,12 +47,5 @@ class FileHandler implements LoggerHandlerInterface
 	 *
 	 * @return boolean
 	 */
-	public function save(int $level, string $log)
-	{
-		if (($level & $this -> level) === $level) {
-			return error_log($log . PHP_EOL, 3, $this -> file);
-		} else {
-			return false;
-		}
-	}
+	public function save(int $level, string $log);
 }

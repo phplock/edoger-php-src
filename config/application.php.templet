@@ -31,39 +31,99 @@
  */
 
 /**
+ * ================================================================================
+ * This Is A Standard Configuration File For An Application.
+ * 
+ * Before you create this application, make sure that it is properly configured. 
+ * Otherwise, the application cannot be created successfully.
+ *
+ * The configuration item marked as "[*]" must be configured.
+ *
+ * Configuration File Version: 1.0
+ * ================================================================================
+ */
+$config = [];
+
+
+
+/**
  * --------------------------------------------------------------------------------
- * Loading Edoger PHP Framework Start Script File.
+ * What is it ?
  * --------------------------------------------------------------------------------
  * 
- * This will create and initialize the framework runtime environment and application 
- * running environment.
+ * Detailed description.
+ *
+ * @var type ?
  */
-require __DIR__ . '/../edoger/launcher.php';
+$config['application'] = [];
+
+	// The root directory of the application.
+	
+	$config['application']['root'] = dirname(__DIR__) . '/application';
+
 
 
 /**
  * --------------------------------------------------------------------------------
- * Create An Application.
+ * What is it ?
  * --------------------------------------------------------------------------------
+ * 
+ * Detailed description.
  *
- * This will create an application based on a given configuration file, if create 
- * the application failure, it will cause the system to throw an exception. This 
- * profile is very important, please make sure that the configuration options are 
- * correct.
+ * @var type ?
  */
-edoger() -> create(
+$config['cookie'] = [];
 
-	//	This is the configuration file path for your application.
-	__DIR__ . '/../config/application.php'
-	);
+	/**
+	 * Detailed description.
+	 *
+	 * @var type ?
+	 */
+	$config['cookie']['expire'] = 7200;
+
+	/**
+	 * Detailed description.
+	 *
+	 * @var type ?
+	 */
+	$config['cookie']['path'] = '/';
+
+	/**
+	 * Detailed description.
+	 *
+	 * @var type ?
+	 */
+	$config['cookie']['domain'] = '';
+
+	/**
+	 * Detailed description.
+	 *
+	 * @var type ?
+	 */
+	$config['cookie']['secure'] = false;
+
+	/**
+	 * Detailed description.
+	 *
+	 * @var type ?
+	 */
+	$config['cookie']['httponly'] = false;
+
+	/**
+	 * Detailed description.
+	 *
+	 * @var type ?
+	 */
+	$config['cookie']['key'] = '';
+
+	/**
+	 * Detailed description.
+	 *
+	 * @var type ?
+	 */
+	$config['cookie']['security_prefix'] = '';
 
 
-/**
- * --------------------------------------------------------------------------------
- * Start This Application.
- * --------------------------------------------------------------------------------
- *
- * If the application does not work correctly, please check the running log of the 
- * framework.
- */
-edoger() -> app() -> run();
+
+
+return $config;

@@ -30,31 +30,5 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-/**
- * ================================================================================
- * This Is A Standard Configuration File For An Application.
- * 
- * Before you create this application, make sure that it is properly configured. 
- * Otherwise, the application cannot be created successfully.
- *
- * The configuration item marked as "[*]" must be configured.
- *
- * Configuration File Version: 1.0
- * ================================================================================
- */
 
-
-/**
- * --------------------------------------------------------------------------------
- * What is it ?
- * --------------------------------------------------------------------------------
- * 
- * Detailed description.
- *
- * @var type ?
- */
-$conf['index'] = '';
-
-
-
-
+echo 'Hello Edoger';

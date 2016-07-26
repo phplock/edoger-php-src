@@ -43,5 +43,43 @@ use PDOException;
  */
 final class Connect
 {
-	
+	/**
+	 * ----------------------------------------------------------------------------
+	 * [$pdo description]
+	 * ----------------------------------------------------------------------------
+	 * 
+	 * @var PDO
+	 */
+	private $pdo = null;
+
+	/**
+	 * ----------------------------------------------------------------------------
+	 * [__construct description]
+	 * ----------------------------------------------------------------------------
+	 * 
+	 * @param string $dsn      [description]
+	 * @param string $user     [description]
+	 * @param string $password [description]
+	 */
+	public function __construct(string $dsn, string $user, string $password, array $options = [])
+	{
+		try {
+			$this -> pdo = new PDO($dsn, $user, $password, $options);
+		} catch (PDOException $e) {
+			
+			//
+		}
+	}
+
+	/**
+	 * ----------------------------------------------------------------------------
+	 * [query description]
+	 * ----------------------------------------------------------------------------
+	 * 
+	 * @return [type] [description]
+	 */
+	public function query()
+	{
+
+	}
 }

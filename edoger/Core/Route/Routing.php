@@ -29,123 +29,140 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE 
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-namespace Edoger\Core;
-
-use Edoger\Exceptions\EdogerException;
+namespace Edoger\Core\Route;
 
 /**
  * ================================================================================
- * Kernel Of Edoger Framework.
+ * Some Description.
  *
- * All of the frame components are registered in this core.
+ * 
  * ================================================================================
  */
-final class Kernel
+final class Routing
 {
 	/**
 	 * ----------------------------------------------------------------------------
-	 * Application Configuration Options Manager.
+	 * What is it ?
 	 * ----------------------------------------------------------------------------
 	 *
-	 * @var Edoger\Core\Config
+	 * @return type
 	 */
-	private static $config = null;
-
-	/**
-	 * ----------------------------------------------------------------------------
-	 * An Instance The Application.
-	 * ----------------------------------------------------------------------------
-	 *
-	 * @var Edoger\Core\Application
-	 */
-	private static $application = null;
-
-	/**
-	 * ----------------------------------------------------------------------------
-	 * Get The Kernel Version.
-	 * ----------------------------------------------------------------------------
-	 * 
-	 * @return string
-	 */
-	public static function version()
+	public static function method(array $method, string $uri, $action)
 	{
-		return '1.0.0';
+		$pignut = preg_split('/\//', $uri, 0, PREG_SPLIT_NO_EMPTY);
+
+		return new Node($method, $pignut, $action);
 	}
 
 	/**
 	 * ----------------------------------------------------------------------------
-	 * 
-	 * ----------------------------------------------------------------------------
-	 * 
-	 * @return void
-	 */
-	private function __construct()
-	{
-		//	
-	}
-
-	/**
-	 * ----------------------------------------------------------------------------
-	 * Creates And Returns The Edoger Kernel Instance.
+	 * What is it ?
 	 * ----------------------------------------------------------------------------
 	 *
-	 * This instance will only be created once.
-	 * 
-	 * @return Edoger\Core\Kernel
+	 * @return type
 	 */
-	public static function core()
+	public static function get(string $uri, $action)
 	{
-		static $kernel = null;
-		if (is_null($kernel)) {
-			$kernel = new self();
-		}
-		return $kernel;
-	}
-
-
-
-	/**
-	 * ----------------------------------------------------------------------------
-	 * 
-	 * ----------------------------------------------------------------------------
-	 * 
-	 * @return void
-	 */
-	public function create(string $file)
-	{
-		if (!file_exists($file)) {
-			throw new EdogerException(
-				"The configuration file {$file} does not exist", 5001
-				);
-		}
-
-		$configuration = require $file;
-
-		self::$config 		= new Config($configuration);
-		self::$application 	= new Application($this);
+		return self::method(['get'], $uri, $action);
 	}
 
 	/**
 	 * ----------------------------------------------------------------------------
-	 * Get The Edoger Application Instance.
+	 * What is it ?
 	 * ----------------------------------------------------------------------------
 	 *
-	 * @return Edoger\Core\Application
+	 * @return type
 	 */
-	public function app()
+	public static function post(string $uri)
 	{
-		return self::$application;
+		return self::method(['post'], $uri, $action);
 	}
 
 	/**
 	 * ----------------------------------------------------------------------------
-	 * Get The Edoger Application Configuration Manager Instance.
+	 * What is it ?
 	 * ----------------------------------------------------------------------------
 	 *
-	 * @return Edoger\Core\Config
+	 * @return type
 	 */
-	public function config()
+	public static function put(string $uri)
 	{
-		return self::$config;
+		return self::method(['put'], $uri, $action);
+	}
+
+	/**
+	 * ----------------------------------------------------------------------------
+	 * What is it ?
+	 * ----------------------------------------------------------------------------
+	 *
+	 * @return type
+	 */
+	public static function head(string $uri)
+	{
+		return self::method(['head'], $uri, $action);
+	}
+
+	/**
+	 * ----------------------------------------------------------------------------
+	 * What is it ?
+	 * ----------------------------------------------------------------------------
+	 *
+	 * @return type
+	 */
+	public static function delete(string $uri)
+	{
+		return self::method(['delete'], $uri, $action);
+	}
+
+	/**
+	 * ----------------------------------------------------------------------------
+	 * What is it ?
+	 * ----------------------------------------------------------------------------
+	 *
+	 * @return type
+	 */
+	public static function connect(string $uri)
+	{
+		return self::method(['connect'], $uri, $action);
+	}
+
+	/**
+	 * ----------------------------------------------------------------------------
+	 * What is it ?
+	 * ----------------------------------------------------------------------------
+	 *
+	 * @return type
+	 */
+	public static function options(string $uri)
+	{
+		return self::method(['options'], $uri, $action);
+	}
+
+	/**
+	 * ----------------------------------------------------------------------------
+	 * What is it ?
+	 * ----------------------------------------------------------------------------
+	 *
+	 * @return type
+	 */
+	public static function trace(string $uri)
+	{
+		return self::method(['trace'], $uri, $action);
+	}
+
+	/**
+	 * ----------------------------------------------------------------------------
+	 * What is it ?
+	 * ----------------------------------------------------------------------------
+	 *
+	 * @return type
+	 */
+	public static function any(string $uri)
+	{
+		return self::method(
+			['get','post','put','head','delete','connect','options','trace'],
+			$uri,
+			$action
+			);
 	}
 }

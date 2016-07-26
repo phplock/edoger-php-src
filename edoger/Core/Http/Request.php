@@ -29,11 +29,8 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE 
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-namespace Edoger\Exceptions;
+namespace Edoger\Core\Http;
 
-use Exception;
-use Edoger\Core\Logger;
-use Edoger\Interfaces\EdogerExceptionInterface;
 
 /**
  * ================================================================================
@@ -42,41 +39,36 @@ use Edoger\Interfaces\EdogerExceptionInterface;
  * 
  * ================================================================================
  */
-class EdogerException extends Exception implements EdogerExceptionInterface
+class Request
 {
 	/**
 	 * ----------------------------------------------------------------------------
 	 * What is it ?
 	 * ----------------------------------------------------------------------------
 	 *
-	 * @return string
+	 * @var type
 	 */
-	public function __construct(string $message, int $code = 5000)
-	{
-		parent::__construct($message, $code);
-	}
+	private $kernel;
 
 	/**
 	 * ----------------------------------------------------------------------------
 	 * What is it ?
 	 * ----------------------------------------------------------------------------
 	 *
-	 * @return string
+	 * @var type
 	 */
-	public function getLog()
-	{
-		return "{$this -> message} in {$this -> file} line {$this -> line}";
-	}
-
+	private $server;
+	
 	/**
 	 * ----------------------------------------------------------------------------
-	 * What is it ?
+	 * [__construct description]
 	 * ----------------------------------------------------------------------------
-	 *
-	 * @return integer
+	 * 
+	 * @param Kernel &$kernel [description]
 	 */
-	public function getLevel()
+	public function __construct(Kernel &$kernel)
 	{
-		return Logger::ALERT;
+		$this -> server = new Server();
+		$this -> kernel = &$kernel;
 	}
 }
