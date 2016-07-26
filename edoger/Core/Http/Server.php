@@ -29,123 +29,84 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE 
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-namespace Edoger\Core;
+namespace Edoger\Core\Http;
 
-use Edoger\Exceptions\EdogerException;
 
 /**
  * ================================================================================
- * Kernel Of Edoger Framework.
+ * Some Description.
  *
- * All of the frame components are registered in this core.
+ * 
  * ================================================================================
  */
-final class Kernel
+class Server
 {
 	/**
 	 * ----------------------------------------------------------------------------
-	 * Application Configuration Options Manager.
+	 * What is it ?
 	 * ----------------------------------------------------------------------------
 	 *
-	 * @var Edoger\Core\Config
+	 * @var type
 	 */
-	private static $config = null;
-
+	private $server = [];
+	
 	/**
 	 * ----------------------------------------------------------------------------
-	 * An Instance The Application.
+	 * [__construct description]
 	 * ----------------------------------------------------------------------------
 	 *
-	 * @var Edoger\Core\Application
-	 */
-	private static $application = null;
-
-	/**
-	 * ----------------------------------------------------------------------------
-	 * Get The Kernel Version.
-	 * ----------------------------------------------------------------------------
 	 * 
-	 * @return string
 	 */
-	public static function version()
+	public function __construct()
 	{
-		return '1.0.0';
-	}
-
-	/**
-	 * ----------------------------------------------------------------------------
-	 * 
-	 * ----------------------------------------------------------------------------
-	 * 
-	 * @return void
-	 */
-	private function __construct()
-	{
-		//	
-	}
-
-	/**
-	 * ----------------------------------------------------------------------------
-	 * Creates And Returns The Edoger Kernel Instance.
-	 * ----------------------------------------------------------------------------
-	 *
-	 * This instance will only be created once.
-	 * 
-	 * @return Edoger\Core\Kernel
-	 */
-	public static function core()
-	{
-		static $kernel = null;
-		if (is_null($kernel)) {
-			$kernel = new self();
+		if (!empty($_SERVER)) {
+			$this -> server = $_SERVER;
 		}
-		return $kernel;
 	}
-
-
 
 	/**
 	 * ----------------------------------------------------------------------------
-	 * 
+	 * [query description]
 	 * ----------------------------------------------------------------------------
 	 * 
-	 * @return void
+	 * @param  string $key [description]
+	 * @param  [type] $def [description]
+	 * @return [type]      [description]
 	 */
-	public function create(string $file)
+	public function query(string $key, $def = null)
 	{
-		if (!file_exists($file)) {
-			throw new EdogerException(
-				"The configuration file {$file} does not exist", 5001
-				);
+		return $this -> server[$key] ?? $def;
+	}
+
+	/**
+	 * ----------------------------------------------------------------------------
+	 * [search description]
+	 * ----------------------------------------------------------------------------
+	 * 
+	 * @param  string $key [description]
+	 * @param  [type] $def [description]
+	 * @return [type]      [description]
+	 */
+	public function search(string $key, $def = null)
+	{
+		foreach (explode('|', $key) as $query) {
+			if (isset($this -> server[$query])) {
+				return $this -> server[$query];
+			}
 		}
-
-		$configuration = require $file;
-
-		self::$config 		= new Config($configuration);
-		self::$application 	= new Application($this);
+		return $def;
 	}
 
 	/**
 	 * ----------------------------------------------------------------------------
-	 * Get The Edoger Application Instance.
+	 * [exists description]
 	 * ----------------------------------------------------------------------------
-	 *
-	 * @return Edoger\Core\Application
+	 * 
+	 * @param  string $key [description]
+	 * @return [type]      [description]
 	 */
-	public function app()
+	public function exists(string $key)
 	{
-		return self::$application;
-	}
-
-	/**
-	 * ----------------------------------------------------------------------------
-	 * Get The Edoger Application Configuration Manager Instance.
-	 * ----------------------------------------------------------------------------
-	 *
-	 * @return Edoger\Core\Config
-	 */
-	public function config()
-	{
-		return self::$config;
+		return isset($this -> server[$key]);
 	}
 }

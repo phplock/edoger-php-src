@@ -29,7 +29,7 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE 
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-namespace Edoger\Core;
+namespace Edoger\Core\Route;
 
 /**
  * ================================================================================
@@ -38,70 +38,20 @@ namespace Edoger\Core;
  * 
  * ================================================================================
  */
-final class Route
+final class Routing
 {
 	/**
 	 * ----------------------------------------------------------------------------
 	 * What is it ?
 	 * ----------------------------------------------------------------------------
 	 *
-	 * @var string
-	 */
-	private static $uri 		= '/';
-
-	/**
-	 * ----------------------------------------------------------------------------
-	 * What is it ?
-	 * ----------------------------------------------------------------------------
-	 *
-	 * @var array
-	 */
-	private static $sections 	= [];
-
-	/**
-	 * ----------------------------------------------------------------------------
-	 * What is it ?
-	 * ----------------------------------------------------------------------------
-	 *
-	 * @var integer
-	 */
-	private static $length 		= 0;
-
-	/**
-	 * ----------------------------------------------------------------------------
-	 * What is it ?
-	 * ----------------------------------------------------------------------------
-	 *
-	 * @var string
-	 */
-	private static $method 		= '';
-
-	/**
-	 * ----------------------------------------------------------------------------
-	 * What is it ?
-	 * ----------------------------------------------------------------------------
-	 *
-	 * @var integer
-	 */
-	private static $port 		= 0;
-
-	/**
-	 * ----------------------------------------------------------------------------
-	 * What is it ?
-	 * ----------------------------------------------------------------------------
-	 *
 	 * @return type
 	 */
-	public function __construct(string $uri, string $method, int $port)
+	public static function method(array $method, string $uri, $action)
 	{
-		if ($uri !== '/') {
-			self::$uri 		= $uri;
-			self::$sections = preg_split('/\//', $uri, 0, PREG_SPLIT_NO_EMPTY);
-			self::$length 	= count(self::$sections);
-		}
+		$pignut = preg_split('/\//', $uri, 0, PREG_SPLIT_NO_EMPTY);
 
-		self::$method 	= $method;
-		self::$port 	= $port;
+		return new Node($method, $pignut, $action);
 	}
 
 	/**
@@ -111,40 +61,108 @@ final class Route
 	 *
 	 * @return type
 	 */
-	public static function parseUri(string $uri)
+	public static function get(string $uri, $action)
 	{
-		if ($uri === '/') {
-			if (self::$length) {
-				return false;
-			} else {
-				return [];
-			}
-		} else {
-
-			$nodes 		= preg_split('/\//', $uri, 0, PREG_SPLIT_NO_EMPTY);
-
-			$patterns 	= [];
-			$keys 		= [];
-
-			foreach ($nodes as $node) {
-				if (preg_match('/^\:(\w+)(\??)$/', $node, $m)) {
-					$patterns[] = $m[2] ? '([\w\-]+)' : '([\w\-]*)';
-					$keys[] 	= $m[1];
-				} else {
-					$patterns[] = preg_quote($v);
-				}
-			}
-
-			$pattern = '/^' . join('\/', $patterns) . '$/';
-			$subject = join('/', array_pad($this -> sections, count($nodes), ''));
-
-			if (preg_match($pattern, $subject, $matches)) {
-				return array_combine($keys, array_slice($matches, 1));
-			} else {
-				return false;
-			}
-		}
+		return self::method(['get'], $uri, $action);
 	}
 
-	
+	/**
+	 * ----------------------------------------------------------------------------
+	 * What is it ?
+	 * ----------------------------------------------------------------------------
+	 *
+	 * @return type
+	 */
+	public static function post(string $uri)
+	{
+		return self::method(['post'], $uri, $action);
+	}
+
+	/**
+	 * ----------------------------------------------------------------------------
+	 * What is it ?
+	 * ----------------------------------------------------------------------------
+	 *
+	 * @return type
+	 */
+	public static function put(string $uri)
+	{
+		return self::method(['put'], $uri, $action);
+	}
+
+	/**
+	 * ----------------------------------------------------------------------------
+	 * What is it ?
+	 * ----------------------------------------------------------------------------
+	 *
+	 * @return type
+	 */
+	public static function head(string $uri)
+	{
+		return self::method(['head'], $uri, $action);
+	}
+
+	/**
+	 * ----------------------------------------------------------------------------
+	 * What is it ?
+	 * ----------------------------------------------------------------------------
+	 *
+	 * @return type
+	 */
+	public static function delete(string $uri)
+	{
+		return self::method(['delete'], $uri, $action);
+	}
+
+	/**
+	 * ----------------------------------------------------------------------------
+	 * What is it ?
+	 * ----------------------------------------------------------------------------
+	 *
+	 * @return type
+	 */
+	public static function connect(string $uri)
+	{
+		return self::method(['connect'], $uri, $action);
+	}
+
+	/**
+	 * ----------------------------------------------------------------------------
+	 * What is it ?
+	 * ----------------------------------------------------------------------------
+	 *
+	 * @return type
+	 */
+	public static function options(string $uri)
+	{
+		return self::method(['options'], $uri, $action);
+	}
+
+	/**
+	 * ----------------------------------------------------------------------------
+	 * What is it ?
+	 * ----------------------------------------------------------------------------
+	 *
+	 * @return type
+	 */
+	public static function trace(string $uri)
+	{
+		return self::method(['trace'], $uri, $action);
+	}
+
+	/**
+	 * ----------------------------------------------------------------------------
+	 * What is it ?
+	 * ----------------------------------------------------------------------------
+	 *
+	 * @return type
+	 */
+	public static function any(string $uri)
+	{
+		return self::method(
+			['get','post','put','head','delete','connect','options','trace'],
+			$uri,
+			$action
+			);
+	}
 }

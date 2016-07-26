@@ -29,80 +29,46 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE 
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-namespace Edoger\Core;
+namespace Edoger\Core\Http;
 
 
 /**
  * ================================================================================
- * Application Configuration Options Manager.
+ * Some Description.
  *
- * The manager is able to efficiently search for all configuration options.
+ * 
  * ================================================================================
  */
-final class Config
+class Request
 {
 	/**
 	 * ----------------------------------------------------------------------------
-	 * All configuration options.
+	 * What is it ?
 	 * ----------------------------------------------------------------------------
 	 *
-	 * @var array
+	 * @var type
 	 */
-	private $config = [];
+	private $kernel;
+
+	/**
+	 * ----------------------------------------------------------------------------
+	 * What is it ?
+	 * ----------------------------------------------------------------------------
+	 *
+	 * @var type
+	 */
+	private $server;
 	
 	/**
 	 * ----------------------------------------------------------------------------
-	 * Initialization manager instance, the configuration options data is bound to 
-	 * an instance.
+	 * [__construct description]
 	 * ----------------------------------------------------------------------------
-	 * @param  array 	$config 	The configuration options.
-	 * @return void
+	 * 
+	 * @param Kernel &$kernel [description]
 	 */
-	public function __construct(array $config)
+	public function __construct(Kernel &$kernel)
 	{
-		$this -> config = $config;
-	}
-
-	/**
-	 * ----------------------------------------------------------------------------
-	 * Gets the value of the specified configuration option.
-	 * ----------------------------------------------------------------------------
-	 *
-	 * @param  string 	$key 	Name of configuration options.
-	 * @param  mixed 	$def 	The default value.
-	 * @return mixed
-	 */
-	public function get(string $key, $def = null)
-	{
-		if (isset($this -> config[$key])) {
-			return $this -> config[$key];
-		} else {
-			if (empty($this -> config)) {
-				return $def;
-			}
-			$config = $this -> config;
-			foreach (explode('.', $key) as $query) {
-				if (isset($config[$query])) {
-					$config = $config[$query];
-				} else {
-					$config = $def;
-					break;
-				}
-			}
-			return $config;
-		}
-	}
-
-	/**
-	 * ----------------------------------------------------------------------------
-	 * Detecting whether there is a configuration option.
-	 * ----------------------------------------------------------------------------
-	 *
-	 * @param  string 	$key 	Name of configuration options.
-	 * @return boolean
-	 */
-	public function has(string $key)
-	{
-		return $this -> get($key) !== null;
+		$this -> server = new Server();
+		$this -> kernel = &$kernel;
 	}
 }
