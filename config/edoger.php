@@ -37,11 +37,14 @@
  * ================================================================================
  */
 $config = [];
+	
 
+$config['debug'] = true;
 
+$config['log'] = true;
+$config['logLevel'] = 'ALL';
+$config['logHandler'] = [];
 
-
-
-
+$config['logHandler'][] = ['File', EDOGER_ROOT . '/Data/logs/' . date('Ymd') . '.log'];
 
 return $config;
