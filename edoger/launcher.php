@@ -39,6 +39,7 @@
  */
 const EDOGER_ROOT = __DIR__;
 
+
 /**
  * --------------------------------------------------------------------------------
  * Registered Automatic Loader.
@@ -51,10 +52,6 @@ spl_autoload_register(
 
 	function(string $class){
 		
-		if (substr($class, 0, 1) === '/') {
-			$class = substr($class, 1);
-		}
-
 		//	Create the class file path.
 		$path = preg_replace(
 			['/\\\\/', '/^Edoger/'],
