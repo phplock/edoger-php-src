@@ -127,7 +127,7 @@ final class Logger
 	 */
 	public function __construct(string $passageway)
 	{
-		$this -> passageway = $passageway;
+		$this -> passageway = strtoupper($passageway);
 	}
 
 	/**
