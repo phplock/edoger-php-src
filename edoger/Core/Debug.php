@@ -29,39 +29,57 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE 
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
+namespace Edoger\Core;
+
+use Edoger\Core\Log\Logger;
 
 /**
- * --------------------------------------------------------------------------------
- * Loading Edoger PHP Framework Start Script File.
- * --------------------------------------------------------------------------------
  * 
- * This will create and initialize the framework runtime environment and application 
- * running environment.
  */
-require __DIR__ . '/../edoger/launcher.php';
+final class Debug
+{
+	private static $map = [
+		E_ERROR             => Logger::CRITICAL,
+		E_WARNING           => Logger::WARNING,
+		E_PARSE             => Logger::ALERT,
+		E_NOTICE            => Logger::NOTICE,
+		E_CORE_ERROR        => Logger::CRITICAL,
+		E_CORE_WARNING      => Logger::WARNING,
+		E_COMPILE_ERROR     => Logger::ALERT,
+		E_COMPILE_WARNING   => Logger::WARNING,
+		E_USER_ERROR        => Logger::ERROR,
+		E_USER_WARNING      => Logger::WARNING,
+		E_USER_NOTICE       => Logger::NOTICE,
+		E_STRICT            => Logger::NOTICE,
+		E_RECOVERABLE_ERROR => Logger::ERROR,
+		E_DEPRECATED        => Logger::NOTICE,
+		E_USER_DEPRECATED   => Logger::NOTICE
+	];
 
+	private static $registered = false;
+	
+	public function __construct()
+	{
+		if (!self::$registered) {
+			self::$registered = true;
 
-/**
- * --------------------------------------------------------------------------------
- * Create An Application.
- * --------------------------------------------------------------------------------
- *
- * This will create an application based on a given configuration file, if create 
- * the application failure, it will cause the system to throw an exception. This 
- * profile is very important, please make sure that the configuration options are 
- * correct.
- * 
- * You need to specify the configuration file name for the application.
- */
-edoger() -> create('application');
+			set_error_handler([$this, 'ErrorHandler']);
+			set_exception_handler([$this, 'ExceptionHandler']);
+		}
+	}
 
+	public function stop()
+	{
 
-/**
- * --------------------------------------------------------------------------------
- * Start This Application.
- * --------------------------------------------------------------------------------
- *
- * If the application does not work correctly, please check the running log of the 
- * framework.
- */
-edoger() -> app() -> run();
+	}
+
+	public function ErrorHandler(int $code, string $message, string $file = '', int $line = 0, array $context = [])
+	{
+
+	}
+
+	public function ExceptionHandler($exception)
+	{
+
+	}
+}

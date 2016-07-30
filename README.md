@@ -2,16 +2,16 @@
 
 A simple and efficient PHP framework.
 
-> For Example：
-
+For Example：
+```php
 	require "path/to/edoger/launcher.php";
 	
 	edoger() -> create("path/to/config.file.php");
 	
 	edoger() -> app() -> run();
-
-> Components List:
-
+```
+Components List:
+```php
 	edoger() -> request();
 	edoger() -> respond();
 	edoger() -> input();
@@ -23,3 +23,4 @@ A simple and efficient PHP framework.
 	edoger() -> log();
 	edoger() -> hooks();
 	edoger() -> debug();
+```

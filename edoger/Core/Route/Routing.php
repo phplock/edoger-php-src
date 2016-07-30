@@ -47,7 +47,7 @@ final class Routing
 	 *
 	 * @return type
 	 */
-	public static function method(array $method, string $uri, $action)
+	public static function match(array $method, string $uri, $action)
 	{
 		$pignut = preg_split('/\//', $uri, 0, PREG_SPLIT_NO_EMPTY);
 
@@ -63,7 +63,7 @@ final class Routing
 	 */
 	public static function get(string $uri, $action)
 	{
-		return self::method(['get'], $uri, $action);
+		return self::match(['get'], $uri, $action);
 	}
 
 	/**
@@ -75,7 +75,7 @@ final class Routing
 	 */
 	public static function post(string $uri)
 	{
-		return self::method(['post'], $uri, $action);
+		return self::match(['post'], $uri, $action);
 	}
 
 	/**
@@ -87,7 +87,7 @@ final class Routing
 	 */
 	public static function put(string $uri)
 	{
-		return self::method(['put'], $uri, $action);
+		return self::match(['put'], $uri, $action);
 	}
 
 	/**
@@ -99,7 +99,7 @@ final class Routing
 	 */
 	public static function head(string $uri)
 	{
-		return self::method(['head'], $uri, $action);
+		return self::match(['head'], $uri, $action);
 	}
 
 	/**
@@ -111,7 +111,7 @@ final class Routing
 	 */
 	public static function delete(string $uri)
 	{
-		return self::method(['delete'], $uri, $action);
+		return self::match(['delete'], $uri, $action);
 	}
 
 	/**
@@ -123,7 +123,7 @@ final class Routing
 	 */
 	public static function connect(string $uri)
 	{
-		return self::method(['connect'], $uri, $action);
+		return self::match(['connect'], $uri, $action);
 	}
 
 	/**
@@ -135,7 +135,7 @@ final class Routing
 	 */
 	public static function options(string $uri)
 	{
-		return self::method(['options'], $uri, $action);
+		return self::match(['options'], $uri, $action);
 	}
 
 	/**
@@ -147,7 +147,7 @@ final class Routing
 	 */
 	public static function trace(string $uri)
 	{
-		return self::method(['trace'], $uri, $action);
+		return self::match(['trace'], $uri, $action);
 	}
 
 	/**
@@ -159,7 +159,7 @@ final class Routing
 	 */
 	public static function any(string $uri)
 	{
-		return self::method(
+		return self::match(
 			['get','post','put','head','delete','connect','options','trace'],
 			$uri,
 			$action

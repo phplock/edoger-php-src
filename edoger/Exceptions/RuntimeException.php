@@ -29,39 +29,54 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE 
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
+namespace Edoger\Exceptions;
+
+use Exception;
+use Edoger\Core\Log\Logger;
+use Edoger\Interfaces\EdogerExceptionInterface;
 
 /**
- * --------------------------------------------------------------------------------
- * Loading Edoger PHP Framework Start Script File.
- * --------------------------------------------------------------------------------
- * 
- * This will create and initialize the framework runtime environment and application 
- * running environment.
- */
-require __DIR__ . '/../edoger/launcher.php';
-
-
-/**
- * --------------------------------------------------------------------------------
- * Create An Application.
- * --------------------------------------------------------------------------------
+ * ================================================================================
+ * Some Description.
  *
- * This will create an application based on a given configuration file, if create 
- * the application failure, it will cause the system to throw an exception. This 
- * profile is very important, please make sure that the configuration options are 
- * correct.
  * 
- * You need to specify the configuration file name for the application.
+ * ================================================================================
  */
-edoger() -> create('application');
+class RuntimeException extends Exception implements EdogerExceptionInterface
+{
+	/**
+	 * ----------------------------------------------------------------------------
+	 * What is it ?
+	 * ----------------------------------------------------------------------------
+	 *
+	 * @return string
+	 */
+	public function __construct(string $message, int $code = 5000)
+	{
+		parent::__construct($message, $code);
+	}
 
+	/**
+	 * ----------------------------------------------------------------------------
+	 * What is it ?
+	 * ----------------------------------------------------------------------------
+	 *
+	 * @return string
+	 */
+	public function getLog()
+	{
+		return "{$this -> message} in {$this -> file} line {$this -> line}";
+	}
 
-/**
- * --------------------------------------------------------------------------------
- * Start This Application.
- * --------------------------------------------------------------------------------
- *
- * If the application does not work correctly, please check the running log of the 
- * framework.
- */
-edoger() -> app() -> run();
+	/**
+	 * ----------------------------------------------------------------------------
+	 * What is it ?
+	 * ----------------------------------------------------------------------------
+	 *
+	 * @return integer
+	 */
+	public function getLevel()
+	{
+		return Logger::ALERT;
+	}
+}

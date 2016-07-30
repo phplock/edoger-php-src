@@ -45,6 +45,7 @@ use Edoger\Exceptions\EdogerException;
  */
 final class Application
 {
+	private $config;
 	/**
 	 * ----------------------------------------------------------------------------
 	 * What is it ?
@@ -61,7 +62,7 @@ final class Application
 	 *
 	 * @var Edoger\Core\Kernel
 	 */
-	private $rootDir;
+	private $root;
 	
 	/**
 	 * ----------------------------------------------------------------------------
@@ -70,19 +71,45 @@ final class Application
 	 *
 	 * @return type
 	 */
-	public function __construct(Kernel &$kernel)
+	public function __construct(Kernel &$kernel, Config $config)
 	{
-		$config = $kernel -> config() -> get('application');
-
-		if (!is_dir($config['root'])) {
-			
-			//	
-		}
-
-		$this -> rootDir = $config['root'];
-
-
+		$this -> config = $config;
 		$this -> kernel = &$kernel;
+
+		$this -> root = $kernel -> root(
+			
+			//	The root directory of the application.
+			//	Default value equal "application".
+			$config -> get('root', 'application')
+			);
+	}
+
+	/**
+	 * ----------------------------------------------------------------------------
+	 * What is it ?
+	 * ----------------------------------------------------------------------------
+	 *
+	 * @return type
+	 */
+	public function config()
+	{
+		return $this -> config;
+	}
+
+	/**
+	 * ----------------------------------------------------------------------------
+	 * What is it ?
+	 * ----------------------------------------------------------------------------
+	 *
+	 * @return type
+	 */
+	public function root(string $uri = '')
+	{
+		if ($uri) {
+			return $this -> root . '/' . ltrim($uri, '/');
+		} else {
+			return $this -> root;
+		}
 	}
 
 	/**
@@ -94,6 +121,6 @@ final class Application
 	 */
 	public function run()
 	{
-		require $this -> rootDir . '/routes.php';
+		require $this -> root . '/routes.php';
 	}
 }

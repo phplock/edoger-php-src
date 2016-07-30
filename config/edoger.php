@@ -29,54 +29,22 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE 
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-namespace Edoger\Exceptions;
-
-use Exception;
-use Edoger\Core\Logger;
-use Edoger\Interfaces\EdogerExceptionInterface;
 
 /**
  * ================================================================================
- * Some Description.
- *
+ * This Is Edoger PHP Framework Configuration File.
  * 
  * ================================================================================
  */
-class EdogerException extends Exception implements EdogerExceptionInterface
-{
-	/**
-	 * ----------------------------------------------------------------------------
-	 * What is it ?
-	 * ----------------------------------------------------------------------------
-	 *
-	 * @return string
-	 */
-	public function __construct(string $message, int $code = 5000)
-	{
-		parent::__construct($message, $code);
-	}
+$config = [];
+	
 
-	/**
-	 * ----------------------------------------------------------------------------
-	 * What is it ?
-	 * ----------------------------------------------------------------------------
-	 *
-	 * @return string
-	 */
-	public function getLog()
-	{
-		return "{$this -> message} in {$this -> file} line {$this -> line}";
-	}
+$config['debug'] = true;
 
-	/**
-	 * ----------------------------------------------------------------------------
-	 * What is it ?
-	 * ----------------------------------------------------------------------------
-	 *
-	 * @return integer
-	 */
-	public function getLevel()
-	{
-		return Logger::ALERT;
-	}
-}
+$config['log'] = true;
+$config['logLevel'] = 'ALL';
+$config['logHandler'] = [];
+
+$config['logHandler'][] = ['File', EDOGER_ROOT . '/Data/logs/' . date('Ymd') . '.log'];
+
+return $config;
