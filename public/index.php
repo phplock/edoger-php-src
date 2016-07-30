@@ -50,12 +50,10 @@ require __DIR__ . '/../edoger/launcher.php';
  * the application failure, it will cause the system to throw an exception. This 
  * profile is very important, please make sure that the configuration options are 
  * correct.
+ * 
+ * You need to specify the configuration file name for the application.
  */
-edoger() -> create(
-
-	//	This is the configuration file path for your application.
-	__DIR__ . '/../config/application.php'
-	);
+edoger() -> create('application');
 
 
 /**
