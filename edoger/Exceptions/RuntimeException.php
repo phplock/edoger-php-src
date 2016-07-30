@@ -32,7 +32,7 @@
 namespace Edoger\Exceptions;
 
 use Exception;
-use Edoger\Core\Logger;
+use Edoger\Core\Log\Logger;
 use Edoger\Interfaces\EdogerExceptionInterface;
 
 /**
@@ -42,7 +42,7 @@ use Edoger\Interfaces\EdogerExceptionInterface;
  * 
  * ================================================================================
  */
-class EdogerException extends Exception implements EdogerExceptionInterface
+class RuntimeException extends Exception implements EdogerExceptionInterface
 {
 	/**
 	 * ----------------------------------------------------------------------------
