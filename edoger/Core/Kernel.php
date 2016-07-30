@@ -31,7 +31,7 @@
  */
 namespace Edoger\Core;
 
-use Edoger\Exceptions\EdogerException;
+use Edoger\Exceptions\RuntimeException;
 
 /**
  * ================================================================================
@@ -44,12 +44,21 @@ final class Kernel
 {
 	/**
 	 * ----------------------------------------------------------------------------
+	 * The Root Directory Of The WEB Site.
+	 * ----------------------------------------------------------------------------
+	 *
+	 * @var string
+	 */
+	private static $root;
+
+	/**
+	 * ----------------------------------------------------------------------------
 	 * Application Configuration Options Manager.
 	 * ----------------------------------------------------------------------------
 	 *
 	 * @var Edoger\Core\Config
 	 */
-	private static $config = null;
+	private static $config;
 
 	/**
 	 * ----------------------------------------------------------------------------
@@ -58,7 +67,7 @@ final class Kernel
 	 *
 	 * @var Edoger\Core\Application
 	 */
-	private static $application = null;
+	private static $application;
 
 	/**
 	 * ----------------------------------------------------------------------------
@@ -81,7 +90,18 @@ final class Kernel
 	 */
 	private function __construct()
 	{
-		//	
+		self::$root = dirname(dirname(__DIR__));
+
+		$file = self::$root . '/config/edoger.php';
+		if (!file_exists($file)) {
+			throw new RuntimeException(
+				"The edoger configuration file {$file} does not exist", 5001
+				);
+		}
+		$configuration = require $file;
+
+		//	Create system configuration manager.
+		self::$config = new Config($configuration);
 	}
 
 	/**
@@ -102,7 +122,21 @@ final class Kernel
 		return $kernel;
 	}
 
-
+	/**
+	 * ----------------------------------------------------------------------------
+	 * 
+	 * ----------------------------------------------------------------------------
+	 * 
+	 * @return void
+	 */
+	public function root(string $uri = '')
+	{
+		if ($uri) {
+			return self::$root . '/' . ltrim($uri, '/');
+		} else {
+			return self::$root;
+		}
+	}
 
 	/**
 	 * ----------------------------------------------------------------------------
@@ -111,18 +145,19 @@ final class Kernel
 	 * 
 	 * @return void
 	 */
-	public function create(string $file)
+	public function create(string $fileName)
 	{
+		$file = self::$root . '/config/' . $fileName . '.php';
+
 		if (!file_exists($file)) {
-			throw new EdogerException(
-				"The configuration file {$file} does not exist", 5001
+			throw new RuntimeException(
+				"The application configuration file {$file} does not exist", 5001
 				);
 		}
 
 		$configuration = require $file;
 
-		self::$config 		= new Config($configuration);
-		self::$application 	= new Application($this);
+		self::$application = new Application($this, new Config($configuration));
 	}
 
 	/**
