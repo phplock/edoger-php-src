@@ -167,7 +167,7 @@ final class Logger
 	 * @param  string 	$message 	The log content.
 	 * @return Edoger\Core\Logger\Logger
 	 */
-	protected function log(int $level, string $message)
+	public function log(int $level, string $message)
 	{
 		$date 	= date('Y-m-d H:i:s');
 		$name 	= self::$levelToStringMap[$level] ?? 'UNKNOWN';
