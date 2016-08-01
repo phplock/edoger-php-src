@@ -31,37 +31,21 @@
  */
 
 /**
- * --------------------------------------------------------------------------------
- * Loading Edoger PHP Framework Start Script File.
- * --------------------------------------------------------------------------------
+ * -------------------------------------------------------------------------------------
+ * 载入框架启动脚本文件
+ * -------------------------------------------------------------------------------------
  * 
- * This will create and initialize the framework runtime environment and application 
- * running environment.
+ * 启动脚本将准备应用程序运行的基本环境，同时进行核心对象的初始化工作
  */
 require __DIR__ . '/../edoger/launcher.php';
 
 
 /**
- * --------------------------------------------------------------------------------
- * Create An Application.
- * --------------------------------------------------------------------------------
+ * -------------------------------------------------------------------------------------
+ * 基于配置文件创建一个应用程序实例，并立即运行创建的应用程序
+ * -------------------------------------------------------------------------------------
  *
- * This will create an application based on a given configuration file, if create 
- * the application failure, it will cause the system to throw an exception. This 
- * profile is very important, please make sure that the configuration options are 
- * correct.
- * 
- * You need to specify the configuration file name for the application.
+ * 系统默认的配置文件名称是 "application"，如果想自定义，请在调用 create() 方法时传入自
+ * 定义的配置文件名称，配置文件必须位于 config 目录中。
  */
-edoger() -> create('application');
-
-
-/**
- * --------------------------------------------------------------------------------
- * Start This Application.
- * --------------------------------------------------------------------------------
- *
- * If the application does not work correctly, please check the running log of the 
- * framework.
- */
-edoger() -> app() -> run();
+edoger() -> create() -> app() -> run();
