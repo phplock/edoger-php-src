@@ -41,10 +41,9 @@ $config = [];
 
 $config['debug'] = true;
 
-$config['log'] = true;
-$config['logLevel'] = 'ALL';
-$config['logHandler'] = [];
+$config['log_level'] 	= 'debug';
+$config['log_handler'] 	= 'file';
 
-$config['logHandler'][] = ['File', EDOGER_ROOT . '/Data/logs/' . date('Ymd') . '.log'];
+
 
 return $config;

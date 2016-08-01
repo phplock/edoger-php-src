@@ -46,7 +46,6 @@ final class Logger
 	const LEVEL_CRITICAL 	= 4;
 	const LEVEL_ALERT 		= 2;
 	const LEVEL_EMERGENCY 	= 1;
-	const LEVEL_ALL 		= 255;
 
 	/**
 	 * ----------------------------------------------------------------------------
@@ -91,7 +90,7 @@ final class Logger
 	 * 
 	 * @var type
 	 */
-	private $handlers = [];
+	private $handler = null;
 
 	/**
 	 * ----------------------------------------------------------------------------
@@ -112,7 +111,7 @@ final class Logger
 	 * 
 	 * @return array
 	 */
-	public static function getAllLogs()
+	public static function getLogQueue()
 	{
 		return self::$logQueue;
 	}
@@ -137,14 +136,14 @@ final class Logger
 	 * 
 	 * @return string
 	 */
-	public function getPassageway()
+	public function getPassagewayName()
 	{
 		return $this -> passageway;
 	}
 
 	/**
 	 * ----------------------------------------------------------------------------
-	 * Add a log handler object to the current logger.
+	 * Set a log handler object to the current logger.
 	 * ----------------------------------------------------------------------------
 	 *
 	 * Each log handler must be an instance of a class that implements the "Logger-
@@ -153,9 +152,9 @@ final class Logger
 	 * @param  object 	$handler 	The log handler object.
 	 * @return Edoger\Core\Logger\Logger
 	 */
-	public function appendHandler(LoggerHandlerInterface $handler)
+	public function setHandler(LoggerHandlerInterface $handler)
 	{
-		$this -> handlers[] = $handler;
+		$this -> handler = $handler;
 		return $this;
 	}
 
@@ -177,12 +176,8 @@ final class Logger
 
 		self::$logQueue[] = [$level, $log];
 
-		if (!empty($this -> handlers)) {
-			foreach ($this -> handlers as $handler) {
-				if ($handler -> save($level, $log)) {
-					break;
-				}
-			}
+		if ($this -> handler) {
+			$handler -> save($level, $log);
 		}
 
 		return $this;

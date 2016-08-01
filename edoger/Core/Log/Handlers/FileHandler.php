@@ -67,10 +67,10 @@ class FileHandler implements LoggerHandlerInterface
 	 *
 	 * @return void
 	 */
-	public function __construct(string $file, int $level)
+	public function __construct(int $level)
 	{
-		$this -> file 	= $file;
 		$this -> level 	= $level;
+		$this -> file 	= EDOGER_ROOT . '/Data/logs/' . date('Ymd') . '.log';
 	}
 
 	/**
@@ -82,7 +82,7 @@ class FileHandler implements LoggerHandlerInterface
 	 */
 	public function save(int $level, string $log)
 	{
-		if (($level & $this -> level) === $level) {
+		if ($level <= $this -> level) {
 			return error_log($log . PHP_EOL, 3, $this -> file);
 		} else {
 			return false;
