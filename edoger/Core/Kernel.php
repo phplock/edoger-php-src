@@ -120,7 +120,7 @@ final class Kernel
 
 	/**
 	 * ----------------------------------------------------------------------------
-	 * 初始化核心对象
+	 * 初始化核心对象，装载系统配置管理器
 	 * ----------------------------------------------------------------------------
 	 * 
 	 * @return void
@@ -134,7 +134,7 @@ final class Kernel
 		if (file_exists($file)) {
 			$configuration = require $file;
 		} else {
-			throw new RuntimeException(
+			$this -> triggerError(
 				"The edoger configuration file {$file} does not exist", 5001
 				);
 		}
@@ -170,7 +170,7 @@ final class Kernel
 			$class 		= "\\Edoger\\Core\\Log\\Handlers\\{$handler}Handler";
 
 			if (!class_exists($class, true)) {
-				throw new RuntimeException(
+				$this -> triggerError(
 					"The Logger Handler {$calss} is not found", 5001
 					);
 			}
@@ -213,6 +213,20 @@ final class Kernel
 
 	/**
 	 * ----------------------------------------------------------------------------
+	 * 触发系统错误，立即结束程序的运行
+	 * ----------------------------------------------------------------------------
+	 * 
+	 * @param  string  	$message 	错误消息
+	 * @param  integer 	$code    	错误代码
+	 * @return void
+	 */
+	public function triggerError(string $message, int $code = 5000)
+	{
+		throw new RuntimeException($message, $code);
+	}
+
+	/**
+	 * ----------------------------------------------------------------------------
 	 * 获取站点的根目录，或者创建基于根目录的绝对路径
 	 * ----------------------------------------------------------------------------
 	 *
@@ -246,7 +260,7 @@ final class Kernel
 		$file = self::$root . '/config/' . $fileName . '.php';
 
 		if (!file_exists($file)) {
-			throw new RuntimeException(
+			$this -> triggerError(
 				"The application configuration file {$file} does not exist", 5001
 				);
 		}
