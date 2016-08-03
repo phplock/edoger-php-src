@@ -33,7 +33,7 @@ namespace Edoger\Core\Log;
 
 /**
  * ================================================================================
- * Log Recorder.
+ * 日志记录器类
  * ================================================================================
  */
 final class Logger
@@ -49,11 +49,8 @@ final class Logger
 
 	/**
 	 * ----------------------------------------------------------------------------
-	 * All logs captured by the system.
+	 * 全局所有日志记录器记录的日志
 	 * ----------------------------------------------------------------------------
-	 *
-	 * Each element inside contains a two element array that contains the log level 
-	 * and log content.
 	 * 
 	 * @var array
 	 */
@@ -61,7 +58,7 @@ final class Logger
 
 	/**
 	 * ----------------------------------------------------------------------------
-	 * Description of all log levels.
+	 * 日志级别对应的文字描述
 	 * ----------------------------------------------------------------------------
 	 *
 	 * @var array
@@ -81,44 +78,46 @@ final class Logger
 
 	/**
 	 * ----------------------------------------------------------------------------
-	 * Log handler list.
+	 * 该日志记录器本身的记录缓存
 	 * ----------------------------------------------------------------------------
-	 *
-	 * In the queue of any a log processing procedures, if returns true, then a 
-	 * handler for the back of the queue will not be executed, because the said log 
-	 * has been completed, no longer need to continue processing.
 	 * 
-	 * @var type
+	 * @var array
+	 */
+	private $logs = [];
+
+	/**
+	 * ----------------------------------------------------------------------------
+	 * 日志处理程序
+	 * ----------------------------------------------------------------------------
+	 * 
+	 * @var Edoger\Core\Log\LoggerHandlerInterface
 	 */
 	private $handler = null;
 
 	/**
 	 * ----------------------------------------------------------------------------
-	 * The passageway name of the log recorder.
+	 * 日志记录器的通道名称，这个用于区分多个日志记录器记录的不同日志
 	 * ----------------------------------------------------------------------------
-	 *
-	 * The passageway names can be used to distinguish logs from different components 
-	 * and modules.
 	 * 
-	 * @var type
+	 * @var string
 	 */
 	private $passageway = '';
 
 	/**
 	 * ----------------------------------------------------------------------------
-	 * Gets all the logs captured by the system.
+	 * 获取全局所有日志记录器记录的日志
 	 * ----------------------------------------------------------------------------
 	 * 
 	 * @return array
 	 */
-	public static function getLogQueue()
+	public static function getAllLogs()
 	{
 		return self::$logQueue;
 	}
 
 	/**
 	 * ----------------------------------------------------------------------------
-	 * Bind passageway name to this logger.
+	 * 创建一个日志记录器实例，并设定通道名称
 	 * ----------------------------------------------------------------------------
 	 * 
 	 * @param  string 	$passageway 	The passageway name.
@@ -131,7 +130,7 @@ final class Logger
 
 	/**
 	 * ----------------------------------------------------------------------------
-	 * Gets the passageway name for this logger.
+	 * 获取当前日志记录器的通道名称
 	 * ----------------------------------------------------------------------------
 	 * 
 	 * @return string
@@ -143,29 +142,45 @@ final class Logger
 
 	/**
 	 * ----------------------------------------------------------------------------
-	 * Set a log handler object to the current logger.
+	 * 获取该日志记录器本身记录的所有日志
 	 * ----------------------------------------------------------------------------
-	 *
-	 * Each log handler must be an instance of a class that implements the "Logger-
-	 * HandlerInterface" interface.
 	 * 
-	 * @param  object 	$handler 	The log handler object.
-	 * @return Edoger\Core\Logger\Logger
+	 * @return array
+	 */
+	public function getLogs()
+	{
+		return $this -> logs;
+	}
+
+	/**
+	 * ----------------------------------------------------------------------------
+	 * 设置日志处理程序
+	 * ----------------------------------------------------------------------------
+	 * 
+	 * @param  Edoger\Core\Log\LoggerHandlerInterface 	$handler 	日志处理程序对象
+	 * @return Edoger\Core\Log\Logger
 	 */
 	public function setHandler(LoggerHandlerInterface $handler)
 	{
 		$this -> handler = $handler;
+
+		//	绑定日志处理程序后立即处理已有的日志记录
+		if (!empty($this -> logs)) {
+			foreach ($this -> logs as $log) {
+				$handler -> save($log[0], $log[1]);
+			}
+		}
 		return $this;
 	}
 
 	/**
 	 * ----------------------------------------------------------------------------
-	 * Record a custom level log.
+	 * 记录一条指定级别的日志，如果指定的级别不能识别，将转换成未知日志
 	 * ----------------------------------------------------------------------------
 	 * 
 	 * @param  int    	$level   	The log level.
 	 * @param  string 	$message 	The log content.
-	 * @return Edoger\Core\Logger\Logger
+	 * @return Edoger\Core\Log\Logger
 	 */
 	public function log(int $level, string $message)
 	{
@@ -174,7 +189,8 @@ final class Logger
 
 		$log 	= "[{$date}][{$name}][{$this -> passageway}]{$message}";
 
-		self::$logQueue[] = [$level, $log];
+		self::$logQueue[] 	= [$level, $log];
+		$this -> logs[] 	= [$level, $log];
 
 		if ($this -> handler) {
 			$handler -> save($level, $log);
@@ -185,10 +201,10 @@ final class Logger
 
 	/**
 	 * ----------------------------------------------------------------------------
-	 * Record a "DEBUG" level log.
+	 * 记录一条 DEBUG 级别的日志
 	 * ----------------------------------------------------------------------------
 	 * 
-	 * @return Edoger\Core\Logger\Logger
+	 * @return Edoger\Core\Log\Logger
 	 */
 	public function debug(string $message)
 	{
@@ -199,10 +215,10 @@ final class Logger
 
 	/**
 	 * ----------------------------------------------------------------------------
-	 * Record a "INFO" level log.
+	 * 记录一条 INFO 级别的日志
 	 * ----------------------------------------------------------------------------
 	 * 
-	 * @return Edoger\Core\Logger\Logger
+	 * @return Edoger\Core\Log\Logger
 	 */
 	public function info(string $message)
 	{
@@ -213,10 +229,10 @@ final class Logger
 
 	/**
 	 * ----------------------------------------------------------------------------
-	 * Record a "NOTICE" level log.
+	 * 记录一条 NOTICE 级别的日志
 	 * ----------------------------------------------------------------------------
 	 * 
-	 * @return Edoger\Core\Logger\Logger
+	 * @return Edoger\Core\Log\Logger
 	 */
 	public function notice(string $message)
 	{
@@ -227,10 +243,10 @@ final class Logger
 
 	/**
 	 * ----------------------------------------------------------------------------
-	 * Record a "WARNING" level log.
+	 * 记录一条 WARNING 级别的日志
 	 * ----------------------------------------------------------------------------
 	 * 
-	 * @return Edoger\Core\Logger\Logger
+	 * @return Edoger\Core\Log\Logger
 	 */
 	public function warning(string $message)
 	{
@@ -241,10 +257,10 @@ final class Logger
 
 	/**
 	 * ----------------------------------------------------------------------------
-	 * Record a "ERROR" level log.
+	 * 记录一条 ERROR 级别的日志
 	 * ----------------------------------------------------------------------------
 	 * 
-	 * @return Edoger\Core\Logger\Logger
+	 * @return Edoger\Core\Log\Logger
 	 */
 	public function error(string $message)
 	{
@@ -255,10 +271,10 @@ final class Logger
 
 	/**
 	 * ----------------------------------------------------------------------------
-	 * Record a "CRITICAL" level log.
+	 * 记录一条 CRITICAL 级别的日志
 	 * ----------------------------------------------------------------------------
 	 * 
-	 * @return Edoger\Core\Logger\Logger
+	 * @return Edoger\Core\Log\Logger
 	 */
 	public function critical(string $message)
 	{
@@ -269,10 +285,10 @@ final class Logger
 
 	/**
 	 * ----------------------------------------------------------------------------
-	 * Record a "ALERT" level log.
+	 * 记录一条 ALERT 级别的日志
 	 * ----------------------------------------------------------------------------
 	 * 
-	 * @return Edoger\Core\Logger\Logger
+	 * @return Edoger\Core\Log\Logger
 	 */
 	public function alert(string $message)
 	{
@@ -283,10 +299,10 @@ final class Logger
 
 	/**
 	 * ----------------------------------------------------------------------------
-	 * Record a "EMERGENCY" level log.
+	 * 记录一条 EMERGENCY 级别的日志
 	 * ----------------------------------------------------------------------------
 	 * 
-	 * @return Edoger\Core\Logger\Logger
+	 * @return Edoger\Core\Log\Logger
 	 */
 	public function emergency(string $message)
 	{
