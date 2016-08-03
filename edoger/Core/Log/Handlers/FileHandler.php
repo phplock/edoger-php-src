@@ -31,7 +31,7 @@
  */
 namespace Edoger\Core\Log\Handlers;
 
-use Edoger\Core\Logger\LoggerHandlerInterface;
+use Edoger\Core\Log\LoggerHandlerInterface;
 
 /**
  * ================================================================================
