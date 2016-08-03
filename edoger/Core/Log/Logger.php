@@ -167,7 +167,7 @@ final class Logger
 		//	绑定日志处理程序后立即处理已有的日志记录
 		if (!empty($this -> logs)) {
 			foreach ($this -> logs as $log) {
-				$handler -> save($log[0], $log[1]);
+				$this -> handler -> save($log[0], $log[1]);
 			}
 		}
 		return $this;
@@ -193,7 +193,7 @@ final class Logger
 		$this -> logs[] 	= [$level, $log];
 
 		if ($this -> handler) {
-			$handler -> save($level, $log);
+			$this -> handler -> save($level, $log);
 		}
 
 		return $this;

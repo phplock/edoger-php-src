@@ -131,16 +131,10 @@ final class Kernel
 		self::$root = dirname(dirname(__DIR__));
 
 		$file = self::$root . '/config/edoger.php';
-		if (file_exists($file)) {
-			$configuration = require $file;
-		} else {
-			$this -> triggerError(
-				"The edoger configuration file {$file} does not exist", 5001
-				);
-		}
+		$conf = require $file;
 		
 		//	绑定框架配置管理器实例
-		self::$config = new Config($configuration);
+		self::$config = new Config($conf);
 	}
 
 	/**
@@ -156,9 +150,6 @@ final class Kernel
 
 		if (is_null($kernel)) {
 
-			//	创建并绑定错误调试管理器
-			self::$debug = new Debug();
-
 			//	创建核心对象
 			$kernel = new self();
 
@@ -168,12 +159,6 @@ final class Kernel
 
 			$handler 	= ucfirst(strtolower(self::$config -> get('log_handler')));
 			$class 		= "\\Edoger\\Core\\Log\\Handlers\\{$handler}Handler";
-
-			if (!class_exists($class, true)) {
-				$this -> triggerError(
-					"The Logger Handler {$calss} is not found", 5001
-					);
-			}
 
 			//	日志处理的级别映射表
 			//	系统仅能识别和使用定义的8个日志级别
@@ -186,27 +171,21 @@ final class Kernel
 				'error' 	=> Logger::LEVEL_ERROR,
 				'critical' 	=> Logger::LEVEL_CRITICAL,
 				'alert' 	=> Logger::LEVEL_ALERT,
-				'emergenc' 	=> Logger::LEVEL_EMERGENC
+				'emergenc' 	=> Logger::LEVEL_EMERGENCY
 			];
 
 			$level = strtolower(self::$config -> get('log_level'));
 
 			//	添加日志处理程序
 			//	只有在添加了日志处理程序之后，日志记录器才能发送日志
-			self::$log -> setHandler(new $calss($map[$level] ?? Logger::LEVEL_ERROR));
+			self::$logger -> setHandler(new $class($map[$level] ?? Logger::LEVEL_ERROR));
 
-			//	绑定日志记录器到错误调试管理器
-			//	在此之前，如果发生错误，不会被捕获，因为只有绑定了日志记录器才会启动
-			//	错误捕获
-			self::$debug -> bindLogger(self::$log);
+			//	创建并绑定错误调试管理器
+			self::$debug = new Debug($kernel, self::$logger);
 			
 			//	创建基础的请求组件和响应组件
-			self::$request = new Request($this);
-			self::$respond = new Respond($this);
-
-			//	绑定响应钩子程序到错误调试管理器
-			//	一旦发生致命错误，可以保证有相应的数据输出
-			self::$debug -> bindHook(self::$respond -> getHook());
+			self::$request = new Request($kernel);
+			self::$respond = new Respond($kernel);
 		}
 		return $kernel;
 	}
@@ -220,7 +199,7 @@ final class Kernel
 	 * @param  integer 	$code    	错误代码
 	 * @return void
 	 */
-	public function triggerError(string $message, int $code = 5000)
+	public function throwError(string $message, int $code = 5000)
 	{
 		throw new RuntimeException($message, $code);
 	}
@@ -260,8 +239,9 @@ final class Kernel
 		$file = self::$root . '/config/' . $fileName . '.php';
 
 		if (!file_exists($file)) {
-			$this -> triggerError(
-				"The application configuration file {$file} does not exist", 5001
+			$this -> throwError(
+				"The application configuration file {$file} does not exist",
+				5001
 				);
 		}
 
@@ -296,6 +276,18 @@ final class Kernel
 	public function config()
 	{
 		return self::$config;
+	}
+
+	/**
+	 * ----------------------------------------------------------------------------
+	 * 获取错误调试管理器
+	 * ----------------------------------------------------------------------------
+	 * 
+	 * @return Edoger\Core\Debug
+	 */
+	public function debug()
+	{
+		return self::$debug;
 	}
 
 	/**
