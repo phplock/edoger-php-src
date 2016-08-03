@@ -34,44 +34,42 @@ namespace Edoger\Core\Http;
 
 /**
  * ================================================================================
- * Some Description.
- *
- * 
+ * 针对全局变量 $_SERVER 的访问管理器
  * ================================================================================
  */
-class Server
+final class Server
 {
 	/**
 	 * ----------------------------------------------------------------------------
-	 * What is it ?
+	 * 全局变量 $_SERVER 的引用
 	 * ----------------------------------------------------------------------------
 	 *
-	 * @var type
+	 * @var array
 	 */
 	private $server = [];
 	
 	/**
 	 * ----------------------------------------------------------------------------
-	 * [__construct description]
+	 * 初始化组件本身，绑定全局变量 $_SERVER 的引用
 	 * ----------------------------------------------------------------------------
 	 *
-	 * 
+	 * @return void
 	 */
 	public function __construct()
 	{
 		if (!empty($_SERVER)) {
-			$this -> server = $_SERVER;
+			$this -> server = &$_SERVER;
 		}
 	}
 
 	/**
 	 * ----------------------------------------------------------------------------
-	 * [query description]
+	 * 读取并返回一个指定键名的数据
 	 * ----------------------------------------------------------------------------
 	 * 
-	 * @param  string $key [description]
-	 * @param  [type] $def [description]
-	 * @return [type]      [description]
+	 * @param  string 	$key 	要读取的键
+	 * @param  mixed 	$def 	缺省值
+	 * @return mixed
 	 */
 	public function query(string $key, $def = null)
 	{
@@ -80,12 +78,12 @@ class Server
 
 	/**
 	 * ----------------------------------------------------------------------------
-	 * [search description]
+	 * 从变量中搜索多个键，只有有一个存在，立即返回键值
 	 * ----------------------------------------------------------------------------
 	 * 
-	 * @param  string $key [description]
-	 * @param  [type] $def [description]
-	 * @return [type]      [description]
+	 * @param  string 	$key 	要查找的多个键，用 "|" 连接的字符串
+	 * @param  mixed 	$def 	缺省值
+	 * @return mixed
 	 */
 	public function search(string $key, $def = null)
 	{
@@ -99,11 +97,11 @@ class Server
 
 	/**
 	 * ----------------------------------------------------------------------------
-	 * [exists description]
+	 * 检查指定的键名是否存在
 	 * ----------------------------------------------------------------------------
 	 * 
-	 * @param  string $key [description]
-	 * @return [type]      [description]
+	 * @param  string 	$key 	要检查的键名
+	 * @return boolean
 	 */
 	public function exists(string $key)
 	{
