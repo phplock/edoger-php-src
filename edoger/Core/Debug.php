@@ -31,9 +31,10 @@
  */
 namespace Edoger\Core;
 
+use ErrorException;
 use Edoger\Core\Log\Logger;
 use Edoger\Interfaces\EdogerExceptionInterface;
-use ErrorException;
+
 
 /**
  * ================================================================================
@@ -56,12 +57,12 @@ final class Debug
 
 	/**
 	 * ----------------------------------------------------------------------------
-	 * 绑定的响应钩子程序，如果没有设定，那么这个值是NULL
+	 * 绑定的钩子程序，这些程序将在系统发生异常时被执行，通常用于处理默认的响应
 	 * ----------------------------------------------------------------------------
 	 *
-	 * @var Edoger\Core\Hook
+	 * @var array
 	 */
-	private static $hook = null;
+	private static $hooks = [];
 
 	/**
 	 * ----------------------------------------------------------------------------
@@ -112,11 +113,13 @@ final class Debug
 	 * ----------------------------------------------------------------------------
 	 *
 	 * @param  Kernel 	$kernel 	核心对象的引用
+	 * @param  Logger 	$logger 	日志记录器实例
 	 * @return void
 	 */
-	public function __construct(Kernel &$kernel)
+	public function __construct(Kernel &$kernel, Logger &$logger)
 	{
 		self::$kernel = &$kernel;
+		self::$logger = &$logger;
 		$this -> register();
 	}
 
@@ -136,27 +139,6 @@ final class Debug
 
 	/**
 	 * ----------------------------------------------------------------------------
-	 * 绑定日志记录器到组件内部
-	 * ----------------------------------------------------------------------------
-	 * 
-	 * @param  Logger 	$logger 	日志记录器对象
-	 * @return void
-	 */
-	public function bindLogger(Logger $logger)
-	{
-		self::$logger = $logger;
-
-		//	如果在绑定日志记录器存在缓存的日志，那么将立即写入日志
-		if (!empty(self::$logCache)) {
-			foreach (self::$logCache as $log) {
-				self::$logCache -> log($log[0], $log[1]);
-			}
-			self::$logCache = [];
-		}
-	}
-
-	/**
-	 * ----------------------------------------------------------------------------
 	 * 绑定响应输出的钩子程序到组件内部，这个钩子程序将在系统发生 ERROR 及以上级别
 	 * 的错误或异常时执行，执行完这个钩子程序，会立即完全退出系统。这个钩子程序必须
 	 * 是只能执行一次，因为这个程序可能会被系统调用多次
@@ -167,7 +149,27 @@ final class Debug
 	 */
 	public function bindHook(Hook $hook)
 	{
-		self::$hook = $hook;
+		self::$hooks[] = $hook;
+	}
+
+	/**
+	 * ----------------------------------------------------------------------------
+	 * 执行所有的钩子程序，所有的钩子程序只会被执行一次
+	 * ----------------------------------------------------------------------------
+	 * 
+	 * @return void
+	 */
+	private function runHook()
+	{
+		static $isFinished = false;
+		if (!$isFinished) {
+			$isFinished = true;
+			if (!empty(self::$hooks)) {
+				foreach (self::$hooks as $hook) {
+					$hook -> call();
+				}
+			}
+		}
 	}
 
 	/**
@@ -184,7 +186,7 @@ final class Debug
 	 * @param  integer 	$line    	发生错误的行号
 	 * @return void
 	 */
-	private function executeHandler(string $message, int $level, int $code, string $file, int $line)
+	private function runHandler(string $message, int $level, int $code, string $file, int $line)
 	{
 		if ($level <= Logger::LEVEL_ERROR) {
 			$this -> _ExceptionHandler(
@@ -192,11 +194,7 @@ final class Debug
 				);
 		} else {
 			$message = "{$message} at {$file} line {$line}";
-			if (self::$logger) {
-				self::$logger -> log($level, $message);
-			} else {
-				self::$logCache[] = [$level, $message];
-			}
+			self::$logger -> log($level, $message);
 		}
 	}
 
@@ -213,7 +211,7 @@ final class Debug
 	 */
 	public function _ErrorHandler(int $code, string $message, string $file = '', int $line = 0)
 	{
-		$this -> executeHandler(
+		$this -> runHandler(
 			$message,
 			self::$map[$code] ?? Logger::LEVEL_CRITICAL,
 			$code,
@@ -233,22 +231,17 @@ final class Debug
 	public function _ExceptionHandler($e)
 	{
 		if ($e instanceof EdogerExceptionInterface) {
-			$level 	= $e -> getLevel();
-			$log 	= $e -> getLog();
+			$level 		= $e -> getLevel();
+			$message 	= $e -> getLog();
 		} else {
-			$level 	= Logger::LEVEL_ERROR;
-			$log 	= "{$e -> getMessage()} at {$e -> getFile()} line {$e -> getLine()}";
+			$level 		= Logger::LEVEL_ERROR;
+			$message 	= "{$e -> getMessage()} at {$e -> getFile()} line {$e -> getLine()}";
 		}
 
-		if (self::$logger) {
-			self::$logger -> log($level, $log);
-		} else {
-			self::$logCache[] = [$level, $log];
-		}
+		self::$logger -> log($level, $message);
 
-		if (self::$hook) {
-			self::$hook -> call();
-		}
+		//	执行绑定的钩子程序
+		$this -> runHook();
 	}
 
 	/**
@@ -267,7 +260,7 @@ final class Debug
 			//	反复执行
 			error_clear_last();
 
-			$this -> executeHandler(
+			$this -> runHandler(
 				$error['message'],
 				self::$map[$error['type']] ?? Logger::LEVEL_CRITICAL,
 				$error['type'],
@@ -276,12 +269,7 @@ final class Debug
 				);
 		}
 
-		//	针对非致命错误，系统自动完成代码的执行，为了保证响应数据的输出，这里会主
-		//	动在满足条件的情况下，调用一次钩子程序（如果有），但是这极有可能是重复调
-		//	用，但是在某些业务代码中主动触发的错误，或者没有执行应用程序就已经退出了
-		//	系统
-		if (self::$hook) {
-			self::$hook -> call();
-		}
+		//	执行绑定的钩子程序
+		$this -> runHook();
 	}
 }
