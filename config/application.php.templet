@@ -45,21 +45,8 @@
 $config = [];
 
 
-
-/**
- * --------------------------------------------------------------------------------
- * What is it ?
- * --------------------------------------------------------------------------------
- * 
- * Detailed description.
- *
- * @var type ?
- */
-$config['application'] = [];
-
-	// The root directory of the application.
-	
-	$config['application']['root'] = dirname(__DIR__) . '/application';
+// The root directory of the application.
+$config['root'] = '/application';
 
 
 
