@@ -45,10 +45,18 @@ use Edoger\Exceptions\EdogerException;
  */
 final class Application
 {
-	private $config;
 	/**
 	 * ----------------------------------------------------------------------------
-	 * What is it ?
+	 * 配置管理组件实例
+	 * ----------------------------------------------------------------------------
+	 * 
+	 * @var Edoger\Core\Config
+	 */
+	private $config;
+
+	/**
+	 * ----------------------------------------------------------------------------
+	 * 核心对象
 	 * ----------------------------------------------------------------------------
 	 *
 	 * @var Edoger\Core\Kernel
@@ -57,10 +65,10 @@ final class Application
 
 	/**
 	 * ----------------------------------------------------------------------------
-	 * What is it ?
+	 * 应用程序根目录绝对路径
 	 * ----------------------------------------------------------------------------
 	 *
-	 * @var Edoger\Core\Kernel
+	 * @var string
 	 */
 	private $root;
 	
@@ -68,28 +76,25 @@ final class Application
 	 * ----------------------------------------------------------------------------
 	 * What is it ?
 	 * ----------------------------------------------------------------------------
-	 *
-	 * @return type
+	 * 
+	 * @param  Kernel 	$kernel 	核心对象的引用
+	 * @param  Config 	$config  	应用程序自身的配置管理组件实例
+	 * @return void
 	 */
 	public function __construct(Kernel &$kernel, Config $config)
 	{
 		$this -> config = $config;
 		$this -> kernel = &$kernel;
 
-		$this -> root = $kernel -> root(
-			
-			//	The root directory of the application.
-			//	Default value equal "application".
-			$config -> get('root', 'application')
-			);
+		$this -> root = $kernel -> root($config -> get('root', 'application'));
 	}
 
 	/**
 	 * ----------------------------------------------------------------------------
-	 * What is it ?
+	 * 获取应用程序的配置管理组件实例
 	 * ----------------------------------------------------------------------------
 	 *
-	 * @return type
+	 * @return Edoger\Core\Config
 	 */
 	public function config()
 	{
@@ -98,10 +103,10 @@ final class Application
 
 	/**
 	 * ----------------------------------------------------------------------------
-	 * What is it ?
+	 * 计算应用程序根目录为基准的绝对路径
 	 * ----------------------------------------------------------------------------
 	 *
-	 * @return type
+	 * @return string
 	 */
 	public function root(string $uri = '')
 	{
@@ -114,10 +119,10 @@ final class Application
 
 	/**
 	 * ----------------------------------------------------------------------------
-	 * What is it ?
+	 * 运行应用程序
 	 * ----------------------------------------------------------------------------
 	 *
-	 * @return type
+	 * @return void
 	 */
 	public function run()
 	{

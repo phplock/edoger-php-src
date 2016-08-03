@@ -40,7 +40,7 @@ use Edoger\Core\Kernel;
  * 
  * ================================================================================
  */
-class Request
+final class Request
 {
 	/**
 	 * ----------------------------------------------------------------------------
@@ -49,16 +49,16 @@ class Request
 	 *
 	 * @var type
 	 */
-	private $kernel;
+	private static $kernel;
 
 	/**
 	 * ----------------------------------------------------------------------------
-	 * What is it ?
+	 * 全局变量 $_SERVER 的访问管理器实例
 	 * ----------------------------------------------------------------------------
 	 *
 	 * @var type
 	 */
-	private $server;
+	private static $server;
 	
 	/**
 	 * ----------------------------------------------------------------------------
@@ -69,7 +69,33 @@ class Request
 	 */
 	public function __construct(Kernel &$kernel)
 	{
-		$this -> server = new Server();
-		$this -> kernel = &$kernel;
+		self::$server = new Server();
+		self::$kernel = &$kernel;
 	}
+
+	/**
+	 * ----------------------------------------------------------------------------
+	 * [server description]
+	 * ----------------------------------------------------------------------------
+	 * 
+	 * @return [type] [description]
+	 */
+	public function server()
+	{
+		return self::$server;
+	}
+
+	/**
+	 * ----------------------------------------------------------------------------
+	 * [method description]
+	 * ----------------------------------------------------------------------------
+	 * 
+	 * @return [type] [description]
+	 */
+	public function method()
+	{
+		return strtolower(self::$server -> query('REQUEST_METHOD', ''));
+	}
+
+	
 }
