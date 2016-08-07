@@ -166,7 +166,9 @@ final class Debug
 			$isFinished = true;
 			if (!empty(self::$hooks)) {
 				foreach (self::$hooks as $hook) {
-					$hook -> call();
+					if (!$hook -> call()) {
+						break;
+					}
 				}
 			}
 		}
