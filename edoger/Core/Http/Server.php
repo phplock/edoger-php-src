@@ -81,13 +81,13 @@ final class Server
 	 * 从变量中搜索多个键，只有有一个存在，立即返回键值
 	 * ----------------------------------------------------------------------------
 	 * 
-	 * @param  string 	$key 	要查找的多个键，用 "|" 连接的字符串
+	 * @param  array 	$keys 	要查找的多个键，用 "|" 连接的字符串
 	 * @param  mixed 	$def 	缺省值
 	 * @return mixed
 	 */
-	public function search(string $key, $def = null)
+	public function search(array $keys, $def = null)
 	{
-		foreach (explode('|', $key) as $query) {
+		foreach ($keys as $query) {
 			if (isset($this -> server[$query])) {
 				return $this -> server[$query];
 			}
