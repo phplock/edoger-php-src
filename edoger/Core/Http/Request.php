@@ -59,6 +59,8 @@ final class Request
 	 * @var type
 	 */
 	private static $server;
+
+	private static $input;
 	
 	/**
 	 * ----------------------------------------------------------------------------
@@ -70,6 +72,7 @@ final class Request
 	public function __construct(Kernel &$kernel)
 	{
 		self::$server = new Server();
+		self::$input = new Input();
 		self::$kernel = &$kernel;
 	}
 
