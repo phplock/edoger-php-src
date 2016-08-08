@@ -71,9 +71,9 @@ final class Request
 	 */
 	public function __construct(Kernel &$kernel)
 	{
-		self::$server = new Server();
-		self::$input = new Input();
-		self::$kernel = &$kernel;
+		self::$server 	= new Server();
+		self::$input 	= new Input();
+		self::$kernel 	= &$kernel;
 	}
 
 	/**
@@ -100,5 +100,75 @@ final class Request
 		return strtolower(self::$server -> query('REQUEST_METHOD', ''));
 	}
 
-	
+	/**
+	 * ----------------------------------------------------------------------------
+	 * [ip description]
+	 * ----------------------------------------------------------------------------
+	 * 
+	 * @return [type] [description]
+	 */
+	public function ip()
+	{
+
+	}
+
+	/**
+	 * ----------------------------------------------------------------------------
+	 * [uri description]
+	 * ----------------------------------------------------------------------------
+	 * 
+	 * @return [type] [description]
+	 */
+	public function uri()
+	{
+
+	}
+
+	/**
+	 * ----------------------------------------------------------------------------
+	 * [route description]
+	 * ----------------------------------------------------------------------------
+	 * 
+	 * @return [type] [description]
+	 */
+	public function route()
+	{
+
+	}
+
+	/**
+	 * ----------------------------------------------------------------------------
+	 * [hostname description]
+	 * ----------------------------------------------------------------------------
+	 * 
+	 * @return [type] [description]
+	 */
+	public function hostname()
+	{
+
+	}
+
+	/**
+	 * ----------------------------------------------------------------------------
+	 * [port description]
+	 * ----------------------------------------------------------------------------
+	 * 
+	 * @return [type] [description]
+	 */
+	public function port()
+	{
+
+	}
+
+	/**
+	 * ----------------------------------------------------------------------------
+	 * [userAgent description]
+	 * ----------------------------------------------------------------------------
+	 * 
+	 * @return [type] [description]
+	 */
+	public function userAgent()
+	{
+
+	}
 }
