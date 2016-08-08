@@ -31,59 +31,95 @@
  */
 namespace Edoger\Core\Http;
 
-
+/**
+ * ================================================================================
+ * 客户端输入数据管理器，该管理器用于管理通过 $_GET 和 $_POST 传递的全部参数，组件
+ * 为整个应用程序提供便捷安全的数据访问接口，在任何情况下，读取从客户端传递过来的数
+ * 据，都应当通过该组件提供的方法来读取。
+ * ================================================================================
+ */
 class Input
 {
 	/**
-	 * [$filter description]
+	 * ----------------------------------------------------------------------------
+	 * 已经加载的过滤器列表
+	 * ----------------------------------------------------------------------------
+	 * 
 	 * @var array
 	 */
 	private static $filter = [];
 
 	/**
-	 * [$get description]
-	 * @var [type]
+	 * ----------------------------------------------------------------------------
+	 * 以URL方式传递的参数数据
+	 * ----------------------------------------------------------------------------
+	 * 
+	 * @var array
 	 */
-	private $get;
+	private static $get = [];
 
 	/**
-	 * [$post description]
-	 * @var [type]
+	 * ----------------------------------------------------------------------------
+	 * 以POST方式传递的参数数据
+	 * ----------------------------------------------------------------------------
+	 * 
+	 * @var array
 	 */
-	private $post;
+	private static $post = [];
 
 	/**
-	 * [__construct description]
+	 * ----------------------------------------------------------------------------
+	 * 合并后的来自多个渠道传递的参数数据
+	 * ----------------------------------------------------------------------------
+	 * 
+	 * @var array
+	 */
+	private static $query = [];
+
+	/**
+	 * ----------------------------------------------------------------------------
+	 * 初始化，绑定全局变量到组件内部
+	 * ----------------------------------------------------------------------------
+	 *
+	 * @param  array $get  [description]
+	 * @param  array $post [description]
+	 * @return void
 	 */
 	public function __construct()
 	{
-		if (!empty($_GET)) {
-			$this -> get = $_GET;
-		}
+		self::$get 	= $_GET;
+		self::$post = $_POST;
 
-		if (!empty($_POST)) {
-			$this -> post = $_POST;
+		if (empty($_GET)) {
+			self::$query = $_POST;
+		} elseif (empty($_POST)) {
+			self::$query = $_GET;
+		} else {
+			self::$query = $_POST + $_GET;
 		}
 	}
 
 	/**
-	 * [get description]
-	 * @param  string $key    [description]
-	 * @param  [type] $def    [description]
-	 * @param  [type] $filter [description]
-	 * @return [type]         [description]
+	 * ----------------------------------------------------------------------------
+	 * 从全局 $_GET 中获取指定的数据
+	 * ----------------------------------------------------------------------------
+	 * 
+	 * @param  string 			$key    	要获取的键名
+	 * @param  mixed 			$def    	缺省值
+	 * @param  string | array | callable 	$filter 	要使用的过滤器或过滤器数组
+	 * @return mixed
 	 */
 	public function get(string $key, $def = null, $filter = null)
 	{
-		if (isset($this -> get[$key])) {
-			if ($filter) {
-				if (self::callFilter($filter, $this -> get[$key])) {
-					return $this -> get[$key];
+		if (isset(self::$get[$key])) {
+			if (empty($filter)) {
+				return self::$get[$key];
+			} else {
+				if (self::callFilter($filter, self::$get[$key])) {
+					return self::$get[$key];
 				} else {
 					return $def;
 				}
-			} else {
-				return $this -> get[$key];
 			}
 		} else {
 			return $def;
@@ -91,23 +127,26 @@ class Input
 	}
 
 	/**
-	 * [post description]
-	 * @param  string $key    [description]
-	 * @param  [type] $def    [description]
-	 * @param  [type] $filter [description]
-	 * @return [type]         [description]
+	 * ----------------------------------------------------------------------------
+	 * 从全局 $_POST 中获取指定的数据
+	 * ----------------------------------------------------------------------------
+	 * 
+	 * @param  string 			$key    	[description]
+	 * @param  mixed 			$def    	[description]
+	 * @param  string | array 	$filter 	[description]
+	 * @return mixed
 	 */
 	public function post(string $key, $def = null, $filter = null)
 	{
-		if (isset($this -> post[$key])) {
-			if ($filter) {
-				if (self::callFilter($filter, $this -> post[$key])) {
-					return $this -> post[$key];
+		if (isset(self::$post[$key])) {
+			if (empty($filter)) {
+				return self::$post[$key];
+			} else {
+				if (self::callFilter($filter, self::$post[$key])) {
+					return self::$post[$key];
 				} else {
 					return $def;
 				}
-			} else {
-				return $this -> post[$key];
 			}
 		} else {
 			return $def;
@@ -115,33 +154,26 @@ class Input
 	}
 
 	/**
-	 * [fetch description]
+	 * ----------------------------------------------------------------------------
+	 * 从 $_GET 和 $_POST 中获取数据，优先级和请求方式相同
+	 * ----------------------------------------------------------------------------
+	 * 
 	 * @param  string $key    [description]
 	 * @param  [type] $def    [description]
 	 * @param  [type] $filter [description]
 	 * @return [type]         [description]
 	 */
-	public function fetch(string $key, $def = null, $filter = null)
+	public function query(string $key, $def = null, $filter = null)
 	{
-		if (isset($this -> get[$key])) {
+		if (isset(self::$query[$key])) {
 			if ($filter) {
-				if (self::callFilter($filter, $this -> get[$key])) {
-					return $this -> get[$key];
+				if (self::callFilter($filter, self::$query[$key])) {
+					return self::$query[$key];
 				} else {
 					return $def;
 				}
 			} else {
-				return $this -> get[$key];
-			}
-		} elseif (isset($this -> post[$key])) {
-			if ($filter) {
-				if (self::callFilter($filter, $this -> post[$key])) {
-					return $this -> post[$key];
-				} else {
-					return $def;
-				}
-			} else {
-				return $this -> post[$key];
+				return self::$query[$key];
 			}
 		} else {
 			return $def;
@@ -149,135 +181,34 @@ class Input
 	}
 
 	/**
-	 * [optional description]
-	 * @param  array   $keys    [description]
-	 * @param  boolean $pattern [description]
-	 * @return [type]           [description]
+	 * ----------------------------------------------------------------------------
+	 * 从数据集合中搜索给定的键名，一旦被搜索到就会立即返回从而忽略其他候选搜索项
+	 * ----------------------------------------------------------------------------
+	 * 
+	 * @param  array $keys    [description]
+	 * @param  [type] $def    [description]
+	 * @param  [type] $filter [description]
+	 * @param  string $range  [description]
+	 * @return [type]         [description]
 	 */
-	public function optional(array $keys, bool $pattern = false)
-	{
-		$input = [];
-
-		if (empty($keys)) {
-			return $input;
-		}
-
-		if ($pattern) {
-			$b = &$this -> get;
-			$a = &$this -> post;
-		} else {
-			$a = &$this -> get;
-			$b = &$this -> post;
-		}
-
-		$error = false;
-		foreach ($keys as $k => $v) {
-			$v 		= (array)$v;
-			$value 	= $a[$v[0]] ?? $b[$v[0]] ?? $v[2] ?? null;
-			if ($value === null) {
-				continue;
-			}
-
-			if (isset($v[1]) && !self::callFilter($v[1], $value)) {
-				$error = true;
-				break;
-			}
-
-			$input[is_int($k) ? $v[0] : $k] = $value;
-		}
-
-		return $error ? false : $input;
-	}
-
-	/**
-	 * [obligatory description]
-	 * @param  array   $keys    [description]
-	 * @param  boolean $pattern [description]
-	 * @return [type]           [description]
-	 */
-	public function obligatory(array $keys, bool $pattern = false)
-	{
-		$input = [];
-
-		if (empty($keys)) {
-			return $input;
-		}
-
-		if ($pattern) {
-			$b = &$this -> get;
-			$a = &$this -> post;
-		} else {
-			$a = &$this -> get;
-			$b = &$this -> post;
-		}
-
-		$error = false;
-		foreach ($keys as $k => $v) {
-			$v 		= (array)$v;
-			$value 	= $a[$v[0]] ?? $b[$v[0]] ?? null;
-
-			if ($value === null) {
-				$error = true;
-				break;
-			}
-
-			if (isset($v[1]) && !self::callFilter($v[1], $value)) {
-				$error = true;
-				break;
-			}
-
-			$input[is_int($k) ? $v[0] : $k] = $value;
-		}
-
-		return $error ? false : $input;
-	}
-
-	/**
-	 * [magic description]
-	 * @param  array  $keys [description]
-	 * @return [type]       [description]
-	 */
-	public function magic(array $keys)
-	{
-		$input = [];
-
-		if (empty($keys)) {
-			return $input;
-		}
-	}
-
-	/**
-	 * [search description]
-	 * @param  string       $key     [description]
-	 * @param  [type]       $def     [description]
-	 * @param  string       $range   [description]
-	 * @param  bool|boolean $pattern [description]
-	 * @return [type]                [description]
-	 */
-	public function search(string $key, $def = null, string $range = 'any', bool $pattern = false)
+	public function search(array $keys, $def = null, $filter = null, string $range = 'any')
 	{
 		$input = [];
 
 		switch ($range) {
 			case 'any':
-				if ($pattern) {
-					$input = $this -> post + $this -> get;
-				} else {
-					$input = $this -> get + $this -> post;
-				}
+				$input = &self::$query;
 				break;
-			
 			case 'get':
-				$input = &$this -> get;
+				$input = &self::$get;
 				break;
-
 			case 'post':
-				$input = &$this -> post;
+				$input = &self::$post;
 				break;
 		}
 
 		if (!empty($input)) {
-			foreach (explode('|', $key) as $k) {
+			foreach ($keys as $k) {
 				if (isset($input[$k])) {
 					return $input[$k];
 				}
@@ -288,7 +219,10 @@ class Input
 	}
 
 	/**
-	 * [exists description]
+	 * ----------------------------------------------------------------------------
+	 * 检查给定名称的键是否存在于数据集合中
+	 * ----------------------------------------------------------------------------
+	 * 
 	 * @param  string $key   [description]
 	 * @param  string $range [description]
 	 * @return [type]        [description]
@@ -297,20 +231,223 @@ class Input
 	{
 		switch ($range) {
 			case 'any':
-				return isset($this -> get[$key]) || isset($this -> post[$key]);
+				return isset(self::$query[$key]);
 			
 			case 'get':
-				return isset($this -> get[$key]);
+				return isset(self::$get[$key]);
 
 			case 'post':
-				return isset($this -> post[$key]);
+				return isset(self::$post[$key]);
 		}
 
 		return false;
 	}
 
 	/**
-	 * [registerFilter description]
+	 * ----------------------------------------------------------------------------
+	 * 以可选参数模式获取一组参数
+	 * ----------------------------------------------------------------------------
+	 * 
+	 * @param  array         $keys     [description]
+	 * @param  callable|null $handler  [description]
+	 * @param  [type]        $argument [description]
+	 * @return [type]                  [description]
+	 */
+	public function optional(array $keys, callable $handler = null, $argument = null)
+	{
+		$input 	= [];
+		$errno 	= 0;
+		$errstr = '';
+
+		foreach ($keys as $k => $v) {
+			$v = (array)$v;
+			$m = $v[1] ?? 'any';
+			if ($m === 'any') {
+				$d = self::$query[$v[0]] ?? null;
+			} elseif ($m === 'get') {
+				$d = self::$get[$v[0]] ?? null;
+			} elseif ($m === 'post') {
+				$d = self::$post[$v[0]] ?? null;
+			} else {
+				$error 	= 1;
+				$errstr = 'Unrecognized search pattern: ' . $m;
+				break;
+			}
+			if (is_null($d)) {
+				if (isset($v[3])) {
+					$input[is_int($k) ? $v[0] : $k] = $v[3];
+				}
+			} else {
+				if (isset($v[2]) && !self::callFilter($v[2], $d, $v[0])) {
+					$errno 	= 2;
+					$errstr = "Argument {$v[0]} is not valid";
+					break;
+				}
+				if (isset($v[4])) {
+					if (is_callable($v[4])) {
+						$input[is_int($k) ? $v[0] : $k] = call_user_func($v[4], $d, $v[0]);
+					} else {
+						$errno 	= 4;
+						$errstr = 'Modifier is not valid, with: ' . $v[0];
+						break;
+					}
+				} else {
+					$input[is_int($k) ? $v[0] : $k] = $d;
+				}
+			}
+		}
+
+		if ($errno) {
+			if ($handler) {
+				call_user_func($handler, $v[0], $errno, $errstr, $argument);
+			}
+			return false;
+		}
+
+		return $input;
+	}
+
+	/**
+	 * ----------------------------------------------------------------------------
+	 * 以必选参数模式获取一组参数
+	 * ----------------------------------------------------------------------------
+	 * 
+	 * @param  array         $keys     [description]
+	 * @param  callable|null $handler  [description]
+	 * @param  [type]        $argument [description]
+	 * @return [type]                  [description]
+	 */
+	public function obligatory(array $keys, callable $handler = null, $argument = null)
+	{
+		$input 	= [];
+		$errno 	= 0;
+		$errstr = '';
+
+		foreach ($keys as $k => $v) {
+			$v = (array)$v;
+			$m = $v[1] ?? 'any';
+			if ($m === 'any') {
+				$d = self::$query[$v[0]] ?? null;
+			} elseif ($m === 'get') {
+				$d = self::$get[$v[0]] ?? null;
+			} elseif ($m === 'post') {
+				$d = self::$post[$v[0]] ?? null;
+			} else {
+				$error 	= 1;
+				$errstr = 'Unrecognized search pattern: ' . $m;
+				break;
+			}
+			if (is_null($d)) {
+				$errno 	= 8;
+				$errstr = "Argument {$v[0]} does not exist";
+				break;
+			} else {
+				if (isset($v[2]) && !self::callFilter($v[2], $d, $v[0])) {
+					$errno 	= 2;
+					$errstr = "Argument {$v[0]} is not valid";
+					break;
+				}
+				if (isset($v[3])) {
+					if (is_callable($v[3])) {
+						$input[is_int($k) ? $v[0] : $k] = call_user_func($v[3], $d, $v[0]);
+					} else {
+						$errno 	= 4;
+						$errstr = 'Modifier is not valid, with: ' . $v[0];
+						break;
+					}
+				} else {
+					$input[is_int($k) ? $v[0] : $k] = $d;
+				}
+			}
+		}
+
+		if ($errno) {
+			if ($handler) {
+				call_user_func($handler, $v[0], $errno, $errstr, $argument);
+			}
+			return false;
+		}
+
+		return $input;
+	}
+
+	/**
+	 * ----------------------------------------------------------------------------
+	 * 以指定的可选或者必选模式获取一组参数
+	 * ----------------------------------------------------------------------------
+	 * 
+	 * @param  array         $keys     [description]
+	 * @param  callable|null $handler  [description]
+	 * @param  [type]        $argument [description]
+	 * @return [type]                  [description]
+	 */
+	public function magic(array $keys, callable $handler = null, $argument = null)
+	{
+		$input 	= [];
+		$errno 	= 0;
+		$errstr = '';
+
+		foreach ($keys as $k => $v) {
+			$v = (array)$v;
+			$m = $v[2] ?? 'any';
+			if ($m === 'any') {
+				$d = self::$query[$v[0]] ?? null;
+			} elseif ($m === 'get') {
+				$d = self::$get[$v[0]] ?? null;
+			} elseif ($m === 'post') {
+				$d = self::$post[$v[0]] ?? null;
+			} else {
+				$error 	= 1;
+				$errstr = 'Unrecognized search pattern: ' . $m;
+				break;
+			}
+			if (is_null($d)) {
+				if (isset($v[1]) && !$v[1]) {
+					if (isset($v[4])) {
+						$input[is_int($k) ? $v[0] : $k] = $v[4];
+					}
+				} else {
+					$errno 	= 8;
+					$errstr = "Argument {$v[0]} does not exist";
+					break;
+				}
+			} else {
+				if (isset($v[3]) && !self::callFilter($v[3], $d, $v[0])) {
+					$errno 	= 2;
+					$errstr = "Argument {$v[0]} is not valid";
+					break;
+				}
+				if (isset($v[5])) {
+					if (is_callable($v[5])) {
+						$input[is_int($k) ? $v[0] : $k] = call_user_func($v[5], $d, $v[0]);
+					} else {
+						$errno 	= 4;
+						$errstr = 'Modifier is not valid, with: ' . $v[0];
+						break;
+					}
+				} else {
+					$input[is_int($k) ? $v[0] : $k] = $d;
+				}
+			}
+		}
+
+		if ($errno) {
+			if ($handler) {
+				call_user_func($handler, $v[0], $errno, $errstr, $argument);
+			}
+			return false;
+		}
+
+		return $input;
+	}
+
+
+
+	/**
+	 * ----------------------------------------------------------------------------
+	 * 注册一个系统过滤器
+	 * ----------------------------------------------------------------------------
+	 * 
 	 * @return [type] [description]
 	 */
 	public static function registerFilter()
@@ -319,7 +456,10 @@ class Input
 	}
 
 	/**
-	 * [callFilter description]
+	 * ----------------------------------------------------------------------------
+	 * 内部方法，调用一个或者一组过滤器，并返回数据是否通过了过滤器
+	 * ----------------------------------------------------------------------------
+	 * 
 	 * @param  [type] $filter [description]
 	 * @param  [type] $value  [description]
 	 * @return [type]         [description]
@@ -336,7 +476,15 @@ class Input
 				) {
 				return (bool)preg_match($filter, $value);
 			}
+		} elseif (is_array($filter)) {
+			foreach ($filter as $f) {
+				if (!self::callFilter($f, $value)) {
+					return false;
+				}
+			}
+			return true;
+		} else {
+			return false;
 		}
-		return false;
 	}
 }

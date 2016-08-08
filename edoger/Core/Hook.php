@@ -29,145 +29,139 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE 
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-namespace Edoger\Core\Http;
+namespace Edoger\Core;
 
-use Edoger\Core\Kernel;
+use Error;
+use Exception;
+use Edoger\Interfaces\EdogerExceptionInterface;
+use Edoger\Exceptions\RuntimeException;
 
 /**
  * ================================================================================
- * Some Description.
  *
- * 
  * ================================================================================
  */
-class Respond
+class Hook
 {
 	/**
 	 * ----------------------------------------------------------------------------
-	 * What is it ?
+	 * [$hooks description]
 	 * ----------------------------------------------------------------------------
-	 *
-	 * @var type
+	 * 
+	 * @var array
 	 */
-	private $kernel;
+	private static $hooks = [];
 
 	/**
 	 * ----------------------------------------------------------------------------
-	 * [$hook description]
+	 * [$name description]
 	 * ----------------------------------------------------------------------------
 	 * 
 	 * @var [type]
 	 */
-	private $hook;
+	private $name;
 
 	/**
 	 * ----------------------------------------------------------------------------
-	 * [$data description]
+	 * [$handler description]
+	 * ----------------------------------------------------------------------------
+	 * 
+	 * @var [type]
+	 */
+	private $handler;
+
+	/**
+	 * ----------------------------------------------------------------------------
+	 * [$params description]
 	 * ----------------------------------------------------------------------------
 	 * 
 	 * @var array
 	 */
-	private $data = [];
-
-	/**
-	 * ----------------------------------------------------------------------------
-	 * [$options description]
-	 * ----------------------------------------------------------------------------
-	 * 
-	 * @var array
-	 */
-	private $options = [];
+	private $params = [];
 
 	/**
 	 * ----------------------------------------------------------------------------
 	 * [__construct description]
 	 * ----------------------------------------------------------------------------
 	 * 
-	 * @param Kernel &$kernel [description]
+	 * @param string   $name    [description]
+	 * @param callable $handler [description]
 	 */
-	public function __construct(Kernel &$kernel)
+	public function __construct(string $name, callable $handler)
 	{
-		$this -> kernel = &$kernel;
+		$name = strtolower($name);
+		if (isset(self::$hooks[$name])) {
+			throw new RuntimeException("Hook {$name} already exists and cannot be repeated");
+		}
+		$this -> name 		= $name;
+		$this -> handler 	= $handler;
+
+		self::$hooks[$name] = &$this;
 	}
 
 	/**
 	 * ----------------------------------------------------------------------------
-	 * [getHook description]
+	 * [call description]
 	 * ----------------------------------------------------------------------------
 	 * 
 	 * @return [type] [description]
 	 */
-	public function getHook()
+	public function call()
 	{
-
+		try {
+			call_user_func_array($this -> handler, $this -> params);
+			return true;
+		} catch(Exception $e) {
+			if ($e instanceof EdogerExceptionInterface) {
+				$level 		= $e -> getLevel();
+				$message 	= $e -> getLog();
+				edoger() -> logger() -> log($level, $message);
+			} else {
+				$message 	= "{$e -> getMessage()} at {$e -> getFile()} line {$e -> getLine()}";
+				edoger() -> logger() -> alert("Hook {$this -> name} runtime exception: {$message}");
+			}
+			return false;
+		} catch(Error $e) {
+			$message = "{$e -> getMessage()} at {$e -> getFile()} line {$e -> getLine()}";
+			edoger() -> logger() -> alert("Hook {$this -> name} runtime exception: {$message}");
+			return false;
+		}
 	}
 
 	/**
 	 * ----------------------------------------------------------------------------
-	 * [send description]
+	 * [appendParam description]
 	 * ----------------------------------------------------------------------------
 	 * 
-	 * @param  string       $key   [description]
-	 * @param  [type]       $value [description]
-	 * @param  bool|boolean $cover [description]
-	 * @return [type]              [description]
+	 * @param  [type]      $param [description]
+	 * @param  int|integer $index [description]
+	 * @return [type]             [description]
 	 */
-	public function send(string $key, $value, bool $cover = true)
+	public function addParam($param, int $index = -1)
 	{
-
+		if ($index < 0) {
+			$this -> params[] = $param;
+		} elseif (isset($this -> params[$index])) {
+			$this -> params[$index] = $param;
+		}
+		return $this;
 	}
 
 	/**
 	 * ----------------------------------------------------------------------------
-	 * [sendArray description]
+	 * [removeParam description]
 	 * ----------------------------------------------------------------------------
 	 * 
-	 * @param  array        $data  [description]
-	 * @param  bool|boolean $cover [description]
-	 * @return [type]              [description]
+	 * @param  integer $index [description]
+	 * @return [type]         [description]
 	 */
-	public function sendArray(array $data, bool $cover = true)
+	public function removeParam($index = -1)
 	{
-
-	}
-
-	/**
-	 * ----------------------------------------------------------------------------
-	 * [end description]
-	 * ----------------------------------------------------------------------------
-	 * 
-	 * @return [type] [description]
-	 */
-	public function end()
-	{
-
-	}
-
-	/**
-	 * ----------------------------------------------------------------------------
-	 * [status description]
-	 * ----------------------------------------------------------------------------
-	 * 
-	 * @param  int    $code [description]
-	 * @return [type]       [description]
-	 */
-	public function status(int $code)
-	{
-
-	}
-
-	/**
-	 * ----------------------------------------------------------------------------
-	 * [option description]
-	 * ----------------------------------------------------------------------------
-	 * 
-	 * @param  string       $key   [description]
-	 * @param  [type]       $value [description]
-	 * @param  bool|boolean $cover [description]
-	 * @return [type]              [description]
-	 */
-	public function option(string $key, $value, bool $cover = true)
-	{
-
+		if ($index < 0) {
+			$this -> params = [];
+		} elseif (isset($this -> params[$index])) {
+			
+		}
+		return $this;
 	}
 }

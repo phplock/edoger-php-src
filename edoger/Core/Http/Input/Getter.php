@@ -29,88 +29,63 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE 
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
+namespace Edoger\Core\Http\Input;
 
 /**
  * ================================================================================
- * This Is A Standard Configuration File For An Application.
- * 
- * Before you create this application, make sure that it is properly configured. 
- * Otherwise, the application cannot be created successfully.
  *
- * The configuration item marked as "[*]" must be configured.
- *
- * Configuration File Version: 1.0
  * ================================================================================
  */
-$config = [];
-
-
-// The root directory of the application.
-$config['root'] = '/application';
-
-
-
-/**
- * --------------------------------------------------------------------------------
- * What is it ?
- * --------------------------------------------------------------------------------
- * 
- * Detailed description.
- *
- * @var type ?
- */
-$config['cookie'] = [];
+class Getter
+{
+	/**
+	 * ----------------------------------------------------------------------------
+	 * [$get description]
+	 * ----------------------------------------------------------------------------
+	 * 
+	 * @var array
+	 */
+	private $get = [];
+	
+	/**
+	 * ----------------------------------------------------------------------------
+	 * [__construct description]
+	 * ----------------------------------------------------------------------------
+	 * 
+	 */
+	public function __construct()
+	{
+		if (isset($_GET)) {
+			$this -> get = &$_GET;
+		}
+	}
 
 	/**
-	 * Detailed description.
-	 *
-	 * @var type ?
+	 * ----------------------------------------------------------------------------
+	 * [fetch description]
+	 * ----------------------------------------------------------------------------
+	 * 
+	 * @param  [type] $key      [description]
+	 * @param  [type] $def      [description]
+	 * @param  [type] $filter   [description]
+	 * @param  [type] $modifier [description]
+	 * @return [type]           [description]
 	 */
-	$config['cookie']['expire'] = 7200;
+	public function fetch($key, $def = null, $filter = null, $modifier = null)
+	{
+
+	}
 
 	/**
-	 * Detailed description.
-	 *
-	 * @var type ?
+	 * ----------------------------------------------------------------------------
+	 * [has description]
+	 * ----------------------------------------------------------------------------
+	 * 
+	 * @param  string  $key [description]
+	 * @return boolean      [description]
 	 */
-	$config['cookie']['path'] = '/';
-
-	/**
-	 * Detailed description.
-	 *
-	 * @var type ?
-	 */
-	$config['cookie']['domain'] = '';
-
-	/**
-	 * Detailed description.
-	 *
-	 * @var type ?
-	 */
-	$config['cookie']['secure'] = false;
-
-	/**
-	 * Detailed description.
-	 *
-	 * @var type ?
-	 */
-	$config['cookie']['httponly'] = false;
-
-	/**
-	 * Detailed description.
-	 *
-	 * @var type ?
-	 */
-	$config['cookie']['key'] = '';
-
-	/**
-	 * Detailed description.
-	 *
-	 * @var type ?
-	 */
-	$config['cookie']['security_prefix'] = '';
-
-
-
-
-return $config;
+	public function has(string $key)
+	{
+		return isset($this -> get[$key]);
+	}
+}
