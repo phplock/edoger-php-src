@@ -37,21 +37,61 @@ use Edoger\Interfaces\EdogerExceptionInterface;
 use Edoger\Exceptions\RuntimeException;
 
 /**
- * 
+ * ================================================================================
+ *
+ * ================================================================================
  */
 class Hook
 {
+	/**
+	 * ----------------------------------------------------------------------------
+	 * [$hooks description]
+	 * ----------------------------------------------------------------------------
+	 * 
+	 * @var array
+	 */
 	private static $hooks = [];
+
+	/**
+	 * ----------------------------------------------------------------------------
+	 * [$name description]
+	 * ----------------------------------------------------------------------------
+	 * 
+	 * @var [type]
+	 */
 	private $name;
+
+	/**
+	 * ----------------------------------------------------------------------------
+	 * [$handler description]
+	 * ----------------------------------------------------------------------------
+	 * 
+	 * @var [type]
+	 */
 	private $handler;
 
+	/**
+	 * ----------------------------------------------------------------------------
+	 * [$params description]
+	 * ----------------------------------------------------------------------------
+	 * 
+	 * @var array
+	 */
+	private $params = [];
+
+	/**
+	 * ----------------------------------------------------------------------------
+	 * [__construct description]
+	 * ----------------------------------------------------------------------------
+	 * 
+	 * @param string   $name    [description]
+	 * @param callable $handler [description]
+	 */
 	public function __construct(string $name, callable $handler)
 	{
 		$name = strtolower($name);
 		if (isset(self::$hooks[$name])) {
-			throw new RuntimeException(
-				"Hook {$name} already exists and cannot be repeated"
-				);
+			throw new RuntimeException("Hook {$name} already exists and cannot be repeated");
 		}
 		$this -> name 		= $name;
 		$this -> handler 	= $handler;
@@ -59,10 +99,17 @@ class Hook
 		self::$hooks[$name] = &$this;
 	}
 
+	/**
+	 * ----------------------------------------------------------------------------
+	 * [call description]
+	 * ----------------------------------------------------------------------------
+	 * 
+	 * @return [type] [description]
+	 */
 	public function call()
 	{
 		try {
-			call_user_func($this -> handler);
+			call_user_func_array($this -> handler, $this -> params);
 			return true;
 		} catch(Exception $e) {
 			if ($e instanceof EdogerExceptionInterface) {
@@ -79,5 +126,42 @@ class Hook
 			edoger() -> logger() -> alert("Hook {$this -> name} runtime exception: {$message}");
 			return false;
 		}
+	}
+
+	/**
+	 * ----------------------------------------------------------------------------
+	 * [appendParam description]
+	 * ----------------------------------------------------------------------------
+	 * 
+	 * @param  [type]      $param [description]
+	 * @param  int|integer $index [description]
+	 * @return [type]             [description]
+	 */
+	public function addParam($param, int $index = -1)
+	{
+		if ($index < 0) {
+			$this -> params[] = $param;
+		} elseif (isset($this -> params[$index])) {
+			$this -> params[$index] = $param;
+		}
+		return $this;
+	}
+
+	/**
+	 * ----------------------------------------------------------------------------
+	 * [removeParam description]
+	 * ----------------------------------------------------------------------------
+	 * 
+	 * @param  integer $index [description]
+	 * @return [type]         [description]
+	 */
+	public function removeParam($index = -1)
+	{
+		if ($index < 0) {
+			$this -> params = [];
+		} elseif (isset($this -> params[$index])) {
+			
+		}
+		return $this;
 	}
 }
