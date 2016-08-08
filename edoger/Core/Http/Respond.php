@@ -53,6 +53,33 @@ class Respond
 
 	/**
 	 * ----------------------------------------------------------------------------
+	 * [$hook description]
+	 * ----------------------------------------------------------------------------
+	 * 
+	 * @var [type]
+	 */
+	private $hook;
+
+	/**
+	 * ----------------------------------------------------------------------------
+	 * [$data description]
+	 * ----------------------------------------------------------------------------
+	 * 
+	 * @var array
+	 */
+	private $data = [];
+
+	/**
+	 * ----------------------------------------------------------------------------
+	 * [$options description]
+	 * ----------------------------------------------------------------------------
+	 * 
+	 * @var array
+	 */
+	private $options = [];
+
+	/**
+	 * ----------------------------------------------------------------------------
 	 * [__construct description]
 	 * ----------------------------------------------------------------------------
 	 * 
@@ -63,7 +90,83 @@ class Respond
 		$this -> kernel = &$kernel;
 	}
 
+	/**
+	 * ----------------------------------------------------------------------------
+	 * [getHook description]
+	 * ----------------------------------------------------------------------------
+	 * 
+	 * @return [type] [description]
+	 */
 	public function getHook()
+	{
+
+	}
+
+	/**
+	 * ----------------------------------------------------------------------------
+	 * [send description]
+	 * ----------------------------------------------------------------------------
+	 * 
+	 * @param  string       $key   [description]
+	 * @param  [type]       $value [description]
+	 * @param  bool|boolean $cover [description]
+	 * @return [type]              [description]
+	 */
+	public function send(string $key, $value, bool $cover = true)
+	{
+
+	}
+
+	/**
+	 * ----------------------------------------------------------------------------
+	 * [sendArray description]
+	 * ----------------------------------------------------------------------------
+	 * 
+	 * @param  array        $data  [description]
+	 * @param  bool|boolean $cover [description]
+	 * @return [type]              [description]
+	 */
+	public function sendArray(array $data, bool $cover = true)
+	{
+
+	}
+
+	/**
+	 * ----------------------------------------------------------------------------
+	 * [end description]
+	 * ----------------------------------------------------------------------------
+	 * 
+	 * @return [type] [description]
+	 */
+	public function end()
+	{
+
+	}
+
+	/**
+	 * ----------------------------------------------------------------------------
+	 * [status description]
+	 * ----------------------------------------------------------------------------
+	 * 
+	 * @param  int    $code [description]
+	 * @return [type]       [description]
+	 */
+	public function status(int $code)
+	{
+
+	}
+
+	/**
+	 * ----------------------------------------------------------------------------
+	 * [option description]
+	 * ----------------------------------------------------------------------------
+	 * 
+	 * @param  string       $key   [description]
+	 * @param  [type]       $value [description]
+	 * @param  bool|boolean $cover [description]
+	 * @return [type]              [description]
+	 */
+	public function option(string $key, $value, bool $cover = true)
 	{
 
 	}
