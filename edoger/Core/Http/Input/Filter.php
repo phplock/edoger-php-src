@@ -63,7 +63,7 @@ class Filter
 	{
 		if (!empty($localFilter)) {
 			foreach ($localFilter as $group) {
-				$this -> loadFilter($group, $cover);
+				self::loadFilter($group, $cover);
 			}
 		}
 	}
@@ -77,7 +77,7 @@ class Filter
 	 * @param  boolean 	$cover 	是否覆盖名称冲突的过滤器
 	 * @return boolean
 	 */
-	public function loadFilter(string $group, bool $cover = true)
+	public static function loadFilter(string $group, bool $cover = true)
 	{
 		//
 	}
@@ -92,7 +92,7 @@ class Filter
 	 * @param  boolean 	$cover   	是否覆盖名称冲突的过滤器
 	 * @return boolean
 	 */
-	public function addFilter(string $name, callable $handler, bool $cover = true)
+	public static function addFilter(string $name, callable $handler, bool $cover = true)
 	{
 		if ($cover || !isset(self::$filterList[$name])) {
 			self::$filterList[$name] = $handler;
@@ -186,7 +186,7 @@ class Filter
 	 * @param  string | array   			$value  	等待过滤的数据或数据组
 	 * @return boolean
 	 */
-	public function call($filter, $value)
+	public static function call($filter, $value)
 	{
 		if (is_callable($filter)) {
 			return self::callFunctionFilter($filter, $value);
@@ -200,7 +200,7 @@ class Filter
 			}
 		} elseif (is_array($filter) && !empty($filter)) {
 			foreach ($filter as $f) {
-				if (!$this -> call($f, $value)) {
+				if (!self::call($f, $value)) {
 					return false;
 				}
 			}
