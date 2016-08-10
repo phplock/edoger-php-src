@@ -53,28 +53,28 @@ class Modifier
 	
 	/**
 	 * ----------------------------------------------------------------------------
-	 * [loadModifier description]
+	 * [local description]
 	 * ----------------------------------------------------------------------------
 	 * 
 	 * @param  string       $group [description]
 	 * @param  bool|boolean $cover [description]
 	 * @return [type]              [description]
 	 */
-	public static function loadModifier(string $group, bool $cover = true)
+	public static function local(string $group, bool $cover = true)
 	{
 		//
 	}
 
 	/**
 	 * ----------------------------------------------------------------------------
-	 * [addModifier description]
+	 * [register description]
 	 * ----------------------------------------------------------------------------
 	 * 
 	 * @param string       $name    [description]
 	 * @param callable     $handler [description]
 	 * @param bool|boolean $cover   [description]
 	 */
-	public static function addModifier(string $name, callable $handler, bool $cover = true)
+	public static function register(string $name, callable $handler, bool $cover = true)
 	{
 		if ($cover || !isset(self::$modifierList[$name])) {
 			self::$modifierList[$name] = $handler;

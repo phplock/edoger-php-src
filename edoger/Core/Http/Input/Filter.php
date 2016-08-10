@@ -59,7 +59,7 @@ class Filter
 	 * @param  boolean 	$cover 	是否覆盖名称冲突的过滤器
 	 * @return boolean
 	 */
-	public static function loadFilter(string $group, bool $cover = true)
+	public static function local(string $group, bool $cover = true)
 	{
 		//
 	}
@@ -74,7 +74,7 @@ class Filter
 	 * @param  boolean 	$cover   	是否覆盖名称冲突的过滤器
 	 * @return boolean
 	 */
-	public static function addFilter(string $name, callable $handler, bool $cover = true)
+	public static function register(string $name, callable $handler, bool $cover = true)
 	{
 		if ($cover || !isset(self::$filterList[$name])) {
 			self::$filterList[$name] = $handler;
