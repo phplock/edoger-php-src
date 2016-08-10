@@ -40,28 +40,6 @@ class Poster
 {
 	/**
 	 * ----------------------------------------------------------------------------
-	 * [$get description]
-	 * ----------------------------------------------------------------------------
-	 * 
-	 * @var array
-	 */
-	private static $post = [];
-	
-	/**
-	 * ----------------------------------------------------------------------------
-	 * [__construct description]
-	 * ----------------------------------------------------------------------------
-	 * 
-	 */
-	public function __construct()
-	{
-		if (isset($_POST)) {
-			self::$post = &$_POST;
-		}
-	}
-
-	/**
-	 * ----------------------------------------------------------------------------
 	 * [fetch description]
 	 * ----------------------------------------------------------------------------
 	 * 
@@ -73,7 +51,72 @@ class Poster
 	 */
 	public function fetch($key, $def = null, $filter = null, $modifier = null)
 	{
+		$data = [null, 0];
 
+		if (isset($_POST[$key])) {
+			if ($filter !== null && !Filter::call($filter, $_POST[$key])) {
+				$data[0] = $def;
+				$data[1] = 2;
+			} else {
+				if ($modifier === null) {
+					$data[0] = $_POST[$key];
+				} else {
+					$data[0] = Modifier::call($modifier, $_POST[$key]);
+					if ($data[1] === null) {
+						$data[0] = 4;
+					}
+				}
+			}
+		} else {
+			$data[0] = $def;
+			$data[1] = 1;
+		}
+
+		return $data;
+	}
+
+	/**
+	 * ----------------------------------------------------------------------------
+	 * [search description]
+	 * ----------------------------------------------------------------------------
+	 * 
+	 * @param  array  $keys     [description]
+	 * @param  [type] $def      [description]
+	 * @param  [type] $filter   [description]
+	 * @param  [type] $modifier [description]
+	 * @return [type]           [description]
+	 */
+	public static function search(array $keys, $def = null, $filter = null, $modifier = null)
+	{
+		$data = [null, 0, ''];
+
+		foreach ($keys as $v) {
+			if (isset($_POST[$v])) {
+				
+				$data[2] = $v;
+
+				if ($filter !== null && !Filter::call($filter, $_POST[$v])) {
+					$data[0] = $def;
+					$data[1] = 2;
+				} else {
+					if ($modifier === null) {
+						$data[0] = $_POST[$v];
+					} else {
+						$data[0] = Modifier::call($modifier, $_POST[$v]);
+						if ($data[1] === null) {
+							$data[0] = 4;
+						}
+					}
+				}
+
+				return $data;
+			}
+		}
+
+		$data[0] = $def;
+		$data[1] = 1;
+
+		return $data;
 	}
 
 	/**
@@ -86,6 +129,6 @@ class Poster
 	 */
 	public function has(string $key)
 	{
-		return isset(self::$post[$key]);
+		return isset($_POST[$key]);
 	}
 }

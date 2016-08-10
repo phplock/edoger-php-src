@@ -37,9 +37,8 @@ namespace Edoger\Core\Http\Input;
  * 通常在转换数据类型，以及一些逻辑处理，修改器的返回值将作为最终的返回值。
  * ================================================================================
  *
- * 注意：错误的修改器或者未定义的修改器将导致调度器抛出异常，这与过滤器的行为不同，
- * 当修改器处理的数据不是字符串、数字和由字符串或数字组成的数组（不能为空数组）时，
- * 修改器会也会抛出异常。
+ * 注意：错误的修改器或者未定义的修改器，以及当修改器处理的数据不是字符串、数字和由字
+ * 符串或数字组成的数组（不能为空数组）时，修改器会返回 NULL。
  */
 class Modifier
 {
@@ -101,11 +100,13 @@ class Modifier
 			$data = [];
 			foreach ($value as $k => $v) {
 				$data[$k] = self::callFunctionModifier($modifier, $v);
+				if ($data[$k] === null) {
+					return null;
+				}
 			}
 			return $data;
 		} else {
-
-			//	
+			return null;
 		}
 	}
 
@@ -126,11 +127,13 @@ class Modifier
 			$data = [];
 			foreach ($value as $k => $v) {
 				$data[$k] = self::callPredefinedModifier($modifier, $v);
+				if ($data[$k] === null) {
+					return null;
+				}
 			}
 			return $data;
 		} else {
-
-			//	
+			return null;	
 		}
 	}
 
@@ -150,8 +153,7 @@ class Modifier
 		} elseif (is_string($modifier) && isset(self::$modifierList[$modifier])) {
 			return self::callPredefinedModifier($modifier, $value);
 		} else {
-
-			//	
+			return null;
 		}
 	}
 }
