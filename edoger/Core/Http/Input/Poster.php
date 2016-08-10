@@ -45,7 +45,7 @@ class Poster
 	 * 
 	 * @var array
 	 */
-	private $post = [];
+	private static $post = [];
 	
 	/**
 	 * ----------------------------------------------------------------------------
@@ -56,7 +56,7 @@ class Poster
 	public function __construct()
 	{
 		if (isset($_POST)) {
-			$this -> post = &$_POST;
+			self::$post = &$_POST;
 		}
 	}
 
@@ -86,6 +86,6 @@ class Poster
 	 */
 	public function has(string $key)
 	{
-		return isset($this -> post[$key]);
+		return isset(self::$post[$key]);
 	}
 }

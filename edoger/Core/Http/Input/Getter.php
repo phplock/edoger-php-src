@@ -45,7 +45,7 @@ class Getter
 	 * 
 	 * @var array
 	 */
-	private $get = [];
+	private static $get = [];
 	
 	/**
 	 * ----------------------------------------------------------------------------
@@ -56,7 +56,7 @@ class Getter
 	public function __construct()
 	{
 		if (isset($_GET)) {
-			$this -> get = &$_GET;
+			self::$get = &$_GET;
 		}
 	}
 
@@ -71,7 +71,7 @@ class Getter
 	 * @param  [type] $modifier [description]
 	 * @return [type]           [description]
 	 */
-	public function fetch($key, $def = null, $filter = null, $modifier = null)
+	public static function fetch($key, $def = null, $filter = null, $modifier = null)
 	{
 
 	}
@@ -84,8 +84,8 @@ class Getter
 	 * @param  string  $key [description]
 	 * @return boolean      [description]
 	 */
-	public function has(string $key)
+	public static function has(string $key)
 	{
-		return isset($this -> get[$key]);
+		return isset(self::$get[$key]);
 	}
 }
