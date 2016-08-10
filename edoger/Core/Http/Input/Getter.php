@@ -40,52 +40,101 @@ class Getter
 {
 	/**
 	 * ----------------------------------------------------------------------------
-	 * [$get description]
+	 * 查找指定名称的数据
 	 * ----------------------------------------------------------------------------
+	 *
+	 * 方法返回一个二元索引数组，数组的第一个元素是找到的数据，第二个是一个描述内部
+	 * 运行情况的整数。
 	 * 
-	 * @var array
+	 * @param  string 					$key      	数据名称
+	 * @param  mixed 					$def      	缺省值
+	 * @param  string|callable|array 	$filter   	过滤器或过滤器组
+	 * @param  string|callable 			$modifier 	修改器
+	 * @return array
 	 */
-	private $get = [];
-	
-	/**
-	 * ----------------------------------------------------------------------------
-	 * [__construct description]
-	 * ----------------------------------------------------------------------------
-	 * 
-	 */
-	public function __construct()
+	public static function fetch(string $key, $def = null, $filter = null, $modifier = null)
 	{
-		if (isset($_GET)) {
-			$this -> get = &$_GET;
+		$data = [null, 0];
+
+		if (isset($_GET[$key])) {
+			if ($filter !== null && !Filter::call($filter, $_GET[$key])) {
+				$data[0] = $def;
+				$data[1] = 2;
+			} else {
+				if ($modifier === null) {
+					$data[0] = $_GET[$key];
+				} else {
+					$data[0] = Modifier::call($modifier, $_GET[$key]);
+					if ($data[1] === null) {
+						$data[0] = 4;
+					}
+				}
+			}
+		} else {
+			$data[0] = $def;
+			$data[1] = 1;
 		}
+
+		return $data;
 	}
 
 	/**
 	 * ----------------------------------------------------------------------------
-	 * [fetch description]
+	 * 按顺序搜索一组数据，只要找到一个就立即返回
 	 * ----------------------------------------------------------------------------
+	 *
+	 * 方法返回一个三元索引数组，数组的第一个元素是找到的数据，第二个是一个描述内部
+	 * 运行情况的整数，第三个元素是找到的键名称。
 	 * 
-	 * @param  [type] $key      [description]
+	 * @param  array  $keys     [description]
 	 * @param  [type] $def      [description]
 	 * @param  [type] $filter   [description]
 	 * @param  [type] $modifier [description]
 	 * @return [type]           [description]
 	 */
-	public function fetch($key, $def = null, $filter = null, $modifier = null)
+	public static function search(array $keys, $def = null, $filter = null, $modifier = null)
 	{
+		$data = [null, 0, ''];
 
+		foreach ($keys as $v) {
+			if (isset($_GET[$v])) {
+				
+				$data[2] = $v;
+
+				if ($filter !== null && !Filter::call($filter, $_GET[$v])) {
+					$data[0] = $def;
+					$data[1] = 2;
+				} else {
+					if ($modifier === null) {
+						$data[0] = $_GET[$v];
+					} else {
+						$data[0] = Modifier::call($modifier, $_GET[$v]);
+						if ($data[1] === null) {
+							$data[0] = 4;
+						}
+					}
+				}
+
+				return $data;
+			}
+		}
+
+		$data[0] = $def;
+		$data[1] = 1;
+
+		return $data;
 	}
 
 	/**
 	 * ----------------------------------------------------------------------------
-	 * [has description]
+	 * 检查指定名称的数据是否存在
 	 * ----------------------------------------------------------------------------
 	 * 
-	 * @param  string  $key [description]
-	 * @return boolean      [description]
+	 * @param  string  	$key 	数据名称
+	 * @return boolean
 	 */
-	public function has(string $key)
+	public static function has(string $key)
 	{
-		return isset($this -> get[$key]);
+		return isset($_GET[$key]);
 	}
 }

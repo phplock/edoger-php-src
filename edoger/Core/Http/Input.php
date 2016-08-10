@@ -31,6 +31,11 @@
  */
 namespace Edoger\Core\Http;
 
+use Edoger\Core\Http\Input\Getter;
+use Edoger\Core\Http\Input\Poster;
+use Edoger\Core\Http\Input\Filter;
+use Edoger\Core\Http\Input\Modifier;
+
 /**
  * ================================================================================
  * 客户端输入数据管理器，该管理器用于管理通过 $_GET 和 $_POST 传递的全部参数，组件
