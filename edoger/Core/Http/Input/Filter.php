@@ -170,7 +170,9 @@ class Filter
 	 */
 	public static function call($filter, $value)
 	{
-		if (is_callable($filter)) {
+		if (is_null($filter)) {
+			return true;
+		} elseif (is_callable($filter)) {
 			return self::callFunctionFilter($filter, $value);
 		} elseif (is_string($filter)) {
 			if (isset(self::$filterList[$filter])) {
