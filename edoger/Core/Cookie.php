@@ -81,9 +81,22 @@ final class Cookie
 	 */
 	private static $prefix;
 
+	/**
+	 * ----------------------------------------------------------------------------
+	 * [$options description]
+	 * ----------------------------------------------------------------------------
+	 * 
+	 * @var array
+	 */
 	private static $options = [];
 
-
+	/**
+	 * ----------------------------------------------------------------------------
+	 * [__construct description]
+	 * ----------------------------------------------------------------------------
+	 * 
+	 * @param Kernel &$kernel [description]
+	 */
 	public function __construct(Kernel &$kernel)
 	{
 		self::$kernel = &$kernel;
@@ -100,53 +113,157 @@ final class Cookie
 		self::$options['httponly'] 	= $config['httponly'];
 
 		if (!empty($_COOKIE)) {
+			self::$source = $_COOKIE;
+			$prefixLength = strlen($config['security_prefix']);
 			foreach ($_COOKIE as $key => $value) {
-				
+				if (substr($key, 0, $prefixLength) === $config['security_prefix']) {
+					
+				} else {
+					self::$cookies[$key] = self::decrypt($value);
+					if (is_null(self::$cookies[$key])) {
+						self::forget($key);
+						unset(self::$cookies[$key]);
+					}
+				}
 			}
 		}
 	}
 
-	public function fetch(string $key, $def = null)
+	private static function decrypt($cookie)
+	{
+		$json = base64_decode($cookie);
+		if ($json !== false) {
+			$data = json_decode($json, true);
+			if (JSON_ERROR_NONE === json_last_error()) {
+				return $data;
+			}
+		}
+
+		return null;
+	}
+
+	/**
+	 * ----------------------------------------------------------------------------
+	 * 获取一个指定名称的cookie
+	 * ----------------------------------------------------------------------------
+	 * 
+	 * @param  string $key [description]
+	 * @param  [type] $def [description]
+	 * @return [type]      [description]
+	 */
+	public static function fetch(string $key, $def = null)
 	{
 		return self::$cookies[$key] ?? $def;
 	}
 
-	public function exists(string $key)
+	/**
+	 * ----------------------------------------------------------------------------
+	 * 检查指定名称的cookie是否存在
+	 * ----------------------------------------------------------------------------
+	 * 
+	 * @param  string $key [description]
+	 * @return [type]      [description]
+	 */
+	public static function exist(string $key)
 	{
 		return isset(self::$cookies[$key]);
 	}
 
-	public function equal(string $key, $value)
+	/**
+	 * ----------------------------------------------------------------------------
+	 * 检查指定名称的cookie是否与给定的值完全相等
+	 * ----------------------------------------------------------------------------
+	 * 
+	 * @param  string $key   [description]
+	 * @param  [type] $value [description]
+	 * @return [type]        [description]
+	 */
+	public static function equal(string $key, $value)
 	{
 		return $this -> fetch($key) === $value;
 	}
 
-	public function send(string $key, string $value, array $option = [])
+	/**
+	 * ----------------------------------------------------------------------------
+	 * 发送一个自定义cookie
+	 * ----------------------------------------------------------------------------
+	 * 
+	 * @param  string $key    [description]
+	 * @param  string $value  [description]
+	 * @param  array  $option [description]
+	 * @return [type]         [description]
+	 */
+	public static function send(string $key, $value, array $option = [])
 	{
 
 	}
 
-	public function interim(string $key, string $value, array $option = [])
+	/**
+	 * ----------------------------------------------------------------------------
+	 * 创建一个临时的会话cookie
+	 * ----------------------------------------------------------------------------
+	 * 
+	 * @param  string $key    [description]
+	 * @param  string $value  [description]
+	 * @param  array  $option [description]
+	 * @return [type]         [description]
+	 */
+	public static function interim(string $key, $value, array $option = [])
 	{
 
 	}
 
-	public function forever(string $key, string $value, array $option = [])
+	/**
+	 * ----------------------------------------------------------------------------
+	 * 创建一个相对永久的cookie，有效期5年
+	 * ----------------------------------------------------------------------------
+	 * 
+	 * @param  string $key    [description]
+	 * @param  string $value  [description]
+	 * @param  array  $option [description]
+	 * @return [type]         [description]
+	 */
+	public static function forever(string $key, $value, array $option = [])
 	{
 		
 	}
 
-	public function safe(string $key, string $value, array $option = [])
+	/**
+	 * ----------------------------------------------------------------------------
+	 * 创建一个安全的带签名的加密cookie
+	 * ----------------------------------------------------------------------------
+	 * 
+	 * @param  string $key    [description]
+	 * @param  string $value  [description]
+	 * @param  array  $option [description]
+	 * @return [type]         [description]
+	 */
+	public static function safe(string $key, $value, array $option = [])
 	{
 
 	}
 
-	public function forget(string $key)
+	/**
+	 * ----------------------------------------------------------------------------
+	 * 让一个指定的cookie过期
+	 * ----------------------------------------------------------------------------
+	 * 
+	 * @param  string $key [description]
+	 * @return [type]      [description]
+	 */
+	public static function forget(string $key)
 	{
 
 	}
 
-	public function source()
+	/**
+	 * ----------------------------------------------------------------------------
+	 * 获取当前获取的全部原始cookie（加密的cookie未被解密）
+	 * ----------------------------------------------------------------------------
+	 * 
+	 * @return [type] [description]
+	 */
+	public static function source()
 	{
 
 	}
