@@ -34,16 +34,14 @@ namespace Edoger\Core;
 
 /**
  * ================================================================================
- * Application Configuration Options Manager.
- *
- * The manager is able to efficiently search for all configuration options.
+ * 通用配置管理器类
  * ================================================================================
  */
 final class Config
 {
 	/**
 	 * ----------------------------------------------------------------------------
-	 * All configuration options.
+	 * 所有已经被管理的配置项
 	 * ----------------------------------------------------------------------------
 	 *
 	 * @var array
@@ -52,10 +50,9 @@ final class Config
 	
 	/**
 	 * ----------------------------------------------------------------------------
-	 * Initialization manager instance, the configuration options data is bound to 
-	 * an instance.
+	 * 初始化配置管理器，通过传入的配置数组来管理配置
 	 * ----------------------------------------------------------------------------
-	 * @param  array 	$config 	The configuration options.
+	 * @param  array 	$config 	需要被管理的配置项数组
 	 * @return void
 	 */
 	public function __construct(array $config)
@@ -65,11 +62,11 @@ final class Config
 
 	/**
 	 * ----------------------------------------------------------------------------
-	 * Gets the value of the specified configuration option.
+	 * 获取指定名称的配置项
 	 * ----------------------------------------------------------------------------
 	 *
-	 * @param  string 	$key 	Name of configuration options.
-	 * @param  mixed 	$def 	The default value.
+	 * @param  string 	$key 	配置项名称
+	 * @param  mixed 	$def 	缺省值
 	 * @return mixed
 	 */
 	public function get(string $key, $def = null)
@@ -95,10 +92,10 @@ final class Config
 
 	/**
 	 * ----------------------------------------------------------------------------
-	 * Detecting whether there is a configuration option.
+	 * 检查指定名称的配置项是否存在
 	 * ----------------------------------------------------------------------------
 	 *
-	 * @param  string 	$key 	Name of configuration options.
+	 * @param  string 	$key 	配置项名称
 	 * @return boolean
 	 */
 	public function has(string $key)
