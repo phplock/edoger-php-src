@@ -176,9 +176,15 @@ class Respond
 	 * 
 	 * @return [type] [description]
 	 */
-	public static function end()
+	public static function end(array $data = [], bool $cover = true, bool $clean = false)
 	{
-		
+		if ($clean) {
+			self::clean();
+		}
+		if (!empty($data)) {
+			self::sendArray($data, $cover);
+		}
+		self::output();
 		exit(0);
 	}
 
@@ -208,5 +214,14 @@ class Respond
 	public static function option(string $key, $value, bool $cover = true)
 	{
 
+	}
+
+	public static function output()
+	{
+		static $outputed = false;
+		if (!$outputed) {
+			$outputed = true;
+			// self::$engine -> render(self::$data, self::$options);
+		}
 	}
 }

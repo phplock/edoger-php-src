@@ -29,82 +29,48 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE 
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-namespace Edoger\Core\Http;
-
+namespace Edoger\Core\Http\Input;
 
 /**
  * ================================================================================
- * 针对全局变量 $_SERVER 的访问管理器
+ *
  * ================================================================================
  */
-final class Server
+abstract class BaseModifier
 {
 	/**
 	 * ----------------------------------------------------------------------------
-	 * 全局变量 $_SERVER
+	 * [$filters description]
 	 * ----------------------------------------------------------------------------
-	 *
+	 * 
 	 * @var array
 	 */
-	private $server = [];
+	private $modifiers = [];
 	
 	/**
 	 * ----------------------------------------------------------------------------
-	 * 初始化组件本身，绑定全局变量 $_SERVER
+	 * [__construct description]
 	 * ----------------------------------------------------------------------------
-	 *
-	 * @return void
+	 * 
 	 */
 	public function __construct()
 	{
-		if (!empty($_SERVER)) {
-			$this -> server = $_SERVER;
-		}
-	}
+		$methods = get_class_methods($this);
 
-	/**
-	 * ----------------------------------------------------------------------------
-	 * 读取并返回一个指定键名的数据
-	 * ----------------------------------------------------------------------------
-	 * 
-	 * @param  string 	$key 	要读取的键
-	 * @param  mixed 	$def 	缺省值
-	 * @return mixed
-	 */
-	public function query(string $key, $def = null)
-	{
-		return $this -> server[$key] ?? $def;
-	}
-
-	/**
-	 * ----------------------------------------------------------------------------
-	 * 从变量中搜索多个键，只有有一个存在，立即返回键值
-	 * ----------------------------------------------------------------------------
-	 * 
-	 * @param  array 	$keys 	要查找的多个键，用 "|" 连接的字符串
-	 * @param  mixed 	$def 	缺省值
-	 * @return mixed
-	 */
-	public function search(array $keys, $def = null)
-	{
-		foreach ($keys as $query) {
-			if (isset($this -> server[$query])) {
-				return $this -> server[$query];
+		foreach ($methods as $method) {
+			if (preg_match('/Modifier$/', $method, $m)) {
+				$this -> modifiers[$m[1]] = $method;
 			}
 		}
-		return $def;
 	}
 
 	/**
 	 * ----------------------------------------------------------------------------
-	 * 检查指定的键名是否存在
+	 *
 	 * ----------------------------------------------------------------------------
-	 * 
-	 * @param  string 	$key 	要检查的键名
-	 * @return boolean
 	 */
-	public function exists(string $key)
+	final public getFilters()
 	{
-		return isset($this -> server[$key]);
+		return $this -> modifiers;
 	}
 }

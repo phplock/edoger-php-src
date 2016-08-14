@@ -60,7 +60,15 @@ final class Request
 	 */
 	private static $server;
 
+	/**
+	 * [$input description]
+	 * @var [type]
+	 */
 	private static $input;
+
+	private static $requestUri = '/';
+	private static $requesrRoutes = [];
+	private static $reqiestRoutesSize = 0;
 	
 	/**
 	 * ----------------------------------------------------------------------------
@@ -74,6 +82,25 @@ final class Request
 		self::$server 	= new Server();
 		self::$input 	= new Input();
 		self::$kernel 	= &$kernel;
+
+		self::parseRequestUri();
+	}
+
+	private static function parseRequestUri()
+	{
+		$sourceUri = self::$server -> search(['PATH_INFO', 'REQUEST_URI'], '/');
+		if (!$sourceUri || $sourceUri === '/') {
+			return;
+		}
+
+		$path = parse_url(urldecode($sourceUri), PHP_URL_PATH);
+		if ($path === false) {
+			return;
+		}
+
+		self::$requesrRoutes 		= preg_split('/\//', $path, PREG_SPLIT_NO_EMPTY);
+		self::$reqiestRoutesSize 	= count(self::$requesrRoutes);
+		self::$requestUri 			.= implode('/', self::$requesrRoutes);
 	}
 
 	/**
@@ -109,7 +136,10 @@ final class Request
 	 */
 	public function ip()
 	{
-
+		return self::$server -> search([
+			'HTTP_X_IP',
+			'REMOTE_ADDR'
+			], '0.0.0.0');
 	}
 
 	/**
@@ -121,7 +151,7 @@ final class Request
 	 */
 	public function uri()
 	{
-
+		return self::$requestUri;
 	}
 
 	/**
@@ -131,9 +161,21 @@ final class Request
 	 * 
 	 * @return [type] [description]
 	 */
-	public function route()
+	public function route(int $index)
 	{
+		return self::$requesrRoutes[$index] ?? null;
+	}
 
+	/**
+	 * ----------------------------------------------------------------------------
+	 * [routes description]
+	 * ----------------------------------------------------------------------------
+	 * 
+	 * @return [type] [description]
+	 */
+	public function routes()
+	{
+		self::$requesrRoutes
 	}
 
 	/**
@@ -145,7 +187,7 @@ final class Request
 	 */
 	public function hostname()
 	{
-
+		return self::$server -> query('HTTP_HOST', '');
 	}
 
 	/**
@@ -157,7 +199,7 @@ final class Request
 	 */
 	public function port()
 	{
-
+		return (int)self::$server -> query('SERVER_PORT', 80);
 	}
 
 	/**
@@ -169,6 +211,6 @@ final class Request
 	 */
 	public function userAgent()
 	{
-
+		return self::$server -> query('HTTP_USER_AGENT', '');
 	}
 }
