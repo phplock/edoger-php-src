@@ -55,9 +55,7 @@ abstract class BaseFilter
 	 */
 	public function __construct()
 	{
-		$methods = get_class_methods($this);
-
-		foreach ($methods as $method) {
+		foreach (get_class_methods($this) as $method) {
 			if (preg_match('/Filter$/', $method, $m)) {
 				$this -> filters[$m[1]] = $method;
 			}
