@@ -29,54 +29,29 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE 
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-namespace Edoger\Exceptions;
+namespace Edoger\Database\Mysql\Builder;
 
-use Exception;
-use Edoger\Core\Log\Logger;
-use Edoger\Interfaces\EdogerExceptionInterface;
+use Edoger\Database\Mysql\Exceptions\ArgumentException;
 
 /**
- * ================================================================================
- * Some Description.
- *
  * 
- * ================================================================================
  */
-class RuntimeException extends Exception implements EdogerExceptionInterface
+class Parser
 {
-	/**
-	 * ----------------------------------------------------------------------------
-	 * What is it ?
-	 * ----------------------------------------------------------------------------
-	 *
-	 * @return string
-	 */
-	public function __construct(string $message, int $code = 5000)
+	public static function parseFieldValue($value)
 	{
-		parent::__construct($message, $code);
+		if (is_string($value) || is_numeric($value)) {
+			return "'" . addslashes($value) . "'";
+		} elseif (is_array($value) && !empty($value)) {
+			$data = [];
+			foreach ($value as $k => $v) {
+				$data[$k] = self::parseFieldValue($v);
+			}
+			return $data;
+		} else {
+
+			throw new ArgumentException('Parser field value argument error');	
+		}
 	}
 
-	/**
-	 * ----------------------------------------------------------------------------
-	 * What is it ?
-	 * ----------------------------------------------------------------------------
-	 *
-	 * @return string
-	 */
-	public function getLog()
-	{
-		return "{$this -> message} in {$this -> file} line {$this -> line}";
-	} 
-
-	/**
-	 * ----------------------------------------------------------------------------
-	 * What is it ?
-	 * ----------------------------------------------------------------------------
-	 *
-	 * @return integer
-	 */
-	public function getLevel()
-	{
-		return Logger::ALERT;
-	}
 }

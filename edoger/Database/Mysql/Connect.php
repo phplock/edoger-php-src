@@ -32,7 +32,9 @@
 namespace Edoger\Database\Mysql;
 
 use PDO;
+use Error;
 use PDOException;
+use Edoger\Database\Mysql\Exceptions\ConnectException;
 
 /**
  * ================================================================================
@@ -60,14 +62,16 @@ final class Connect
 	 * @param string $dsn      [description]
 	 * @param string $user     [description]
 	 * @param string $password [description]
+	 * @param array  $options  [description]
 	 */
 	public function __construct(string $dsn, string $user, string $password, array $options = [])
 	{
 		try {
 			$this -> pdo = new PDO($dsn, $user, $password, $options);
 		} catch (PDOException $e) {
-			
-			//
+			// throw new ConnectException();
+		} catch (Error $e) {
+			// throw new ConnectException();
 		}
 	}
 
@@ -78,8 +82,10 @@ final class Connect
 	 * 
 	 * @return [type] [description]
 	 */
-	public function query()
+	public function getConnected()
 	{
-
+		return $this -> pdo;
 	}
+
+	
 }

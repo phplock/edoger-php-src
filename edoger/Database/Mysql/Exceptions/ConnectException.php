@@ -29,28 +29,18 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE 
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-namespace Edoger\Exceptions;
+namespace Edoger\Database\Mysql\Exceptions;
 
 use Exception;
 use Edoger\Core\Log\Logger;
 use Edoger\Interfaces\EdogerExceptionInterface;
 
 /**
- * ================================================================================
- * Some Description.
- *
  * 
- * ================================================================================
  */
-class RuntimeException extends Exception implements EdogerExceptionInterface
+class ConnectException extends Exception implements EdogerExceptionInterface
 {
-	/**
-	 * ----------------------------------------------------------------------------
-	 * What is it ?
-	 * ----------------------------------------------------------------------------
-	 *
-	 * @return string
-	 */
+	
 	public function __construct(string $message, int $code = 5000)
 	{
 		parent::__construct($message, $code);

@@ -29,54 +29,20 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE 
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-namespace Edoger\Exceptions;
+namespace Edoger\Database\Mysql\Builder;
 
-use Exception;
-use Edoger\Core\Log\Logger;
-use Edoger\Interfaces\EdogerExceptionInterface;
+use PDO;
 
 /**
- * ================================================================================
- * Some Description.
- *
  * 
- * ================================================================================
  */
-class RuntimeException extends Exception implements EdogerExceptionInterface
+class Filter
 {
-	/**
-	 * ----------------------------------------------------------------------------
-	 * What is it ?
-	 * ----------------------------------------------------------------------------
-	 *
-	 * @return string
-	 */
-	public function __construct(string $message, int $code = 5000)
-	{
-		parent::__construct($message, $code);
-	}
+	public $mode 	= true;
+	public $where 	= [];
 
-	/**
-	 * ----------------------------------------------------------------------------
-	 * What is it ?
-	 * ----------------------------------------------------------------------------
-	 *
-	 * @return string
-	 */
-	public function getLog()
+	private static function _equalValue(string $field, string $value)
 	{
-		return "{$this -> message} in {$this -> file} line {$this -> line}";
-	} 
-
-	/**
-	 * ----------------------------------------------------------------------------
-	 * What is it ?
-	 * ----------------------------------------------------------------------------
-	 *
-	 * @return integer
-	 */
-	public function getLevel()
-	{
-		return Logger::ALERT;
+		Parser::parseFieldValue($value)
 	}
 }
