@@ -29,77 +29,48 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE 
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-namespace Edoger\Core;
-
+namespace Edoger\Core\Http\Input;
 
 /**
  * ================================================================================
- * 通用配置管理器类
+ *
  * ================================================================================
  */
-final class Config
+abstract class BaseModifier
 {
 	/**
 	 * ----------------------------------------------------------------------------
-	 * 所有已经被管理的配置项
+	 * [$filters description]
 	 * ----------------------------------------------------------------------------
-	 *
+	 * 
 	 * @var array
 	 */
-	private $config = [];
+	private $modifiers = [];
 	
 	/**
 	 * ----------------------------------------------------------------------------
-	 * 初始化配置管理器，通过传入的配置数组来管理配置
+	 * [__construct description]
 	 * ----------------------------------------------------------------------------
-	 * @param  array 	$config 	需要被管理的配置项数组
-	 * @return void
+	 * 
 	 */
-	public function __construct(array $config)
+	public function __construct()
 	{
-		$this -> config = $config;
-	}
+		$methods = get_class_methods($this);
 
-	/**
-	 * ----------------------------------------------------------------------------
-	 * 获取指定名称的配置项
-	 * ----------------------------------------------------------------------------
-	 *
-	 * @param  string 	$key 	配置项名称
-	 * @param  mixed 	$def 	缺省值
-	 * @return mixed
-	 */
-	public function get(string $key, $def = null)
-	{
-		if (isset($this -> config[$key])) {
-			return $this -> config[$key];
-		} else {
-			if (empty($this -> config)) {
-				return $def;
+		foreach ($methods as $method) {
+			if (preg_match('/Modifier$/', $method, $m)) {
+				$this -> modifiers[$m[1]] = $method;
 			}
-			$config = $this -> config;
-			foreach (explode('.', $key) as $query) {
-				if (isset($config[$query])) {
-					$config = $config[$query];
-				} else {
-					$config = $def;
-					break;
-				}
-			}
-			return $config;
 		}
 	}
 
 	/**
 	 * ----------------------------------------------------------------------------
-	 * 检查指定名称的配置项是否存在
-	 * ----------------------------------------------------------------------------
 	 *
-	 * @param  string 	$key 	配置项名称
-	 * @return boolean
+	 * ----------------------------------------------------------------------------
 	 */
-	public function has(string $key)
+	final public getFilters()
 	{
-		return $this -> get($key) !== null;
+		return $this -> modifiers;
 	}
 }

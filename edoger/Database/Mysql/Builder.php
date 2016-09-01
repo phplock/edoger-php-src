@@ -30,33 +30,56 @@
  |  Authors: QingShan Luo <shanshan.lqs@gmail.com>                             |
  +-----------------------------------------------------------------------------+
  */
-// echo $_GET['a'] ?? 'no';die;
-phpinfo();die;
-/**
- * -----------------------------------------------------------------------------
- * 载入框架启动脚本文件
- * -----------------------------------------------------------------------------
- */
-require __DIR__ . '/../edoger/launcher.php';
-
+namespace Edoger\Database\Mysql;
 
 /**
- * -----------------------------------------------------------------------------
- * 创建一个基本的应用程序实例
- * -----------------------------------------------------------------------------
- */
-$app = new Edoger\Core\Application(realpath(__DIR__ . '/../'));
+* 
+*/
+class Builder
+{
+	private $connect;
+	private $tableName;
+	private $tableAlias;
+	
+	public function __construct(Connect $connect, $table, $alias)
+	{
+		$this -> connect = $connect;
+		$this -> tableName = $table;
+		$this -> tableAlias = $alias;
+	}
 
-/**
- * -----------------------------------------------------------------------------
- * 对应用程序实例进行扩展、封装以及必要的准备工作
- * -----------------------------------------------------------------------------
- */
-Edoger\Core\Kernel::core() -> make($app);
+	public function find()
+	{
 
-/**
- * -----------------------------------------------------------------------------
- * 运行应用程序
- * -----------------------------------------------------------------------------
- */
-$app -> run();
+	}
+
+	public function delete()
+	{
+		
+	}
+
+	public function insert()
+	{
+		
+	}
+
+	public function update()
+	{
+		
+	}
+
+	public function replace()
+	{
+		
+	}
+
+	public function exists()
+	{
+		
+	}
+
+	public function save()
+	{
+		
+	}
+}

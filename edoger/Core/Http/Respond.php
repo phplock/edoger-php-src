@@ -49,7 +49,7 @@ class Respond
 	 *
 	 * @var type
 	 */
-	private $kernel;
+	private static $kernel;
 
 	/**
 	 * ----------------------------------------------------------------------------
@@ -58,7 +58,7 @@ class Respond
 	 * 
 	 * @var [type]
 	 */
-	private $hook;
+	private static $hook;
 
 	/**
 	 * ----------------------------------------------------------------------------
@@ -67,7 +67,7 @@ class Respond
 	 * 
 	 * @var array
 	 */
-	private $data = [];
+	private static $data = [];
 
 	/**
 	 * ----------------------------------------------------------------------------
@@ -76,7 +76,7 @@ class Respond
 	 * 
 	 * @var array
 	 */
-	private $options = [];
+	private static $options = [];
 
 	/**
 	 * ----------------------------------------------------------------------------
@@ -87,7 +87,7 @@ class Respond
 	 */
 	public function __construct(Kernel &$kernel)
 	{
-		$this -> kernel = &$kernel;
+		self::$kernel = &$kernel;
 	}
 
 	/**
@@ -97,7 +97,7 @@ class Respond
 	 * 
 	 * @return [type] [description]
 	 */
-	public function getHook()
+	public static function getHook()
 	{
 
 	}
@@ -112,9 +112,13 @@ class Respond
 	 * @param  bool|boolean $cover [description]
 	 * @return [type]              [description]
 	 */
-	public function send(string $key, $value, bool $cover = true)
+	public static function send(string $key, $value, bool $cover = true)
 	{
-
+		if ($cover || !isset(self::$data[$key])) {
+			self::$data[$key] = $value;
+			return true;
+		}
+		return false;
 	}
 
 	/**
@@ -126,9 +130,43 @@ class Respond
 	 * @param  bool|boolean $cover [description]
 	 * @return [type]              [description]
 	 */
-	public function sendArray(array $data, bool $cover = true)
+	public static function sendArray(array $data, bool $cover = true)
 	{
+		if ($cover) {
+			self::$data = array_merge(self::$data, $data);
+		} else {
+			self::$data = array_merge($data, self::$data);
+		}
+		return true;
+	}
 
+	/**
+	 * ----------------------------------------------------------------------------
+	 * [clean description]
+	 * ----------------------------------------------------------------------------
+	 * 
+	 * @return [type] [description]
+	 */
+	public static function clean()
+	{
+		self::$data = [];
+		return true;
+	}
+
+	/**
+	 * ----------------------------------------------------------------------------
+	 * [delete description]
+	 * ----------------------------------------------------------------------------
+	 * 
+	 * @param  string $key [description]
+	 * @return [type]      [description]
+	 */
+	public static function delete(string $key)
+	{
+		if (isset(self::$data[$key])) {
+			unset(self::$data[$key]);
+		}
+		return true;
 	}
 
 	/**
@@ -138,9 +176,16 @@ class Respond
 	 * 
 	 * @return [type] [description]
 	 */
-	public function end()
+	public static function end(array $data = [], bool $cover = true, bool $clean = false)
 	{
-
+		if ($clean) {
+			self::clean();
+		}
+		if (!empty($data)) {
+			self::sendArray($data, $cover);
+		}
+		self::output();
+		exit(0);
 	}
 
 	/**
@@ -151,7 +196,7 @@ class Respond
 	 * @param  int    $code [description]
 	 * @return [type]       [description]
 	 */
-	public function status(int $code)
+	public static function status(int $code)
 	{
 
 	}
@@ -166,8 +211,17 @@ class Respond
 	 * @param  bool|boolean $cover [description]
 	 * @return [type]              [description]
 	 */
-	public function option(string $key, $value, bool $cover = true)
+	public static function option(string $key, $value, bool $cover = true)
 	{
 
+	}
+
+	public static function output()
+	{
+		static $outputed = false;
+		if (!$outputed) {
+			$outputed = true;
+			// self::$engine -> render(self::$data, self::$options);
+		}
 	}
 }

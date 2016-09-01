@@ -100,13 +100,10 @@ class Modifier
 			$data = [];
 			foreach ($value as $k => $v) {
 				$data[$k] = self::callFunctionModifier($modifier, $v);
-				if ($data[$k] === null) {
-					return null;
-				}
 			}
 			return $data;
 		} else {
-			return null;
+			return $value;
 		}
 	}
 
@@ -127,13 +124,10 @@ class Modifier
 			$data = [];
 			foreach ($value as $k => $v) {
 				$data[$k] = self::callPredefinedModifier($modifier, $v);
-				if ($data[$k] === null) {
-					return null;
-				}
 			}
 			return $data;
 		} else {
-			return null;	
+			return $value;	
 		}
 	}
 
@@ -148,12 +142,14 @@ class Modifier
 	 */
 	public static function call($modifier, $value)
 	{
-		if (is_callable($modifier)) {
+		if (is_null($modifier)) {
+			return $value;
+		} elseif (is_callable($modifier)) {
 			return self::callFunctionModifier($modifier, $value);
 		} elseif (is_string($modifier) && isset(self::$modifierList[$modifier])) {
 			return self::callPredefinedModifier($modifier, $value);
 		} else {
-			return null;
+			return $value;
 		}
 	}
 }

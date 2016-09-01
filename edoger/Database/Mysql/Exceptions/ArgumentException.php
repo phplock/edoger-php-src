@@ -29,77 +29,44 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE 
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-namespace Edoger\Core;
+namespace Edoger\Database\Mysql\Exceptions;
 
+use Exception;
+use Edoger\Core\Log\Logger;
+use Edoger\Interfaces\EdogerExceptionInterface;
 
 /**
- * ================================================================================
- * 通用配置管理器类
- * ================================================================================
+ * 
  */
-final class Config
+class ArgumentException extends Exception implements EdogerExceptionInterface
 {
-	/**
-	 * ----------------------------------------------------------------------------
-	 * 所有已经被管理的配置项
-	 * ----------------------------------------------------------------------------
-	 *
-	 * @var array
-	 */
-	private $config = [];
 	
-	/**
-	 * ----------------------------------------------------------------------------
-	 * 初始化配置管理器，通过传入的配置数组来管理配置
-	 * ----------------------------------------------------------------------------
-	 * @param  array 	$config 	需要被管理的配置项数组
-	 * @return void
-	 */
-	public function __construct(array $config)
+	public function __construct(string $message, int $code = 5000)
 	{
-		$this -> config = $config;
+		parent::__construct($message, $code);
 	}
 
 	/**
 	 * ----------------------------------------------------------------------------
-	 * 获取指定名称的配置项
+	 * What is it ?
 	 * ----------------------------------------------------------------------------
 	 *
-	 * @param  string 	$key 	配置项名称
-	 * @param  mixed 	$def 	缺省值
-	 * @return mixed
+	 * @return string
 	 */
-	public function get(string $key, $def = null)
+	public function getLog()
 	{
-		if (isset($this -> config[$key])) {
-			return $this -> config[$key];
-		} else {
-			if (empty($this -> config)) {
-				return $def;
-			}
-			$config = $this -> config;
-			foreach (explode('.', $key) as $query) {
-				if (isset($config[$query])) {
-					$config = $config[$query];
-				} else {
-					$config = $def;
-					break;
-				}
-			}
-			return $config;
-		}
-	}
+		return "{$this -> message} in {$this -> file} line {$this -> line}";
+	} 
 
 	/**
 	 * ----------------------------------------------------------------------------
-	 * 检查指定名称的配置项是否存在
+	 * What is it ?
 	 * ----------------------------------------------------------------------------
 	 *
-	 * @param  string 	$key 	配置项名称
-	 * @return boolean
+	 * @return integer
 	 */
-	public function has(string $key)
+	public function getLevel()
 	{
-		return $this -> get($key) !== null;
+		return Logger::ALERT;
 	}
 }

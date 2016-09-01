@@ -29,54 +29,14 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE 
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-namespace Edoger\Exceptions;
+namespace Edoger\Core\Http\Input\Filters;
 
-use Exception;
-use Edoger\Core\Log\Logger;
-use Edoger\Interfaces\EdogerExceptionInterface;
+use Edoger\Core\Http\Input\BaseFilter;
 
 /**
- * ================================================================================
- * Some Description.
- *
  * 
- * ================================================================================
  */
-class RuntimeException extends Exception implements EdogerExceptionInterface
+class Basics extends BaseFilter
 {
-	/**
-	 * ----------------------------------------------------------------------------
-	 * What is it ?
-	 * ----------------------------------------------------------------------------
-	 *
-	 * @return string
-	 */
-	public function __construct(string $message, int $code = 5000)
-	{
-		parent::__construct($message, $code);
-	}
-
-	/**
-	 * ----------------------------------------------------------------------------
-	 * What is it ?
-	 * ----------------------------------------------------------------------------
-	 *
-	 * @return string
-	 */
-	public function getLog()
-	{
-		return "{$this -> message} in {$this -> file} line {$this -> line}";
-	} 
-
-	/**
-	 * ----------------------------------------------------------------------------
-	 * What is it ?
-	 * ----------------------------------------------------------------------------
-	 *
-	 * @return integer
-	 */
-	public function getLevel()
-	{
-		return Logger::ALERT;
-	}
+	
 }
