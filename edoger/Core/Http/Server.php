@@ -41,29 +41,6 @@ final class Server
 {
 	/**
 	 * ----------------------------------------------------------------------------
-	 * 全局变量 $_SERVER
-	 * ----------------------------------------------------------------------------
-	 *
-	 * @var array
-	 */
-	private $server = [];
-	
-	/**
-	 * ----------------------------------------------------------------------------
-	 * 初始化组件本身，绑定全局变量 $_SERVER
-	 * ----------------------------------------------------------------------------
-	 *
-	 * @return void
-	 */
-	public function __construct()
-	{
-		if (!empty($_SERVER)) {
-			$this -> server = $_SERVER;
-		}
-	}
-
-	/**
-	 * ----------------------------------------------------------------------------
 	 * 读取并返回一个指定键名的数据
 	 * ----------------------------------------------------------------------------
 	 * 
@@ -71,9 +48,9 @@ final class Server
 	 * @param  mixed 	$def 	缺省值
 	 * @return mixed
 	 */
-	public function query(string $key, $def = null)
+	public function query(string $key, $def = '')
 	{
-		return $this -> server[$key] ?? $def;
+		return $_SERVER[$key] ?? $def;
 	}
 
 	/**
@@ -81,15 +58,15 @@ final class Server
 	 * 从变量中搜索多个键，只有有一个存在，立即返回键值
 	 * ----------------------------------------------------------------------------
 	 * 
-	 * @param  array 	$keys 	要查找的多个键，用 "|" 连接的字符串
+	 * @param  array 	$keys 	要查找的多个键
 	 * @param  mixed 	$def 	缺省值
 	 * @return mixed
 	 */
-	public function search(array $keys, $def = null)
+	public static function search(array $keys, $def = '')
 	{
 		foreach ($keys as $query) {
-			if (isset($this -> server[$query])) {
-				return $this -> server[$query];
+			if (isset($_SERVER[$query])) {
+				return $_SERVER[$query];
 			}
 		}
 		return $def;
@@ -103,8 +80,8 @@ final class Server
 	 * @param  string 	$key 	要检查的键名
 	 * @return boolean
 	 */
-	public function exists(string $key)
+	public static function exists(string $key)
 	{
-		return isset($this -> server[$key]);
+		return isset($_SERVER[$key]);
 	}
 }

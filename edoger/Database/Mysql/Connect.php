@@ -33,7 +33,7 @@ namespace Edoger\Database\Mysql;
 
 use PDO;
 use Error;
-use PDOException;
+use Exception;
 use Edoger\Database\Mysql\Exceptions\ConnectException;
 
 /**
@@ -68,7 +68,7 @@ final class Connect
 	{
 		try {
 			$this -> pdo = new PDO($dsn, $user, $password, $options);
-		} catch (PDOException $e) {
+		} catch (Exception $e) {
 			// throw new ConnectException();
 		} catch (Error $e) {
 			// throw new ConnectException();
