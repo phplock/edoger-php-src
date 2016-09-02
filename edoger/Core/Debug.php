@@ -119,6 +119,13 @@ final class Debug
 	public static function bindLogger(Logger $logger)
 	{
 		self::$logger = $logger;
+		
+		if (!empty(self::$logCache)) {
+			foreach (self::$logCache as $value) {
+				$logger -> log($value[0], $value[1]);
+			}
+			self::$logCache = [];
+		}
 		return true;
 	}
 
@@ -182,11 +189,17 @@ final class Debug
 	 */
 	private static function callHook()
 	{
-		if (!Hook::call('shutdown')) {
-			self::writeLog(
-				self::parseExceptionLevel(Hook::getLastErrorCode()),
-				Hook::getLastErrorMessage()
-				);
+		static $called = false;
+
+		if (!$called) {
+			$called = true;
+
+			if (!Hook::call('shutdown')) {
+				self::writeLog(
+					self::parseExceptionLevel(Hook::getLastErrorCode()),
+					Hook::getLastErrorMessage()
+					);
+			}
 		}
 	}
 
@@ -216,24 +229,18 @@ final class Debug
 	 * @param  [type] $code [description]
 	 * @return [type]       [description]
 	 */
-	private static function parseExceptionLevel($code)
+	private static function parseExceptionLevel(int $code)
 	{
-		if (is_int($code)) {
-			if ($code < 5000000) {
-				return Logger::LEVEL_ERROR;
-			} elseif ($code < 6000000) {
-				return Logger::LEVEL_WARNING;
-			} elseif ($code < 7000000) {
-				return Logger::LEVEL_NOTICE;
-			} elseif ($code < 8000000) {
-				return Logger::LEVEL_INFO;
-			} elseif ($code < 9000000) {
-				return Logger::LEVEL_DEBUG;
-			} else {
-				return Logger::LEVEL_ALERT;
-			}
-		} elseif (is_string($code)) {
-			return Logger::LEVEL_CRITICAL;
+		if ($code < 5000000) {
+			return Logger::LEVEL_ERROR;
+		} elseif ($code < 6000000) {
+			return Logger::LEVEL_WARNING;
+		} elseif ($code < 7000000) {
+			return Logger::LEVEL_NOTICE;
+		} elseif ($code < 8000000) {
+			return Logger::LEVEL_INFO;
+		} elseif ($code < 9000000) {
+			return Logger::LEVEL_DEBUG;
 		} else {
 			return Logger::LEVEL_EMERGENCY;
 		}
@@ -274,8 +281,13 @@ final class Debug
 	 */
 	public static function _ExceptionHandler($e)
 	{
-		$level 	= self::parseExceptionLevel($e -> getCode());
-		$log 	= $e -> getMessage() . ' at ' . $e -> getFile() . ' line ' . $e -> getLine();
+		if ($e instanceof EdogerExceptionInterface) {
+			$level = self::parseExceptionLevel($e -> getCode());
+		} else {
+			$level = Logger::LEVEL_ERROR;
+		}
+		
+		$log = $e -> getMessage() . ' at ' . $e -> getFile() . ' line ' . $e -> getLine();
 
 		self::writeLog($level, $log);
 

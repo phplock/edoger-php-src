@@ -34,6 +34,7 @@ namespace Edoger\Core;
 
 use Error;
 use Exception;
+use Edoger\Interfaces\EdogerExceptionInterface;
 
 /**
  * =============================================================================
@@ -169,11 +170,15 @@ class Hook
 			try {
 				call_user_func_array($handler, $params);
 			} catch(Exception $e) {
-				self::$errorCode 	= $e -> getCode();
+				if ($e instanceof EdogerExceptionInterface) {
+					self::$errorCode = $e -> getCode();
+				} else {
+					self::$errorCode = 1;
+				}
 				self::$errorMessage = $e -> getMessage() . ' at ' . $e -> getFile() . ' line ' . $e -> getLine();
 				return false;
 			} catch(Error $e) {
-				self::$errorCode 	= $e -> getCode();
+				self::$errorCode 	= 2;
 				self::$errorMessage = $e -> getMessage() . ' at ' . $e -> getFile() . ' line ' . $e -> getLine();
 				return false;
 			}
