@@ -38,55 +38,55 @@ use Edoger\Interfaces\EdogerExceptionInterface;
 
 
 /**
- * ================================================================================
+ * =============================================================================
  * 系统错误和异常管理组件
  *
- * 这个组件用于捕获全局所有的错误和异常，同时提供友好的处理方式。这个组件依赖系统的
- * 日志记录器。
- * ================================================================================
+ * 这个组件用于捕获全局所有的错误和异常，同时提供友好的处理方式。这个组件依赖系
+ * 统的日志记录器。
+ * =============================================================================
  */
 final class Debug
 {
 	/**
-	 * ----------------------------------------------------------------------------
+	 * -------------------------------------------------------------------------
 	 * 核心对象的引用
-	 * ----------------------------------------------------------------------------
+	 * -------------------------------------------------------------------------
 	 *
 	 * @var Edoger\Core\Kernel
 	 */
 	private static $kernel;
 
 	/**
-	 * ----------------------------------------------------------------------------
+	 * -------------------------------------------------------------------------
 	 * 绑定的钩子程序，这些程序将在系统发生异常时被执行，通常用于处理默认的响应
-	 * ----------------------------------------------------------------------------
+	 * -------------------------------------------------------------------------
 	 *
 	 * @var array
 	 */
 	private static $hooks = [];
 
 	/**
-	 * ----------------------------------------------------------------------------
+	 * -------------------------------------------------------------------------
 	 * 绑定的日志记录器，如果没有绑定，捕获的错误将记录组件自身缓存
-	 * ----------------------------------------------------------------------------
+	 * -------------------------------------------------------------------------
 	 *
 	 * @var Edoger\Core\Log\Logger
 	 */
 	private static $logger = null;
 
 	/**
-	 * ----------------------------------------------------------------------------
+	 * -------------------------------------------------------------------------
 	 * 捕获的错误日志缓存，这在绑定日志记录器之后会自动写入日志
-	 * ----------------------------------------------------------------------------
+	 * -------------------------------------------------------------------------
 	 *
 	 * @var array
 	 */
 	private static $logCache = [];
 
 	/**
-	 * ----------------------------------------------------------------------------
+	 * -------------------------------------------------------------------------
 	 * PHP错误级别到日志级别的映射数组
-	 * ----------------------------------------------------------------------------
+	 * -------------------------------------------------------------------------
 	 *
 	 * @var array
 	 */
@@ -107,104 +107,143 @@ final class Debug
 		E_DEPRECATED        => Logger::LEVEL_NOTICE,
 		E_USER_DEPRECATED   => Logger::LEVEL_NOTICE
 	];
-	
-	/**
-	 * ----------------------------------------------------------------------------
-	 * 构造函数，绑定核心对象到组件内部，同时自动注册错误捕获程序
-	 * ----------------------------------------------------------------------------
-	 *
-	 * @param  Kernel 	$kernel 	核心对象的引用
-	 * @param  Logger 	$logger 	日志记录器实例
-	 * @return void
-	 */
-	public function __construct(Kernel &$kernel, Logger &$logger)
-	{
-		self::$kernel = &$kernel;
-		self::$logger = &$logger;
-		$this -> register();
-	}
 
 	/**
-	 * ----------------------------------------------------------------------------
-	 * 注册错误捕获处理程序
-	 * ----------------------------------------------------------------------------
-	 *
-	 * @return void
-	 */
-	private function register()
-	{
-		set_error_handler([$this, '_ErrorHandler']);
-		set_exception_handler([$this, '_ExceptionHandler']);
-		register_shutdown_function([$this, '_ShutdownHandler']);
-	}
-
-	/**
-	 * ----------------------------------------------------------------------------
-	 * 绑定响应输出的钩子程序到组件内部，这个钩子程序将在系统发生 ERROR 及以上级别
-	 * 的错误或异常时执行，执行完这个钩子程序，会立即完全退出系统。这个钩子程序必须
-	 * 是只能执行一次，因为这个程序可能会被系统调用多次
-	 * ----------------------------------------------------------------------------
+	 * -------------------------------------------------------------------------
+	 * [bindLogger description]
+	 * -------------------------------------------------------------------------
 	 * 
-	 * @param  Hook 	$hook 	钩子处理程序对象
-	 * @return void
+	 * @param  Logger $logger [description]
+	 * @return [type]         [description]
 	 */
-	public function bindHook(Hook $hook)
+	public static function bindLogger(Logger $logger)
 	{
-		self::$hooks[] = $hook;
+		self::$logger = $logger;
+		return true;
 	}
 
 	/**
-	 * ----------------------------------------------------------------------------
-	 * 执行所有的钩子程序，所有的钩子程序只会被执行一次
-	 * ----------------------------------------------------------------------------
+	 * -------------------------------------------------------------------------
+	 * [registerErrorHandler description]
+	 * -------------------------------------------------------------------------
 	 * 
-	 * @return void
+	 * @return [type] [description]
 	 */
-	private function runHook()
+	public static function registerErrorHandler()
 	{
-		static $isFinished = false;
-		if (!$isFinished) {
-			$isFinished = true;
-			if (!empty(self::$hooks)) {
-				foreach (self::$hooks as $hook) {
-					if (!$hook -> call()) {
-						break;
-					}
-				}
-			}
+		static $registered = false;
+		if (!$registered) {
+			$registered = true;
+			set_error_handler([__CLASS__, '_ErrorHandler']);
 		}
+		return $registered;
 	}
 
 	/**
-	 * ----------------------------------------------------------------------------
-	 * 处理系统捕获的错误，ERROR 及以上级别的错误都会转换成异常交由异常处理程序处理，
-	 * 异常处理程序会在处理完成后立即进行系统退出程序，这标示 ERROR 及以上级别的错
-	 * 误都会导致程序中断。
-	 * ----------------------------------------------------------------------------
+	 * -------------------------------------------------------------------------
+	 * [registerExceptionHandler description]
+	 * -------------------------------------------------------------------------
 	 * 
-	 * @param  string 	$message 	错误消息
-	 * @param  integer 	$level   	错误日志级别
-	 * @param  integer 	$code 		错误严重级别
-	 * @param  string 	$file    	发生错误的文件
-	 * @param  integer 	$line    	发生错误的行号
-	 * @return void
+	 * @return [type] [description]
 	 */
-	private function runHandler(string $message, int $level, int $code, string $file, int $line)
+	public static function registerExceptionHandler()
 	{
-		if ($level <= Logger::LEVEL_ERROR) {
-			$this -> _ExceptionHandler(
-				new ErrorException($message, $level, $code, $file, $line)
+		static $registered = false;
+		if (!$registered) {
+			$registered = true;
+			set_exception_handler([__CLASS__, '_ExceptionHandler']);
+		}
+		return $registered;
+	}
+
+	/**
+	 * -------------------------------------------------------------------------
+	 * [registerShutdownHandler description]
+	 * -------------------------------------------------------------------------
+	 * 
+	 * @return [type] [description]
+	 */
+	public static function registerShutdownHandler()
+	{
+		static $registered = false;
+		if (!$registered) {
+			$registered = true;
+			register_shutdown_function([__CLASS__, '_ShutdownHandler']);
+		}
+		return $registered;
+	}
+
+	/**
+	 * -------------------------------------------------------------------------
+	 * [callHook description]
+	 * -------------------------------------------------------------------------
+	 * 
+	 * @return [type] [description]
+	 */
+	private static function callHook()
+	{
+		if (!Hook::call('shutdown')) {
+			self::writeLog(
+				self::parseExceptionLevel(Hook::getLastErrorCode()),
+				Hook::getLastErrorMessage()
 				);
-		} else {
-			$message = "{$message} at {$file} line {$line}";
-			self::$logger -> log($level, $message);
 		}
 	}
 
 	/**
-	 * ----------------------------------------------------------------------------
+	 * -------------------------------------------------------------------------
+	 * [writeLog description]
+	 * -------------------------------------------------------------------------
+	 * 
+	 * @param  int    $level   [description]
+	 * @param  string $message [description]
+	 * @return [type]          [description]
+	 */
+	private static function writeLog(int $level, string $message)
+	{
+		if (self::$logger) {
+			self::$logger -> log($level, $message);
+		} else {
+			self::$logCache[] = [$level, $message];
+		}
+	}
+
+	/**
+	 * -------------------------------------------------------------------------
+	 * [parseExceptionLevel description]
+	 * -------------------------------------------------------------------------
+	 * 
+	 * @param  [type] $code [description]
+	 * @return [type]       [description]
+	 */
+	private static function parseExceptionLevel($code)
+	{
+		if (is_int($code)) {
+			if ($code < 5000000) {
+				return Logger::LEVEL_ERROR;
+			} elseif ($code < 6000000) {
+				return Logger::LEVEL_WARNING;
+			} elseif ($code < 7000000) {
+				return Logger::LEVEL_NOTICE;
+			} elseif ($code < 8000000) {
+				return Logger::LEVEL_INFO;
+			} elseif ($code < 9000000) {
+				return Logger::LEVEL_DEBUG;
+			} else {
+				return Logger::LEVEL_ALERT;
+			}
+		} elseif (is_string($code)) {
+			return Logger::LEVEL_CRITICAL;
+		} else {
+			return Logger::LEVEL_EMERGENCY;
+		}
+	}
+
+
+	/**
+	 * -------------------------------------------------------------------------
 	 * 错误处理程序，未知级别的错误将被识别成系统最高级别错误
-	 * ----------------------------------------------------------------------------
+	 * -------------------------------------------------------------------------
 	 * 
 	 * @param  integer 	$code 		错误的严重级别
 	 * @param  string 	$message 	错误描述
@@ -212,67 +251,60 @@ final class Debug
 	 * @param  integer 	$line    	发生错误的行号
 	 * @return void
 	 */
-	public function _ErrorHandler(int $code, string $message, string $file = '', int $line = 0)
+	public static function _ErrorHandler(int $code, string $message, string $file = '', int $line = 0)
 	{
-		$this -> runHandler(
-			$message,
-			self::$map[$code] ?? Logger::LEVEL_CRITICAL,
-			$code,
-			$file,
-			$line
-			);
+		$level 	= self::$map[$code] ?? Logger::LEVEL_CRITICAL;
+		$log 	= $message . ' at ' . $file . ' line ' . $line;
+
+		self::writeLog($level, $log);
+
+		if ($level >= Logger::LEVEL_ERROR) {
+			self::callHook();
+			exit(0);
+		}
 	}
 
 	/**
-	 * ----------------------------------------------------------------------------
+	 * -------------------------------------------------------------------------
 	 * 异常处理程序，异常的默认级别都是 ERROR，异常都会导致程序中断执行
-	 * ----------------------------------------------------------------------------
+	 * -------------------------------------------------------------------------
 	 * 
 	 * @param  Exception | Error 	$e 	异常对象
 	 * @return void
 	 */
-	public function _ExceptionHandler($e)
+	public static function _ExceptionHandler($e)
 	{
-		if ($e instanceof EdogerExceptionInterface) {
-			$level 		= $e -> getLevel();
-			$message 	= $e -> getLog();
-		} else {
-			$level 		= Logger::LEVEL_ERROR;
-			$message 	= "{$e -> getMessage()} at {$e -> getFile()} line {$e -> getLine()}";
+		$level 	= self::parseExceptionLevel($e -> getCode());
+		$log 	= $e -> getMessage() . ' at ' . $e -> getFile() . ' line ' . $e -> getLine();
+
+		self::writeLog($level, $log);
+
+		if ($level >= Logger::LEVEL_ERROR) {
+			self::callHook();
+			exit(0);
 		}
-
-		self::$logger -> log($level, $message);
-
-		//	执行绑定的钩子程序
-		$this -> runHook();
 	}
 
 	/**
-	 * ----------------------------------------------------------------------------
+	 * -------------------------------------------------------------------------
 	 * 致命错误处理程序
-	 * ----------------------------------------------------------------------------
+	 * -------------------------------------------------------------------------
 	 *
 	 * @return void
 	 */
-	public function _ShutdownHandler()
+	public static function _ShutdownHandler()
 	{
 		$error = error_get_last();
+
 		if ($error) {
-			
-			//	清除最后发生的错误，这是为了防止其他程序在全局注册的处理程序被多次
-			//	反复执行
 			error_clear_last();
 
-			$this -> runHandler(
-				$error['message'],
-				self::$map[$error['type']] ?? Logger::LEVEL_CRITICAL,
-				$error['type'],
-				$error['file'],
-				$error['line']
-				);
+			$level 	= self::$map[$error['type']] ?? Logger::LEVEL_CRITICAL;
+			$log 	= $error['message'] . ' at ' . $error['file'] . ' line ' . $error['line'];
+			
+			self::writeLog($level, $log);
 		}
 
-		//	执行绑定的钩子程序
-		$this -> runHook();
+		self::callHook();
 	}
 }
