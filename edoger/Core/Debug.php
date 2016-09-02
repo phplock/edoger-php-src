@@ -32,7 +32,6 @@
  */
 namespace Edoger\Core;
 
-use ErrorException;
 use Edoger\Core\Log\Logger;
 use Edoger\Interfaces\EdogerExceptionInterface;
 
@@ -47,24 +46,6 @@ use Edoger\Interfaces\EdogerExceptionInterface;
  */
 final class Debug
 {
-	/**
-	 * -------------------------------------------------------------------------
-	 * 核心对象的引用
-	 * -------------------------------------------------------------------------
-	 *
-	 * @var Edoger\Core\Kernel
-	 */
-	private static $kernel;
-
-	/**
-	 * -------------------------------------------------------------------------
-	 * 绑定的钩子程序，这些程序将在系统发生异常时被执行，通常用于处理默认的响应
-	 * -------------------------------------------------------------------------
-	 *
-	 * @var array
-	 */
-	private static $hooks = [];
-
 	/**
 	 * -------------------------------------------------------------------------
 	 * 绑定的日志记录器，如果没有绑定，捕获的错误将记录组件自身缓存
@@ -119,7 +100,7 @@ final class Debug
 	public static function bindLogger(Logger $logger)
 	{
 		self::$logger = $logger;
-		
+
 		if (!empty(self::$logCache)) {
 			foreach (self::$logCache as $value) {
 				$logger -> log($value[0], $value[1]);

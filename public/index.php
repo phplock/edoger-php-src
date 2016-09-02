@@ -45,7 +45,7 @@ require __DIR__ . '/../edoger/launcher.php';
  * 创建一个基本的应用程序实例
  * -----------------------------------------------------------------------------
  */
-$app = new Edoger\Core\Application(realpath(__DIR__ . '/../'));
+$app = new Edoger\Core\Application(realpath(__DIR__ . '/../application'));
 
 /**
  * -----------------------------------------------------------------------------

@@ -30,7 +30,9 @@
  |  Authors: QingShan Luo <shanshan.lqs@gmail.com>                             |
  +-----------------------------------------------------------------------------+
  */
-
+use Edoger\Core\Debug;
+use Edoger\Core\Log\Logger;
+use Edoger\Core\Config;
 /**
  * --------------------------------------------------------------------------------
  * The Edoger PHP Framework Root Directory.
@@ -80,3 +82,18 @@ function edoger()
 {
 	return Edoger\Core\Kernel::core();
 }
+
+
+
+
+
+Debug::registerErrorHandler();
+Debug::registerExceptionHandler();
+Debug::registerShutdownHandler();
+
+$config = new Config(EDOGER_ROOT . '/../config/edoger.php');
+
+
+$logger = new Logger('EDOGER');
+
+Debug::bindLogger($logger);
