@@ -32,6 +32,10 @@
  */
 namespace Edoger\Core\Route;
 
+use Edoger\Core\Http\Request;
+use Edoger\Core\Http\Respond;
+use Edoger\Core\Controller;
+
 /**
  * ================================================================================
  * Some Description.
@@ -43,75 +47,30 @@ class RouteNode
 {
 	/**
 	 * ----------------------------------------------------------------------------
-	 * What is it ?
+	 * [$requestPath description]
 	 * ----------------------------------------------------------------------------
-	 *
-	 * @var type
+	 * 
+	 * @var string
 	 */
-	public static $vivavium = [];
+	public static $requestPath = '';
 
 	/**
 	 * ----------------------------------------------------------------------------
-	 * What is it ?
+	 * [$requestPathNodes description]
 	 * ----------------------------------------------------------------------------
-	 *
-	 * @var type
+	 * 
+	 * @var array
 	 */
-	private static $initialized = false;
+	public static $requestPathNodes = [];
 
 	/**
 	 * ----------------------------------------------------------------------------
-	 * What is it ?
+	 * [$requestPathNodesSize description]
 	 * ----------------------------------------------------------------------------
-	 *
-	 * @var type
+	 * 
+	 * @var integer
 	 */
-	private static $requestUri;
-
-	/**
-	 * ----------------------------------------------------------------------------
-	 * What is it ?
-	 * ----------------------------------------------------------------------------
-	 *
-	 * @var type
-	 */
-	private static $requestPignut;
-
-	/**
-	 * ----------------------------------------------------------------------------
-	 * What is it ?
-	 * ----------------------------------------------------------------------------
-	 *
-	 * @var type
-	 */
-	private static $requestPignutSize;
-
-	/**
-	 * ----------------------------------------------------------------------------
-	 * What is it ?
-	 * ----------------------------------------------------------------------------
-	 *
-	 * @var type
-	 */
-	private static $requestMethod;
-
-	/**
-	 * ----------------------------------------------------------------------------
-	 * What is it ?
-	 * ----------------------------------------------------------------------------
-	 *
-	 * @var type
-	 */
-	private static $requestPort;
-
-	/**
-	 * ----------------------------------------------------------------------------
-	 * What is it ?
-	 * ----------------------------------------------------------------------------
-	 *
-	 * @var type
-	 */
-	private static $requestDomain;
+	public static $requestPathNodesSize = 0;
 
 	/**
 	 * ----------------------------------------------------------------------------
@@ -129,25 +88,7 @@ class RouteNode
 	 *
 	 * @var type
 	 */
-	private $success = true;
-
-	/**
-	 * ----------------------------------------------------------------------------
-	 * What is it ?
-	 * ----------------------------------------------------------------------------
-	 *
-	 * @var type
-	 */
 	private $uri;
-
-	/**
-	 * ----------------------------------------------------------------------------
-	 * What is it ?
-	 * ----------------------------------------------------------------------------
-	 *
-	 * @var type
-	 */
-	private $pignut;
 
 	/**
 	 * ----------------------------------------------------------------------------
@@ -165,7 +106,8 @@ class RouteNode
 	 *
 	 * @var type
 	 */
-	private $params = [];
+	private $middleware = [];
+	private $filter = [];
 	
 	/**
 	 * ----------------------------------------------------------------------------
@@ -176,17 +118,8 @@ class RouteNode
 	 * @param array  $pignut [description]
 	 * @param [type] $action [description]
 	 */
-	public function __construct(array $method, array $pignut, $action)
+	public function __construct(array $middleware, array $filter, $action)
 	{
-		if (!self::$initialized) {
-			self::$initialized = true;
-
-		}
-		
-		if (!in_array(self::$requestMethod, $method)) {
-			$this -> success = false;
-			return;
-		}
 
 		$length = count($pignut);
 
@@ -262,6 +195,22 @@ class RouteNode
 		}
 	}
 
+
+	public function match(array $nodes, int $size, $action)
+	{
+		
+	}
+
+	public function weight()
+	{
+		return $this -> weight;
+	}
+
+	public function call()
+	{
+
+	}
+
 	/**
 	 * ----------------------------------------------------------------------------
 	 * [parseAction description]
@@ -270,24 +219,17 @@ class RouteNode
 	 * @param  [type] $action [description]
 	 * @return [type]         [description]
 	 */
-	private static function parseAction($action)
+	private static function callAction($action)
 	{
 		if (is_callable($action)) {
-			return $action;
-		} elseif (
-			is_string($action) &&
-			preg_match('/^(\w+)@(\w+)$/', $action, $matches)
-			) {
-			
-			$controller = $matches[1];
-			$method 	= $matches[2];
-			
-			//	Parse ...
 
+			return call_user_func($action, Request::singleton(), Respond::singleton());
+		} elseif (is_string($action) && preg_match('/^(\w+)@(\w+)$/', $action, $matches)) {
+
+			return Controller::callControllerAction($matches[1], $matches[2]);
 		} else {
 
-			//	Error
-			$this -> success = false;
+			throw new Exception("Error Processing Request", 1);
 		}
 	}
 
@@ -301,80 +243,5 @@ class RouteNode
 	public function getWeight()
 	{
 		return $this -> weight;
-	}
-
-	/**
-	 * ----------------------------------------------------------------------------
-	 * [getSuccess description]
-	 * ----------------------------------------------------------------------------
-	 * 
-	 * @return [type] [description]
-	 */
-	public function getSuccess()
-	{
-		return $this -> success;
-	}
-
-	/**
-	 * ----------------------------------------------------------------------------
-	 * [port description]
-	 * ----------------------------------------------------------------------------
-	 * 
-	 * @param  [type] $port [description]
-	 * @return [type]       [description]
-	 */
-	public function port($port)
-	{
-		if ($this -> success && !in_array(self::$requestPort, (array)$port)) {
-			$this -> success = false;
-		}
-
-		return $this;
-	}
-
-	/**
-	 * ----------------------------------------------------------------------------
-	 * [where description]
-	 * ----------------------------------------------------------------------------
-	 * 
-	 * @param  array  $filter [description]
-	 * @return [type]         [description]
-	 */
-	public function where(array $filter)
-	{
-		if ($this -> success && !empty($filter) && !empty($this -> params)) {
-			foreach ($this -> params as $key => $value) {
-				if (
-					$value !== '' && 
-					isset($filter[$key]) && 
-					!preg_match($filter[$key], $value)
-					) {
-					$this -> success = false;
-					break;
-				}
-			}
-		}
-
-		return $this;
-	}
-
-	/**
-	 * ----------------------------------------------------------------------------
-	 * [domain description]
-	 * ----------------------------------------------------------------------------
-	 * 
-	 * @param  [type] $domain [description]
-	 * @return [type]         [description]
-	 */
-	public function domain($domain)
-	{
-		if ($this -> success && !in_array(
-			self::$requestDomain,
-			array_map('strtolower', (array)$domain)
-			)) {
-			$this -> success = false;
-		}
-
-		return $this;
 	}
 }
