@@ -51,15 +51,6 @@ final class Request
 	 * @var array
 	 */
 	private static $caches = [];
-
-	/**
-	 * -------------------------------------------------------------------------
-	 * 全局变量 $_SERVER 的访问管理器实例
-	 * -------------------------------------------------------------------------
-	 *
-	 * @var type
-	 */
-	private static $server;
 	
 	/**
 	 * -------------------------------------------------------------------------
@@ -283,7 +274,7 @@ final class Request
 	 * @param  string $protocol [description]
 	 * @return [type]           [description]
 	 */
-	public function baseUrl(string $protocol = '')
+	public function baseUrl()
 	{
 		if (!isset(self::$caches['baseUrl'])) {
 			self::$caches['baseUrl']
@@ -361,5 +352,17 @@ final class Request
 	public function postget(string $key, $def = null)
 	{
 		return $_POST[$key] ?? $_GET[$key] ?? $def;
+	}
+
+	/**
+	 * -------------------------------------------------------------------------
+	 * [route description]
+	 * -------------------------------------------------------------------------
+	 * 
+	 * @return [type] [description]
+	 */
+	public function route()
+	{
+
 	}
 }
