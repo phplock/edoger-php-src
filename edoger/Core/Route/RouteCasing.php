@@ -33,21 +33,64 @@
 namespace Edoger\Core\Route;
 
 /**
-* 
-*/
+ * ================================================================================
+ *
+ *
+ * ================================================================================
+ */
 final class RouteCasing
 {
 	private static $middleware 	= [];
 	private static $filter 		= [];
-	private static $action 		= null;
-	private static $route 		= '';
-	private static $isMatch 	= [];
+	private static $hook 		= null;
+	private static $isMatch 	= false;
 
+	/**
+	 * ----------------------------------------------------------------------------
+	 * [$domain description]
+	 * ----------------------------------------------------------------------------
+	 * 
+	 * @var [type]
+	 */
 	private static $domain;
+
+	/**
+	 * ----------------------------------------------------------------------------
+	 * [$port description]
+	 * ----------------------------------------------------------------------------
+	 * 
+	 * @var [type]
+	 */
 	private static $port;
+
+	/**
+	 * ----------------------------------------------------------------------------
+	 * [$scheme description]
+	 * ----------------------------------------------------------------------------
+	 * 
+	 * @var [type]
+	 */
 	private static $scheme;
+
+	/**
+	 * ----------------------------------------------------------------------------
+	 * [$xhr description]
+	 * ----------------------------------------------------------------------------
+	 * 
+	 * @var [type]
+	 */
 	private static $xhr;
 	
+	/**
+	 * ----------------------------------------------------------------------------
+	 * [__construct description]
+	 * ----------------------------------------------------------------------------
+	 * 
+	 * @param string $domain [description]
+	 * @param int    $port   [description]
+	 * @param string $scheme [description]
+	 * @param bool   $xhr    [description]
+	 */
 	public function __construct(string $domain, int $port, string $scheme, bool $xhr)
 	{
 		self::$domain 	= $domain;
@@ -56,6 +99,14 @@ final class RouteCasing
 		self::$xhr 		= $xhr;
 	}
 
+	/**
+	 * ----------------------------------------------------------------------------
+	 * [filter description]
+	 * ----------------------------------------------------------------------------
+	 * 
+	 * @param  array  $filter [description]
+	 * @return [type]         [description]
+	 */
 	public function filter(array $filter)
 	{
 		if (self::$isMatch && !empty($filter)) {
@@ -65,6 +116,14 @@ final class RouteCasing
 		return $this;
 	}
 
+	/**
+	 * ----------------------------------------------------------------------------
+	 * [scheme description]
+	 * ----------------------------------------------------------------------------
+	 * 
+	 * @param  string $scheme [description]
+	 * @return [type]         [description]
+	 */
 	public function scheme(string $scheme)
 	{
 		if (self::$isMatch && self::$scheme !== strtolower($scheme)) {
@@ -74,6 +133,14 @@ final class RouteCasing
 		return $this;
 	}
 
+	/**
+	 * ----------------------------------------------------------------------------
+	 * [domain description]
+	 * ----------------------------------------------------------------------------
+	 * 
+	 * @param  string $domain [description]
+	 * @return [type]         [description]
+	 */
 	public function domain(string $domain)
 	{
 		if (self::$isMatch && self::$domain !== strtolower($domain)) {
@@ -83,6 +150,14 @@ final class RouteCasing
 		return $this;
 	}
 
+	/**
+	 * ----------------------------------------------------------------------------
+	 * [domains description]
+	 * ----------------------------------------------------------------------------
+	 * 
+	 * @param  array  $domains [description]
+	 * @return [type]          [description]
+	 */
 	public function domains(array $domains)
 	{
 		if (self::$isMatch && !empty($domains)) {
@@ -97,6 +172,13 @@ final class RouteCasing
 		return $this;
 	}
 
+	/**
+	 * ----------------------------------------------------------------------------
+	 * [xhrOnly description]
+	 * ----------------------------------------------------------------------------
+	 * 
+	 * @return [type] [description]
+	 */
 	public function xhrOnly()
 	{
 		if (self::$isMatch && !self::$xhr) {
@@ -106,6 +188,14 @@ final class RouteCasing
 		return $this;
 	}
 
+	/**
+	 * ----------------------------------------------------------------------------
+	 * [middleware description]
+	 * ----------------------------------------------------------------------------
+	 * 
+	 * @param  array  $middleware [description]
+	 * @return [type]             [description]
+	 */
 	public function middleware(array $middleware)
 	{
 		if (self::$isMatch) {
@@ -113,5 +203,20 @@ final class RouteCasing
 		}
 
 		return $this;
+	}
+
+	/**
+	 * ----------------------------------------------------------------------------
+	 * [hook description]
+	 * ----------------------------------------------------------------------------
+	 * 
+	 * @param  callable $hook [description]
+	 * @return [type]         [description]
+	 */
+	public function hook(callable $hook)
+	{
+		if (self::$isMatch) {
+			self::$hook = $hook;
+		}
 	}
 }

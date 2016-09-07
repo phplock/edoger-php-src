@@ -65,7 +65,7 @@ class RouteMiddleware
 	 * 
 	 * @param string $namespace [description]
 	 */
-	public function __construct(string $namespace)
+	public static function setMiddlewareNamespace(string $namespace)
 	{
 		self::$middlewareNamespace = $namespace;
 	}
@@ -101,7 +101,7 @@ class RouteMiddleware
 	public static function run(string $name)
 	{
 		return (bool)self::getMiddlewareInstance($name) -> handle(
-			Routing::getRouteManager()
+			Routing::getManager()
 			);
 	}
 }
