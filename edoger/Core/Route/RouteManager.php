@@ -30,106 +30,106 @@
  |  Authors: QingShan Luo <shanshan.lqs@gmail.com>                             |
  +-----------------------------------------------------------------------------+
  */
-namespace Edoger\Core;
+namespace Edoger\Core\Route;
 
-use Error;
-use Exception;
-use Edoger\Interfaces\EdogerExceptionInterface;
 
 /**
  * =============================================================================
  *
  * =============================================================================
  */
-class Hook
+final class RouteManager
 {
 	/**
 	 * -------------------------------------------------------------------------
-	 * [$hooks description]
+	 * [$params description]
 	 * -------------------------------------------------------------------------
 	 * 
-	 * @var array
+	 * @var [type]
 	 */
-	private static $hooks = [];
+	private static $params;
 
 	/**
 	 * -------------------------------------------------------------------------
-	 * [$errorCode description]
+	 * [$uri description]
 	 * -------------------------------------------------------------------------
 	 * 
-	 * @var integer
+	 * @var [type]
 	 */
-	private static $errorCode 		= 0;
+	private static $uri;
 
 	/**
 	 * -------------------------------------------------------------------------
-	 * [$errorMessage description]
+	 * [$nodes description]
 	 * -------------------------------------------------------------------------
 	 * 
-	 * @var string
+	 * @var [type]
 	 */
-	private static $errorMessage 	= '';
+	private static $nodes;
 
 	/**
 	 * -------------------------------------------------------------------------
-	 * [create description]
+	 * [$size description]
 	 * -------------------------------------------------------------------------
 	 * 
-	 * @param  string       $name  [description]
-	 * @param  callable     $hook  [description]
-	 * @param  bool|boolean $cover [description]
-	 * @return [type]              [description]
+	 * @var [type]
 	 */
-	public static function create(string $name, callable $hook, bool $cover = true)
+	private static $size;
+
+	/**
+	 * -------------------------------------------------------------------------
+	 * [$shared description]
+	 * -------------------------------------------------------------------------
+	 * 
+	 * @var [type]
+	 */
+	private static $shared;
+
+	/**
+	 * -------------------------------------------------------------------------
+	 * [param description]
+	 * -------------------------------------------------------------------------
+	 * 
+	 * @param  string $key [description]
+	 * @param  [type] $def [description]
+	 * @return [type]      [description]
+	 */
+	public function param(string $key, $def = null)
 	{
-		$name = strtolower($name);
-
-		if ($cover || !isset(self::$hooks[$name])) {
-			self::$hooks[$name] = [$hook, 'always'];
-			return true;
-		} else {
-			return false;
-		}
+		return self::$params[$key] ?? $def;
 	}
 
 	/**
 	 * -------------------------------------------------------------------------
-	 * [createOnce description]
+	 * [get description]
 	 * -------------------------------------------------------------------------
 	 * 
-	 * @param  string       $name  [description]
-	 * @param  callable     $hook  [description]
-	 * @param  bool|boolean $cover [description]
-	 * @return [type]              [description]
+	 * @param  string $key [description]
+	 * @param  [type] $def [description]
+	 * @return [type]      [description]
 	 */
-	public static function createOnce(string $name, callable $hook, bool $cover = true)
+	public function get(string $key, $def = null)
 	{
-		$name = strtolower($name);
-
-		if ($cover || !isset(self::$hooks[$name])) {
-			self::$hooks[$name] = [$hook, 'once'];
-			return true;
-		} else {
-			return false;
-		}
+		return self::$shared[$key] ?? $def;
 	}
 
 	/**
 	 * -------------------------------------------------------------------------
-	 * [remove description]
+	 * [set description]
 	 * -------------------------------------------------------------------------
 	 * 
-	 * @param  string $name [description]
-	 * @return [type]       [description]
+	 * @param string       $key   [description]
+	 * @param [type]       $value [description]
+	 * @param bool|boolean $cover [description]
 	 */
-	public static function remove(string $name)
+	public function set(string $key, $value, bool $cover = true)
 	{
-		$name = strtolower($name);
-
-		if (isset(self::$hooks[$name])) {
-			unset(self::$hooks[$name]);
+		if ($cover || !isset(self::$shared[$key])) {
+			self::$shared[$key] = $value;
+			return true;
+		} else {
+			return false;
 		}
-		return true;
 	}
 
 	/**
@@ -137,79 +137,145 @@ class Hook
 	 * [exists description]
 	 * -------------------------------------------------------------------------
 	 * 
-	 * @param  string $name [description]
-	 * @return [type]       [description]
+	 * @param  string $key [description]
+	 * @return [type]      [description]
 	 */
-	public static function exists(string $name)
+	public function exists(string $key)
 	{
-		return isset(self::$hooks[strtolower($name)]);
+		return isset(self::$shared[$key]);
 	}
 
 	/**
 	 * -------------------------------------------------------------------------
-	 * [call description]
+	 * [equal description]
 	 * -------------------------------------------------------------------------
 	 * 
-	 * @param  string $name   [description]
-	 * @param  array  $params [description]
+	 * @param  string $key   [description]
+	 * @param  [type] $value [description]
+	 * @return [type]        [description]
+	 */
+	public function equal(string $key, $value)
+	{
+		return $this -> get($key) === $value;
+	}
+
+	/**
+	 * -------------------------------------------------------------------------
+	 * [count description]
+	 * -------------------------------------------------------------------------
+	 * 
+	 * @return [type] [description]
+	 */
+	public function count()
+	{
+		return count(self::$shared);
+	}
+
+	/**
+	 * -------------------------------------------------------------------------
+	 * [replace description]
+	 * -------------------------------------------------------------------------
+	 * 
+	 * @param  array  $shared [description]
 	 * @return [type]         [description]
 	 */
-	public function call(string $name, array $params = [])
+	public function replace(array $shared)
 	{
-		$name = strtolower($name);
+		self::$shared = $shared;
+		return true;
+	}
 
-		self::$errorCode 	= 0;
-		self::$errorMessage = '';
-
-		if (isset(self::$hooks[$name])) {
-			$handler = self::$hooks[$name][0];
-			if (self::$hooks[$name][1] === 'once') {
-				unset(self::$hooks[$name]);
-			}
-
-			try {
-				call_user_func_array($handler, $params);
-			} catch(Exception $e) {
-				if ($e instanceof EdogerExceptionInterface) {
-					self::$errorCode = $e -> getCode();
-				} else {
-					self::$errorCode = 1;
-				}
-				self::$errorMessage = $e -> getMessage() . ' at ' . $e -> getFile() . ' line ' . $e -> getLine();
-				return false;
-			} catch(Error $e) {
-				self::$errorCode 	= 2;
-				self::$errorMessage = $e -> getMessage() . ' at ' . $e -> getFile() . ' line ' . $e -> getLine();
-				return false;
-			}
+	/**
+	 * -------------------------------------------------------------------------
+	 * [remove description]
+	 * -------------------------------------------------------------------------
+	 * 
+	 * @param  string $key [description]
+	 * @return [type]      [description]
+	 */
+	public function remove(string $key)
+	{
+		if (isset(self::$shared[$key])) {
+			unset(self::$shared[$key]);
 		}
 		return true;
 	}
 
 	/**
 	 * -------------------------------------------------------------------------
-	 * [appendParam description]
+	 * [removeAll description]
 	 * -------------------------------------------------------------------------
 	 * 
-	 * @param  [type]      $param [description]
-	 * @param  int|integer $index [description]
-	 * @return [type]             [description]
+	 * @return [type] [description]
 	 */
-	public static function getLastErrorCode()
+	public function removeAll()
 	{
-		return self::$errorCode;
+		self::$shared = [];
+		return true;
 	}
 
 	/**
 	 * -------------------------------------------------------------------------
-	 * [removeParam description]
+	 * [isEmpty description]
 	 * -------------------------------------------------------------------------
 	 * 
-	 * @param  integer $index [description]
-	 * @return [type]         [description]
+	 * @return boolean [description]
 	 */
-	public static function getLastErrorMessage()
+	public function isEmpty()
 	{
-		return self::$errorMessage;
+		return empty(self::$shared);
+	}
+
+	/**
+	 * -------------------------------------------------------------------------
+	 * [uri description]
+	 * -------------------------------------------------------------------------
+	 * 
+	 * @return [type] [description]
+	 */
+	public function uri()
+	{
+		return self::$uri;
+	}
+
+	/**
+	 * -------------------------------------------------------------------------
+	 * [nodes description]
+	 * -------------------------------------------------------------------------
+	 * 
+	 * @return [type] [description]
+	 */
+	public function nodes()
+	{
+		return self::$nodes;
+	}
+
+	/**
+	 * -------------------------------------------------------------------------
+	 * [node description]
+	 * -------------------------------------------------------------------------
+	 * 
+	 * @param  int    $index [description]
+	 * @return [type]        [description]
+	 */
+	public function node(int $index, $def = null)
+	{
+		if ($index >= 0) {
+			return self::$nodes[$index] ?? $def;
+		} else {
+			return self::$nodes[self::$size + $index] ?? $def;
+		}
+	}
+
+	/**
+	 * -------------------------------------------------------------------------
+	 * [size description]
+	 * -------------------------------------------------------------------------
+	 * 
+	 * @return [type] [description]
+	 */
+	public function size()
+	{
+		return self::$size;
 	}
 }

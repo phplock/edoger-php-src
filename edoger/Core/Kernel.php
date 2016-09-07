@@ -261,7 +261,7 @@ final class Kernel
 	 *
 	 * @return Edoger\Core\Application
 	 */
-	public function app()
+	public static function app()
 	{
 		return self::$application;
 	}
@@ -297,7 +297,7 @@ final class Kernel
 	 *
 	 * @return Edoger\Core\Http\Request
 	 */
-	public function request()
+	public static function request()
 	{
 		return self::$request;
 	}
@@ -309,7 +309,7 @@ final class Kernel
 	 *
 	 * @return Edoger\Core\Http\Respond
 	 */
-	public function respond()
+	public static function respond()
 	{
 		return self::$respond;
 	}
@@ -321,7 +321,7 @@ final class Kernel
 	 * 
 	 * @return Edoger\Core\Library
 	 */
-	public function library()
+	public static function library()
 	{
 		static $library = null;
 

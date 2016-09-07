@@ -30,186 +30,218 @@
  |  Authors: QingShan Luo <shanshan.lqs@gmail.com>                             |
  +-----------------------------------------------------------------------------+
  */
-namespace Edoger\Core;
+namespace Edoger\Core\Route;
 
-use Error;
-use Exception;
-use Edoger\Interfaces\EdogerExceptionInterface;
+use Edoger\Core\Http\Request;
+use Edoger\Core\Http\Respond;
+use Edoger\Core\Controller;
 
 /**
  * =============================================================================
+ * Some Description.
  *
+ * 
  * =============================================================================
  */
-class Hook
+class RouteNode
 {
 	/**
 	 * -------------------------------------------------------------------------
-	 * [$hooks description]
-	 * -------------------------------------------------------------------------
-	 * 
-	 * @var array
-	 */
-	private static $hooks = [];
-
-	/**
-	 * -------------------------------------------------------------------------
-	 * [$errorCode description]
-	 * -------------------------------------------------------------------------
-	 * 
-	 * @var integer
-	 */
-	private static $errorCode 		= 0;
-
-	/**
-	 * -------------------------------------------------------------------------
-	 * [$errorMessage description]
+	 * [$requestPath description]
 	 * -------------------------------------------------------------------------
 	 * 
 	 * @var string
 	 */
-	private static $errorMessage 	= '';
+	public static $requestPath = '';
 
 	/**
 	 * -------------------------------------------------------------------------
-	 * [create description]
+	 * [$requestPathNodes description]
 	 * -------------------------------------------------------------------------
 	 * 
-	 * @param  string       $name  [description]
-	 * @param  callable     $hook  [description]
-	 * @param  bool|boolean $cover [description]
-	 * @return [type]              [description]
+	 * @var array
 	 */
-	public static function create(string $name, callable $hook, bool $cover = true)
-	{
-		$name = strtolower($name);
+	public static $requestPathNodes = [];
 
-		if ($cover || !isset(self::$hooks[$name])) {
-			self::$hooks[$name] = [$hook, 'always'];
-			return true;
-		} else {
-			return false;
+	/**
+	 * -------------------------------------------------------------------------
+	 * [$requestPathNodesSize description]
+	 * -------------------------------------------------------------------------
+	 * 
+	 * @var integer
+	 */
+	public static $requestPathNodesSize = 0;
+
+	/**
+	 * -------------------------------------------------------------------------
+	 * What is it ?
+	 * -------------------------------------------------------------------------
+	 *
+	 * @var type
+	 */
+	private $weight = 0;
+
+	/**
+	 * -------------------------------------------------------------------------
+	 * What is it ?
+	 * -------------------------------------------------------------------------
+	 *
+	 * @var type
+	 */
+	private $uri;
+
+	/**
+	 * -------------------------------------------------------------------------
+	 * What is it ?
+	 * -------------------------------------------------------------------------
+	 *
+	 * @var type
+	 */
+	private $action;
+
+	/**
+	 * -------------------------------------------------------------------------
+	 * What is it ?
+	 * -------------------------------------------------------------------------
+	 *
+	 * @var type
+	 */
+	private $middleware = [];
+	private $filter = [];
+	
+	/**
+	 * -------------------------------------------------------------------------
+	 * [__construct description]
+	 * -------------------------------------------------------------------------
+	 * 
+	 * @param array  $method [description]
+	 * @param array  $pignut [description]
+	 * @param [type] $action [description]
+	 */
+	public function __construct(array $middleware, array $filter, $action)
+	{
+
+		$length = count($pignut);
+
+		if ($length < self::$requestPignutSize) {
+			$this -> success = false;
+			return;
 		}
-	}
 
-	/**
-	 * -------------------------------------------------------------------------
-	 * [createOnce description]
-	 * -------------------------------------------------------------------------
-	 * 
-	 * @param  string       $name  [description]
-	 * @param  callable     $hook  [description]
-	 * @param  bool|boolean $cover [description]
-	 * @return [type]              [description]
-	 */
-	public static function createOnce(string $name, callable $hook, bool $cover = true)
-	{
-		$name = strtolower($name);
+		$uri = '/' . implode('/', $pignut);
 
-		if ($cover || !isset(self::$hooks[$name])) {
-			self::$hooks[$name] = [$hook, 'once'];
-			return true;
-		} else {
-			return false;
+		if ($uri === self::$requestUri) {
+			$this -> weight = 99999999.0;
+			$this -> uri 	= $uri;
+			$this -> pignut = $pignut;
+
+			$this -> action = self::parseAction($action);
+
+			self::$vivavium[] = &$this;
+			return;
 		}
-	}
 
-	/**
-	 * -------------------------------------------------------------------------
-	 * [remove description]
-	 * -------------------------------------------------------------------------
-	 * 
-	 * @param  string $name [description]
-	 * @return [type]       [description]
-	 */
-	public static function remove(string $name)
-	{
-		$name = strtolower($name);
-
-		if (isset(self::$hooks[$name])) {
-			unset(self::$hooks[$name]);
+		if (!preg_match('/\:/', $uri)) {
+			$this -> success = false;
+			return;
 		}
-		return true;
-	}
 
-	/**
-	 * -------------------------------------------------------------------------
-	 * [exists description]
-	 * -------------------------------------------------------------------------
-	 * 
-	 * @param  string $name [description]
-	 * @return [type]       [description]
-	 */
-	public static function exists(string $name)
-	{
-		return isset(self::$hooks[strtolower($name)]);
-	}
+		$patterns 		= [];
+		$keys 			= [];
+		$arithmometer 	= [0, 0, 0];
 
-	/**
-	 * -------------------------------------------------------------------------
-	 * [call description]
-	 * -------------------------------------------------------------------------
-	 * 
-	 * @param  string $name   [description]
-	 * @param  array  $params [description]
-	 * @return [type]         [description]
-	 */
-	public function call(string $name, array $params = [])
-	{
-		$name = strtolower($name);
-
-		self::$errorCode 	= 0;
-		self::$errorMessage = '';
-
-		if (isset(self::$hooks[$name])) {
-			$handler = self::$hooks[$name][0];
-			if (self::$hooks[$name][1] === 'once') {
-				unset(self::$hooks[$name]);
-			}
-
-			try {
-				call_user_func_array($handler, $params);
-			} catch(Exception $e) {
-				if ($e instanceof EdogerExceptionInterface) {
-					self::$errorCode = $e -> getCode();
+		foreach ($pignut as $millet) {
+			if (preg_match('/^\:(\w+)(\??)$/', $millet, $matches)) {
+				if ($matches[2]) {
+					$patterns[] = '([\w\-]+)';
+					$arithmometer[0]++;
 				} else {
-					self::$errorCode = 1;
+					$patterns[] = '([\w\-]*)';
+					$arithmometer[1]++;
 				}
-				self::$errorMessage = $e -> getMessage() . ' at ' . $e -> getFile() . ' line ' . $e -> getLine();
-				return false;
-			} catch(Error $e) {
-				self::$errorCode 	= 2;
-				self::$errorMessage = $e -> getMessage() . ' at ' . $e -> getFile() . ' line ' . $e -> getLine();
-				return false;
+				$keys[] = $matches[1];
+			} else {
+				$patterns[] = preg_quote($millet);
+				$arithmometer[2]++;
 			}
 		}
-		return true;
+
+		$pattern = '/^' . implode('\/', $patterns) . '$/';
+		$subject = implode('/', array_pad(self::$requestPignut, $length, ''));
+
+		if (preg_match($pattern, $subject, $matches)) {
+			$weight = 0.0;
+
+			$weight += $arithmometer[0] * 10;
+			$weight += $arithmometer[1] * 100;
+			$weight += $arithmometer[2] * 1000;
+
+			$sum = array_sum($arithmometer);
+
+			$weight += $arithmometer[0] / $sum * 1000;
+			$weight += $arithmometer[1] / $sum * 10000;
+			$weight += $arithmometer[2] / $sum * 100000;
+
+			$this -> weight = $weight;
+			$this -> uri 	= $uri;
+			$this -> pignut = $pignut;
+			$this -> params = array_combine($keys, array_slice($matches, 1));
+
+			$this -> action = self::parseAction($action);
+
+			self::$vivavium[] = &$this;
+		} else {
+			$this -> success = false;
+		}
 	}
 
-	/**
-	 * -------------------------------------------------------------------------
-	 * [appendParam description]
-	 * -------------------------------------------------------------------------
-	 * 
-	 * @param  [type]      $param [description]
-	 * @param  int|integer $index [description]
-	 * @return [type]             [description]
-	 */
-	public static function getLastErrorCode()
+
+	public function match(array $nodes, int $size, $action)
 	{
-		return self::$errorCode;
+		
+	}
+
+	public function weight()
+	{
+		return $this -> weight;
+	}
+
+	public function call()
+	{
+
 	}
 
 	/**
 	 * -------------------------------------------------------------------------
-	 * [removeParam description]
+	 * [parseAction description]
 	 * -------------------------------------------------------------------------
 	 * 
-	 * @param  integer $index [description]
+	 * @param  [type] $action [description]
 	 * @return [type]         [description]
 	 */
-	public static function getLastErrorMessage()
+	private static function callAction($action)
 	{
-		return self::$errorMessage;
+		if (is_callable($action)) {
+
+			return call_user_func($action, Request::singleton(), Respond::singleton());
+		} elseif (is_string($action) && preg_match('/^(\w+)@(\w+)$/', $action, $matches)) {
+
+			return Controller::callControllerAction($matches[1], $matches[2]);
+		} else {
+
+			throw new Exception("Error Processing Request", 1);
+		}
+	}
+
+	/**
+	 * -------------------------------------------------------------------------
+	 * [getWeight description]
+	 * -------------------------------------------------------------------------
+	 * 
+	 * @return [type] [description]
+	 */
+	public function getWeight()
+	{
+		return $this -> weight;
 	}
 }

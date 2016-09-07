@@ -30,43 +30,78 @@
  |  Authors: QingShan Luo <shanshan.lqs@gmail.com>                             |
  +-----------------------------------------------------------------------------+
  */
-class A {private static $a = 0; public function show(){echo self::$a . '<br />';}}
-class B {public static $m = 1; public function __construct($o){
-	$m = &self::$m;
-	(function() use (&$m){self::$a = &$m;}) -> call($o);
-}}
-$o = new A();
-$o->show();
-new B($o);
-$o->show();
-B::$m = 100;
-$o->show();
-die;
-/**
- * -----------------------------------------------------------------------------
- * 载入框架启动脚本文件
- * -----------------------------------------------------------------------------
- */
-require __DIR__ . '/../edoger/launcher.php';
+namespace Edoger\Core\Route;
 
 
 /**
- * -----------------------------------------------------------------------------
- * 创建一个基本的应用程序实例
- * -----------------------------------------------------------------------------
+ * =============================================================================
+ *
+ * =============================================================================
  */
-$app = new Edoger\Core\Application(realpath(__DIR__ . '/../application'));
+class RouteMiddleware
+{
+	/**
+	 * -------------------------------------------------------------------------
+	 * [$middlewareList description]
+	 * -------------------------------------------------------------------------
+	 * 
+	 * @var array
+	 */
+	private static $middlewareList = [];
 
-/**
- * -----------------------------------------------------------------------------
- * 对应用程序实例进行扩展、封装以及必要的准备工作
- * -----------------------------------------------------------------------------
- */
-$app -> make(Edoger\Core\Kernel::core());
+	/**
+	 * -------------------------------------------------------------------------
+	 * [$middlewareNamespace description]
+	 * -------------------------------------------------------------------------
+	 * 
+	 * @var string
+	 */
+	private static $middlewareNamespace = '';
+	
+	/**
+	 * -------------------------------------------------------------------------
+	 * [__construct description]
+	 * -------------------------------------------------------------------------
+	 * 
+	 * @param string $namespace [description]
+	 */
+	public static function setMiddlewareNamespace(string $namespace)
+	{
+		self::$middlewareNamespace = $namespace;
+	}
 
-/**
- * -----------------------------------------------------------------------------
- * 运行应用程序
- * -----------------------------------------------------------------------------
- */
-$app -> run();
+	/**
+	 * -------------------------------------------------------------------------
+	 * [getMiddlewareInstance description]
+	 * -------------------------------------------------------------------------
+	 * 
+	 * @param  string $name [description]
+	 * @return [type]       [description]
+	 */
+	private static function getMiddlewareInstance(string $name)
+	{
+		$className 	= self::$middlewareNamespace . '\\' . $name;
+		$key 		= md5($className);
+
+		if (!isset(self::$middlewareList[$key])) {
+			self::$middlewareList[$key] = new $className();
+		}
+
+		return self::$middlewareList[$key];
+	}
+
+	/**
+	 * -------------------------------------------------------------------------
+	 * [run description]
+	 * -------------------------------------------------------------------------
+	 * 
+	 * @param  string $name [description]
+	 * @return [type]       [description]
+	 */
+	public static function run(string $name)
+	{
+		return (bool)self::getMiddlewareInstance($name) -> handle(
+			Routing::getManager()
+			);
+	}
+}
