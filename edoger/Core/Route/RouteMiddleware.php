@@ -34,13 +34,74 @@ namespace Edoger\Core\Route;
 
 
 /**
- * 
+ * =============================================================================
+ *
+ * =============================================================================
  */
 class RouteMiddleware
 {
+	/**
+	 * -------------------------------------------------------------------------
+	 * [$middlewareList description]
+	 * -------------------------------------------------------------------------
+	 * 
+	 * @var array
+	 */
+	private static $middlewareList = [];
+
+	/**
+	 * -------------------------------------------------------------------------
+	 * [$middlewareNamespace description]
+	 * -------------------------------------------------------------------------
+	 * 
+	 * @var string
+	 */
+	private static $middlewareNamespace = '';
 	
-	public function __construct()
+	/**
+	 * -------------------------------------------------------------------------
+	 * [__construct description]
+	 * -------------------------------------------------------------------------
+	 * 
+	 * @param string $namespace [description]
+	 */
+	public function __construct(string $namespace)
 	{
-		# code...
+		self::$middlewareNamespace = $namespace;
+	}
+
+	/**
+	 * -------------------------------------------------------------------------
+	 * [getMiddlewareInstance description]
+	 * -------------------------------------------------------------------------
+	 * 
+	 * @param  string $name [description]
+	 * @return [type]       [description]
+	 */
+	private static function getMiddlewareInstance(string $name)
+	{
+		$className 	= self::$middlewareNamespace . '\\' . $name;
+		$key 		= md5($className);
+
+		if (!isset(self::$middlewareList[$key])) {
+			self::$middlewareList[$key] = new $className();
+		}
+
+		return self::$middlewareList[$key];
+	}
+
+	/**
+	 * -------------------------------------------------------------------------
+	 * [run description]
+	 * -------------------------------------------------------------------------
+	 * 
+	 * @param  string $name [description]
+	 * @return [type]       [description]
+	 */
+	public static function run(string $name)
+	{
+		return (bool)self::getMiddlewareInstance($name) -> handle(
+			Routing::getRouteManager()
+			);
 	}
 }

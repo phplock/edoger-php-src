@@ -30,43 +30,88 @@
  |  Authors: QingShan Luo <shanshan.lqs@gmail.com>                             |
  +-----------------------------------------------------------------------------+
  */
-class A {private static $a = 0; public function show(){echo self::$a . '<br />';}}
-class B {public static $m = 1; public function __construct($o){
-	$m = &self::$m;
-	(function() use (&$m){self::$a = &$m;}) -> call($o);
-}}
-$o = new A();
-$o->show();
-new B($o);
-$o->show();
-B::$m = 100;
-$o->show();
-die;
-/**
- * -----------------------------------------------------------------------------
- * 载入框架启动脚本文件
- * -----------------------------------------------------------------------------
- */
-require __DIR__ . '/../edoger/launcher.php';
-
+namespace Edoger\Core\Route;
 
 /**
- * -----------------------------------------------------------------------------
- * 创建一个基本的应用程序实例
- * -----------------------------------------------------------------------------
- */
-$app = new Edoger\Core\Application(realpath(__DIR__ . '/../application'));
+* 
+*/
+final class RouteCasing
+{
+	private static $middleware 	= [];
+	private static $filter 		= [];
+	private static $action 		= null;
+	private static $route 		= '';
+	private static $isMatch 	= [];
 
-/**
- * -----------------------------------------------------------------------------
- * 对应用程序实例进行扩展、封装以及必要的准备工作
- * -----------------------------------------------------------------------------
- */
-Edoger\Core\Kernel::core() -> make($app);
+	private static $domain;
+	private static $port;
+	private static $scheme;
+	private static $xhr;
+	
+	public function __construct(string $domain, int $port, string $scheme, bool $xhr)
+	{
+		self::$domain 	= $domain;
+		self::$port 	= $port;
+		self::$scheme 	= $scheme;
+		self::$xhr 		= $xhr;
+	}
 
-/**
- * -----------------------------------------------------------------------------
- * 运行应用程序
- * -----------------------------------------------------------------------------
- */
-$app -> run();
+	public function filter(array $filter)
+	{
+		if (self::$isMatch && !empty($filter)) {
+			self::$filter = $filter;
+		}
+
+		return $this;
+	}
+
+	public function scheme(string $scheme)
+	{
+		if (self::$isMatch && self::$scheme !== strtolower($scheme)) {
+			self::$isMatch = false;
+		}
+
+		return $this;
+	}
+
+	public function domain(string $domain)
+	{
+		if (self::$isMatch && self::$domain !== strtolower($domain)) {
+			self::$isMatch = false;
+		}
+
+		return $this;
+	}
+
+	public function domains(array $domains)
+	{
+		if (self::$isMatch && !empty($domains)) {
+			foreach ($domains as $d) {
+				if (self::$domain !== strtolower($d)) {
+					self::$isMatch = false;
+					break;
+				}
+			}
+		}
+
+		return $this;
+	}
+
+	public function xhrOnly()
+	{
+		if (self::$isMatch && !self::$xhr) {
+			self::$isMatch = false;
+		}
+
+		return $this;
+	}
+
+	public function middleware(array $middleware)
+	{
+		if (self::$isMatch) {
+			self::$middleware = $middleware;
+		}
+
+		return $this;
+	}
+}

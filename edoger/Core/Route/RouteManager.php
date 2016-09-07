@@ -58,23 +58,45 @@ final class RouteManager
 	 */
 	private static $uri;
 
-	private static $nodes;
-	private static $size;
-	
 	/**
 	 * -------------------------------------------------------------------------
-	 * [__construct description]
+	 * [$nodes description]
 	 * -------------------------------------------------------------------------
 	 * 
-	 * @param array  &$params [description]
-	 * @param string &$uri    [description]
+	 * @var [type]
 	 */
-	public function __construct(array &$params, string &$uri, array &$nodes, int &$size)
+	private static $nodes;
+
+	/**
+	 * -------------------------------------------------------------------------
+	 * [$size description]
+	 * -------------------------------------------------------------------------
+	 * 
+	 * @var [type]
+	 */
+	private static $size;
+
+	/**
+	 * -------------------------------------------------------------------------
+	 * [$shared description]
+	 * -------------------------------------------------------------------------
+	 * 
+	 * @var [type]
+	 */
+	private static $shared;
+
+	/**
+	 * -------------------------------------------------------------------------
+	 * [param description]
+	 * -------------------------------------------------------------------------
+	 * 
+	 * @param  string $key [description]
+	 * @param  [type] $def [description]
+	 * @return [type]      [description]
+	 */
+	public function param(string $key, $def = null)
 	{
-		self::$params 	= &$params;
-		self::$uri 		= &$uri;
-		self::$nodes 	= &$nodes;
-		self::$size 	= &$size;
+		return self::$params[$key] ?? $def;
 	}
 
 	/**
@@ -88,7 +110,7 @@ final class RouteManager
 	 */
 	public function get(string $key, $def = null)
 	{
-		return self::$params[$key] ?? $def;
+		return self::$shared[$key] ?? $def;
 	}
 
 	/**
@@ -102,8 +124,8 @@ final class RouteManager
 	 */
 	public function set(string $key, $value, bool $cover = true)
 	{
-		if ($cover || !isset(self::$params[$key])) {
-			self::$params[$key] = $value;
+		if ($cover || !isset(self::$shared[$key])) {
+			self::$shared[$key] = $value;
 			return true;
 		} else {
 			return false;
@@ -120,7 +142,7 @@ final class RouteManager
 	 */
 	public function exists(string $key)
 	{
-		return isset(self::$params[$key]);
+		return isset(self::$shared[$key]);
 	}
 
 	/**
@@ -139,14 +161,14 @@ final class RouteManager
 
 	/**
 	 * -------------------------------------------------------------------------
-	 * [paramsCount description]
+	 * [count description]
 	 * -------------------------------------------------------------------------
 	 * 
 	 * @return [type] [description]
 	 */
-	public function paramsCount()
+	public function count()
 	{
-		return count(self::$params);
+		return count(self::$shared);
 	}
 
 	/**
@@ -154,12 +176,12 @@ final class RouteManager
 	 * [replace description]
 	 * -------------------------------------------------------------------------
 	 * 
-	 * @param  array  $params [description]
+	 * @param  array  $shared [description]
 	 * @return [type]         [description]
 	 */
-	public function replace(array $params)
+	public function replace(array $shared)
 	{
-		self::$params = $params;
+		self::$shared = $shared;
 		return true;
 	}
 
@@ -173,8 +195,8 @@ final class RouteManager
 	 */
 	public function remove(string $key)
 	{
-		if (isset(self::$params[$key])) {
-			unset(self::$params[$key]);
+		if (isset(self::$shared[$key])) {
+			unset(self::$shared[$key]);
 		}
 		return true;
 	}
@@ -188,7 +210,7 @@ final class RouteManager
 	 */
 	public function removeAll()
 	{
-		self::$params = [];
+		self::$shared = [];
 		return true;
 	}
 
@@ -201,7 +223,7 @@ final class RouteManager
 	 */
 	public function isEmpty()
 	{
-		return empty(self::$params);
+		return empty(self::$shared);
 	}
 
 	/**

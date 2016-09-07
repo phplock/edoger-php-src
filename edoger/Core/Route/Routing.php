@@ -31,7 +31,9 @@
  */
 namespace Edoger\Core\Route;
 
+use Closure;
 use Edoger\Core\Kernel;
+use Edoger\Core\Http\Request;
 
 /**
  * ================================================================================
@@ -44,12 +46,48 @@ final class Routing
 {
 	/**
 	 * ----------------------------------------------------------------------------
-	 * [$me description]
+	 * [$params description]
 	 * ----------------------------------------------------------------------------
 	 * 
-	 * @var [type]
+	 * @var array
 	 */
-	private static $me;
+	private static $params 	= [];
+
+	/**
+	 * ----------------------------------------------------------------------------
+	 * [$uri description]
+	 * ----------------------------------------------------------------------------
+	 * 
+	 * @var string
+	 */
+	private static $uri 	= '';
+
+	/**
+	 * ----------------------------------------------------------------------------
+	 * [$nodes description]
+	 * ----------------------------------------------------------------------------
+	 * 
+	 * @var array
+	 */
+	private static $nodes 	= [];
+
+	/**
+	 * ----------------------------------------------------------------------------
+	 * [$size description]
+	 * ----------------------------------------------------------------------------
+	 * 
+	 * @var integer
+	 */
+	private static $size 	= 0;
+
+	/**
+	 * ----------------------------------------------------------------------------
+	 * [$shared description]
+	 * ----------------------------------------------------------------------------
+	 * 
+	 * @var array
+	 */
+	private static $shared 	= [];
 
 	/**
 	 * ----------------------------------------------------------------------------
@@ -58,7 +96,7 @@ final class Routing
 	 * 
 	 * @var [type]
 	 */
-	private $kernel;
+	private static $manager;
 
 	/**
 	 * ----------------------------------------------------------------------------
@@ -67,9 +105,32 @@ final class Routing
 	 * 
 	 * @param Kernel &$kernel [description]
 	 */
-	public function __construct(Kernel &$kernel)
+	public function __construct()
 	{
-		$this -> kernel = &$kernel;
+		$manager = new RouteManager();
+
+		$params = &self::$params;
+		$uri 	= &self::$uri;
+		$nodes 	= &self::$nodes;
+		$size 	= &self::$size;
+		$shared = &self::$shared;
+
+		(function() use (&$params, &$uri, &$nodes, &$size, &$shared){
+			self::$params 	= &$params;
+			self::$uri 		= &$uri;
+			self::$nodes 	= &$nodes;
+			self::$size 	= &$size;
+			self::$shared 	= &$shared;
+		}) -> call($manager);
+
+		self::$manager = $manager;
+
+		$casing = new RouteCasing(
+			Request::singleton() -> hostname(),
+			Request::singleton() -> port(),
+			Request::singleton() -> protocol(),
+			Request::singleton() -> xhr()
+			);
 	}
 
 	/**
@@ -84,117 +145,5 @@ final class Routing
 		$pignut = preg_split('/\//', $uri, 0, PREG_SPLIT_NO_EMPTY);
 
 		return new Node($method, $pignut, $action);
-	}
-
-	/**
-	 * ----------------------------------------------------------------------------
-	 * What is it ?
-	 * ----------------------------------------------------------------------------
-	 *
-	 * @return type
-	 */
-	public static function get(string $uri, $action)
-	{
-		return self::match(['get'], $uri, $action);
-	}
-
-	/**
-	 * ----------------------------------------------------------------------------
-	 * What is it ?
-	 * ----------------------------------------------------------------------------
-	 *
-	 * @return type
-	 */
-	public static function post(string $uri)
-	{
-		return self::match(['post'], $uri, $action);
-	}
-
-	/**
-	 * ----------------------------------------------------------------------------
-	 * What is it ?
-	 * ----------------------------------------------------------------------------
-	 *
-	 * @return type
-	 */
-	public static function put(string $uri)
-	{
-		return self::match(['put'], $uri, $action);
-	}
-
-	/**
-	 * ----------------------------------------------------------------------------
-	 * What is it ?
-	 * ----------------------------------------------------------------------------
-	 *
-	 * @return type
-	 */
-	public static function head(string $uri)
-	{
-		return self::match(['head'], $uri, $action);
-	}
-
-	/**
-	 * ----------------------------------------------------------------------------
-	 * What is it ?
-	 * ----------------------------------------------------------------------------
-	 *
-	 * @return type
-	 */
-	public static function delete(string $uri)
-	{
-		return self::match(['delete'], $uri, $action);
-	}
-
-	/**
-	 * ----------------------------------------------------------------------------
-	 * What is it ?
-	 * ----------------------------------------------------------------------------
-	 *
-	 * @return type
-	 */
-	public static function connect(string $uri)
-	{
-		return self::match(['connect'], $uri, $action);
-	}
-
-	/**
-	 * ----------------------------------------------------------------------------
-	 * What is it ?
-	 * ----------------------------------------------------------------------------
-	 *
-	 * @return type
-	 */
-	public static function options(string $uri)
-	{
-		return self::match(['options'], $uri, $action);
-	}
-
-	/**
-	 * ----------------------------------------------------------------------------
-	 * What is it ?
-	 * ----------------------------------------------------------------------------
-	 *
-	 * @return type
-	 */
-	public static function trace(string $uri)
-	{
-		return self::match(['trace'], $uri, $action);
-	}
-
-	/**
-	 * ----------------------------------------------------------------------------
-	 * What is it ?
-	 * ----------------------------------------------------------------------------
-	 *
-	 * @return type
-	 */
-	public static function any(string $uri)
-	{
-		return self::match(
-			['get','post','put','head','delete','connect','options','trace'],
-			$uri,
-			$action
-			);
 	}
 }

@@ -231,7 +231,7 @@ final class Request
 	public function hostname()
 	{
 		if (!isset(self::$caches['hostname'])) {
-			self::$caches['hostname'] = Server::query('HTTP_HOST');
+			self::$caches['hostname'] = strtolower(Server::query('HTTP_HOST'));
 		}
 		return self::$caches['hostname'];
 	}
