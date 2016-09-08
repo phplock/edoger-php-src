@@ -30,17 +30,8 @@
  |  Authors: QingShan Luo <shanshan.lqs@gmail.com>                             |
  +-----------------------------------------------------------------------------+
  */
-class A {private static $a = 0; public function show(){echo self::$a . '<br />';}}
-class B {public static $m = 1; public function __construct($o){
-	$m = &self::$m;
-	(function() use (&$m){self::$a = &$m;}) -> call($o);
-}}
-$o = new A();
-$o->show();
-new B($o);
-$o->show();
-B::$m = 100;
-$o->show();
+echo '<pre>';
+print_r($_SERVER);
 die;
 /**
  * -----------------------------------------------------------------------------

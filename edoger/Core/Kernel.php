@@ -34,7 +34,7 @@ namespace Edoger\Core;
 use Edoger\Core\Log\Logger;
 use Edoger\Core\Http\Request;
 use Edoger\Core\Http\Respond;
-use Edoger\Exceptions\RuntimeException;
+use Edoger\Core\Route\Routing
 
 /**
  * ================================================================================
@@ -125,16 +125,54 @@ final class Kernel
 	 * 
 	 * @return void
 	 */
-	private function __construct()
+	public function __construct()
 	{
 		//	计算并绑定站点根目录
 		self::$root = dirname(dirname(__DIR__));
 
-		$file = self::$root . '/config/edoger.php';
-		$conf = require $file;
+		//	载入系统配置
+		$edogerConfigFile = self::$root . '/config/edoger.php';
+		$conf = require $edogerConfigFile;
 		
 		//	绑定框架配置管理器实例
 		self::$config = new Config($conf);
+
+		//	创建并绑定系统日志记录器
+		//	系统日志通道名称为 "EDOGER"，请不要重复使用
+		self::$logger = new Logger('EDOGER');
+
+		//	设置触发日志记录的最低级别
+		switch (strtolower(self::$config -> get('log_level'))) {
+
+			case 'debug':		$level = Logger::LEVEL_DEBUG;		break;
+			case 'info':		$level = Logger::LEVEL_INFO;		break;
+			case 'notice':		$level = Logger::LEVEL_NOTICE;		break;
+			case 'warning':		$level = Logger::LEVEL_WARNING;		break;
+			case 'error':		$level = Logger::LEVEL_ERROR;		break;
+			case 'critical':	$level = Logger::LEVEL_CRITICAL;	break;
+			case 'alert':		$level = Logger::LEVEL_ALERT;		break;
+			case 'emergenc':	$level = Logger::LEVEL_EMERGENCY;	break;
+			
+			default:
+
+				//	系统默认最低记录级别为：错误
+				$level = Logger::LEVEL_ERROR;
+				break;
+		}
+
+		//	配置日志记录器的记录程序
+		self::$logger -> useHandler(self::$config -> get('log_handler'), $level);
+
+		//	创建系统的全局错误捕获与管理器
+		self::$debug = new Debug(self::$logger);
+
+		//	创建请求组件实例
+		self::$request = new Request();
+
+		//	创建响应组件实例
+		self::$respond = new Respond();
+
+		new Routing(self::$request);
 	}
 
 	/**
@@ -153,9 +191,7 @@ final class Kernel
 			//	创建核心对象
 			$kernel = new self();
 
-			//	创建并绑定系统日志记录器
-			//	系统日志通道名称为 "EDOGER"，请不要重复使用
-			self::$logger = new Logger('EDOGER');
+			
 
 			$handler 	= ucfirst(strtolower(self::$config -> get('log_handler')));
 			$class 		= "\\Edoger\\Core\\Log\\Handlers\\{$handler}Handler";

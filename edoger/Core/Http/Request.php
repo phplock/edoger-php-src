@@ -51,6 +51,9 @@ final class Request
 	 * @var array
 	 */
 	private static $caches = [];
+
+	private static $routeParams = [];
+	private static $routeShared = [];
 	
 	/**
 	 * -------------------------------------------------------------------------
@@ -59,39 +62,9 @@ final class Request
 	 * 
 	 * @param Kernel &$kernel [description]
 	 */
-	private function __construct()
+	public function __construct()
 	{
 		
-	}
-
-	/**
-	 * -------------------------------------------------------------------------
-	 * [__clone description]
-	 * -------------------------------------------------------------------------
-	 * 
-	 * @return [type] [description]
-	 */
-	public function __clone()
-	{
-
-	}
-
-	/**
-	 * -------------------------------------------------------------------------
-	 * [singleton description]
-	 * -------------------------------------------------------------------------
-	 * 
-	 * @return [type] [description]
-	 */
-	public static function singleton()
-	{
-		static $instance = null;
-
-		if (is_null($instance)) {
-			$instance = new self();
-		}
-
-		return $instance;
 	}
 
 	/**
@@ -359,10 +332,26 @@ final class Request
 	 * [route description]
 	 * -------------------------------------------------------------------------
 	 * 
-	 * @return [type] [description]
+	 * @param  string $name [description]
+	 * @param  [type] $def  [description]
+	 * @return [type]       [description]
 	 */
-	public function route()
+	public function route(string $name, $def = null)
 	{
+		return self::$routeParams[$name] ?? $def;
+	}
 
+	/**
+	 * -------------------------------------------------------------------------
+	 * [share description]
+	 * -------------------------------------------------------------------------
+	 * 
+	 * @param  string $name [description]
+	 * @param  [type] $def  [description]
+	 * @return [type]       [description]
+	 */
+	public function share(string $name, $def = null)
+	{
+		return self::$routeShared[$name] ?? $def;
 	}
 }

@@ -1,33 +1,34 @@
 <?php
-/**
- * Edoger PHP Framework (EdogerPHP)
- * 
- * A simple and efficient PHP framework.
- *
- * By REENT (Qingshan Luo)
- * Version 1.0.0
- *
- * http://www.edoger.com/
- *
- * The MIT License (MIT)
- * Copyright (c) 2016 REENT (Qingshan Luo)
- * Permission is hereby granted, free of charge, to any person obtaining a 
- * copy of this software and associated documentation files (the “Software”), 
- * to deal in the Software without restriction, including without limitation 
- * the rights to use, copy, modify, merge, publish, distribute, sublicense, 
- * and/or sell copies of the Software, and to permit persons to whom the 
- * Software is furnished to do so, subject to the following conditions:
- * 
- * The above copyright notice and this permission notice shall be included in 
- * all copies or substantial portions of the Software.
- * 
- * THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, 
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF 
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. 
- * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, 
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR 
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE 
- * USE OR OTHER DEALINGS IN THE SOFTWARE.
+/*
+ +-----------------------------------------------------------------------------+
+ | Edoger PHP Framework (EdogerPHP)                                            |
+ +-----------------------------------------------------------------------------+
+ | Copyright (c) 2014 - 2016 QingShan Luo                                      |
+ +-----------------------------------------------------------------------------+
+ | The MIT License (MIT)                                                       |
+ |                                                                             |
+ | Permission is hereby granted, free of charge, to any person obtaining a     |
+ | copy of this software and associated documentation files (the “Software”),  |
+ | to deal in the Software without restriction, including without limitation   |
+ | the rights to use, copy, modify, merge, publish, distribute, sublicense,    |
+ | and/or sell copies of the Software, and to permit persons to whom the       |
+ | Software is furnished to do so, subject to the following conditions:        |
+ |                                                                             |
+ | The above copyright notice and this permission notice shall be included in  |
+ | all copies or substantial portions of the Software.                         |
+ |                                                                             |
+ | THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND,             |
+ | EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF          |
+ | MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.      |
+ | IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, |
+ | DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR       |
+ | OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE   |
+ | USE OR OTHER DEALINGS IN THE SOFTWARE.                                      |
+ +-----------------------------------------------------------------------------+
+ |  License: MIT                                                               |
+ +-----------------------------------------------------------------------------+
+ |  Authors: QingShan Luo <shanshan.lqs@gmail.com>                             |
+ +-----------------------------------------------------------------------------+
  */
 namespace Edoger\Core\Http;
 
@@ -42,23 +43,6 @@ use Edoger\Core\Kernel;
  */
 class Respond
 {
-	/**
-	 * ----------------------------------------------------------------------------
-	 * What is it ?
-	 * ----------------------------------------------------------------------------
-	 *
-	 * @var type
-	 */
-	private static $kernel;
-
-	/**
-	 * ----------------------------------------------------------------------------
-	 * [$hook description]
-	 * ----------------------------------------------------------------------------
-	 * 
-	 * @var [type]
-	 */
-	private static $hook;
 
 	/**
 	 * ----------------------------------------------------------------------------
@@ -67,7 +51,7 @@ class Respond
 	 * 
 	 * @var array
 	 */
-	private static $data = [];
+	private static $respondData = [];
 
 	/**
 	 * ----------------------------------------------------------------------------
@@ -76,7 +60,7 @@ class Respond
 	 * 
 	 * @var array
 	 */
-	private static $options = [];
+	private static $respondOptions = [];
 
 	/**
 	 * ----------------------------------------------------------------------------
@@ -85,59 +69,9 @@ class Respond
 	 * 
 	 * @param Kernel &$kernel [description]
 	 */
-	public function __construct(Kernel &$kernel)
+	public function __construct()
 	{
-		self::$kernel = &$kernel;
-	}
-
-	/**
-	 * ----------------------------------------------------------------------------
-	 * [getHook description]
-	 * ----------------------------------------------------------------------------
-	 * 
-	 * @return [type] [description]
-	 */
-	public static function getHook()
-	{
-
-	}
-
-	/**
-	 * ----------------------------------------------------------------------------
-	 * [send description]
-	 * ----------------------------------------------------------------------------
-	 * 
-	 * @param  string       $key   [description]
-	 * @param  [type]       $value [description]
-	 * @param  bool|boolean $cover [description]
-	 * @return [type]              [description]
-	 */
-	public static function send(string $key, $value, bool $cover = true)
-	{
-		if ($cover || !isset(self::$data[$key])) {
-			self::$data[$key] = $value;
-			return true;
-		}
-		return false;
-	}
-
-	/**
-	 * ----------------------------------------------------------------------------
-	 * [sendArray description]
-	 * ----------------------------------------------------------------------------
-	 * 
-	 * @param  array        $data  [description]
-	 * @param  bool|boolean $cover [description]
-	 * @return [type]              [description]
-	 */
-	public static function sendArray(array $data, bool $cover = true)
-	{
-		if ($cover) {
-			self::$data = array_merge(self::$data, $data);
-		} else {
-			self::$data = array_merge($data, self::$data);
-		}
-		return true;
+		
 	}
 
 	/**
@@ -145,28 +79,56 @@ class Respond
 	 * [clean description]
 	 * ----------------------------------------------------------------------------
 	 * 
-	 * @return [type] [description]
+	 * @return boolean
 	 */
-	public static function clean()
+	public function clean()
 	{
-		self::$data = [];
+		self::$respondData = [];
 		return true;
 	}
 
 	/**
 	 * ----------------------------------------------------------------------------
-	 * [delete description]
+	 * [send description]
 	 * ----------------------------------------------------------------------------
 	 * 
-	 * @param  string $key [description]
-	 * @return [type]      [description]
+	 * @param  string $key   [description]
+	 * @param  string $value [description]
+	 * @return boolean
 	 */
-	public static function delete(string $key)
+	public function send(string $value)
 	{
-		if (isset(self::$data[$key])) {
-			unset(self::$data[$key]);
-		}
+		self::$respondData[] = $value;
 		return true;
+	}
+
+	public function json(array $data)
+	{
+		$json = json_encode($data);
+		if ($json === false) {
+			Kernel::error('JSON encode error: ' . json_last_error_msg(), 500);
+		} else {
+			$this -> end($json);
+		}
+	}
+
+	public function sendFile(string $path)
+	{
+		if (file_exists($path) && !is_dir($path)) {
+			$file = file_get_contents($path);
+			if ($file === false) {
+				Kernel::error('System read file failed: ' . $path, 500);
+			} else {
+				$this -> end($file);
+			}
+		} else {
+			Kernel::error('The system could not find the file: ' . $path, 500);
+		}
+	}
+
+	public function render()
+	{
+		
 	}
 
 	/**
@@ -174,18 +136,16 @@ class Respond
 	 * [end description]
 	 * ----------------------------------------------------------------------------
 	 * 
-	 * @return [type] [description]
+	 * @param  boolean $clean [description]
+	 * @return void
 	 */
-	public static function end(array $data = [], bool $cover = true, bool $clean = false)
+	public function end(string $value = '')
 	{
-		if ($clean) {
-			self::clean();
+		if ($value !== '') {
+			self::$respondData[] = $value;
 		}
-		if (!empty($data)) {
-			self::sendArray($data, $cover);
-		}
-		self::output();
-		exit(0);
+		
+		Kernel::quit();
 	}
 
 	/**
@@ -196,7 +156,7 @@ class Respond
 	 * @param  int    $code [description]
 	 * @return [type]       [description]
 	 */
-	public static function status(int $code)
+	public function status(int $code)
 	{
 
 	}
@@ -211,17 +171,21 @@ class Respond
 	 * @param  bool|boolean $cover [description]
 	 * @return [type]              [description]
 	 */
-	public static function option(string $key, $value, bool $cover = true)
+	public function option(string $key, $value = null)
 	{
-
-	}
-
-	public static function output()
-	{
-		static $outputed = false;
-		if (!$outputed) {
-			$outputed = true;
-			// self::$engine -> render(self::$data, self::$options);
+		if (is_null($value)) {
+			if (isset(self::$respondOptions[$key])) {
+				unset(self::$respondOptions[$key]);
+			}
+			return true;
+		} else {
+			self::$respondOptions[$key] = $value;
+			return true;
 		}
 	}
+
+
+	
+
+	
 }
