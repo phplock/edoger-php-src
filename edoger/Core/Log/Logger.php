@@ -161,9 +161,16 @@ final class Logger
 	 * @param  Edoger\Core\Log\LoggerHandlerInterface $handler 日志处理程序对象
 	 * @return Edoger\Core\Log\Logger
 	 */
-	public function setHandler(LoggerHandlerInterface $handler)
+	public function useHandler(string $handler, int $level)
 	{
-		$this -> handler = $handler;
+		$handler 	= ucfirst(strtolower($handler));
+		$className 	= '\\Edoger\\Core\\Log\\Handlers\\' . $handler . 'Handler';
+		
+		if (class_exists($className, true)) {
+			$this -> handler = new $className($level);
+		} else {
+			
+		}
 
 		//	绑定日志处理程序后立即处理已有的日志记录
 		if (!empty($this -> logs)) {

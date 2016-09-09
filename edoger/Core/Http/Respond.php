@@ -32,6 +32,7 @@
  */
 namespace Edoger\Core\Http;
 
+use Edoger\Core\Application;
 use Edoger\Core\Kernel;
 
 /**
@@ -69,9 +70,9 @@ class Respond
 	 * 
 	 * @param Kernel &$kernel [description]
 	 */
-	public function __construct()
+	public function __construct(Application $app)
 	{
-		
+		$app -> make($this);
 	}
 
 	/**
@@ -156,9 +157,18 @@ class Respond
 	 * @param  int    $code [description]
 	 * @return [type]       [description]
 	 */
-	public function status(int $code)
+	public function httpCode(int $code = 0)
 	{
+		if ($code) {
+			return http_response_code($code);
+		} else {
+			return http_response_code();
+		}
+	}
 
+	public function header(string $head, bool $replace = true, int $code = null)
+	{
+		
 	}
 
 	/**

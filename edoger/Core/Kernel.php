@@ -31,6 +31,7 @@
  */
 namespace Edoger\Core;
 
+use Closure;
 use Edoger\Core\Log\Logger;
 use Edoger\Core\Http\Request;
 use Edoger\Core\Http\Respond;
@@ -43,68 +44,24 @@ use Edoger\Core\Route\Routing
  */
 final class Kernel
 {
-	/**
-	 * ----------------------------------------------------------------------------
-	 * 站点根目录的绝对路径
-	 * ----------------------------------------------------------------------------
-	 *
-	 * @var string
-	 */
 	private static $root;
 
-	/**
-	 * ----------------------------------------------------------------------------
-	 * 框架配置管理器实例
-	 * ----------------------------------------------------------------------------
-	 *
-	 * @var Edoger\Core\Config
-	 */
 	private static $config;
-
-	/**
-	 * ----------------------------------------------------------------------------
-	 * 应用程序实例
-	 * ----------------------------------------------------------------------------
-	 *
-	 * @var Edoger\Core\Application
-	 */
 	private static $application;
-
-	/**
-	 * ----------------------------------------------------------------------------
-	 * 系统错误调试管理器
-	 * ----------------------------------------------------------------------------
-	 *
-	 * @var Edoger\Core\Debug
-	 */
 	private static $debug;
-
-	/**
-	 * ----------------------------------------------------------------------------
-	 * 系统日志记录器
-	 * ----------------------------------------------------------------------------
-	 *
-	 * @var Edoger\Core\Debug
-	 */
 	private static $logger;
-
-	/**
-	 * ----------------------------------------------------------------------------
-	 * 系统日志记录器
-	 * ----------------------------------------------------------------------------
-	 *
-	 * @var Edoger\Core\Debug
-	 */
 	private static $request;
-
-	/**
-	 * ----------------------------------------------------------------------------
-	 * 系统日志记录器
-	 * ----------------------------------------------------------------------------
-	 *
-	 * @var Edoger\Core\Debug
-	 */
 	private static $respond;
+	private static $routing;
+
+	private static $sendData = [];
+	private static $sendOptions = [];
+
+	private static $routeParams = [];
+	private static $routeCommon = [];
+	private static $routePath = '';
+
+
 
 	/**
 	 * ----------------------------------------------------------------------------
@@ -125,8 +82,11 @@ final class Kernel
 	 * 
 	 * @return void
 	 */
-	public function __construct()
+	public function __construct(Application $app)
 	{
+		(function($kernel){$this -> kernel = $kernel;}) -> call($app, $this);
+
+
 		//	计算并绑定站点根目录
 		self::$root = dirname(dirname(__DIR__));
 
@@ -136,6 +96,10 @@ final class Kernel
 		
 		//	绑定框架配置管理器实例
 		self::$config = new Config($conf);
+
+		//	创建请求组和响应组件实例
+		self::$request = new Request();
+		self::$respond = new Respond();
 
 		//	创建并绑定系统日志记录器
 		//	系统日志通道名称为 "EDOGER"，请不要重复使用
@@ -163,16 +127,16 @@ final class Kernel
 		//	配置日志记录器的记录程序
 		self::$logger -> useHandler(self::$config -> get('log_handler'), $level);
 
+		$app -> make(self::$logger);
+
 		//	创建系统的全局错误捕获与管理器
 		self::$debug = new Debug(self::$logger);
 
-		//	创建请求组件实例
-		self::$request = new Request();
+		$app -> make(self::$debug);
 
-		//	创建响应组件实例
-		self::$respond = new Respond();
+		self::$routing = new Routing(self::$request);
 
-		new Routing(self::$request);
+		$app -> make(self::$routing);
 	}
 
 	/**
@@ -182,48 +146,16 @@ final class Kernel
 	 * 
 	 * @return Edoger\Core\Kernel
 	 */
-	public static function core()
+	public static function send()
 	{
-		static $kernel = null;
+		static $sent = false;
 
-		if (is_null($kernel)) {
-
-			//	创建核心对象
-			$kernel = new self();
-
-			
-
-			$handler 	= ucfirst(strtolower(self::$config -> get('log_handler')));
-			$class 		= "\\Edoger\\Core\\Log\\Handlers\\{$handler}Handler";
-
-			//	日志处理的级别映射表
-			//	系统仅能识别和使用定义的8个日志级别
-			//	默认情况下使用 "error" 级别
-			$map = [
-				'debug' 	=> Logger::LEVEL_DEBUG,
-				'info' 		=> Logger::LEVEL_INFO,
-				'notice' 	=> Logger::LEVEL_NOTICE,
-				'warning' 	=> Logger::LEVEL_WARNING,
-				'error' 	=> Logger::LEVEL_ERROR,
-				'critical' 	=> Logger::LEVEL_CRITICAL,
-				'alert' 	=> Logger::LEVEL_ALERT,
-				'emergenc' 	=> Logger::LEVEL_EMERGENCY
-			];
-
-			$level = strtolower(self::$config -> get('log_level'));
-
-			//	添加日志处理程序
-			//	只有在添加了日志处理程序之后，日志记录器才能发送日志
-			self::$logger -> setHandler(new $class($map[$level] ?? Logger::LEVEL_ERROR));
-
-			//	创建并绑定错误调试管理器
-			self::$debug = new Debug($kernel, self::$logger);
-			
-			//	创建基础的请求组件和响应组件
-			self::$request = new Request($kernel);
-			self::$respond = new Respond($kernel);
+		if ($sent) {
+			return;
 		}
-		return $kernel;
+
+		$sent = true;
+
 	}
 
 	/**
@@ -235,9 +167,18 @@ final class Kernel
 	 * @param  integer 	$code    	错误代码
 	 * @return void
 	 */
-	public function throwError(string $message, int $code = 5000)
+	public static function quit(int $status = 0, bool $clean = false)
 	{
-		throw new RuntimeException($message, $code);
+		if ($clean) {
+			self::$respond -> clean();
+		}
+
+		if ($status > 0) {
+			self::$respond -> status($status);
+		}
+		
+		self::send();
+		exit(0);
 	}
 
 	/**

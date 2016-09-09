@@ -32,6 +32,7 @@
  */
 namespace Edoger\Core\Http;
 
+use Edoger\Core\Application;
 use Edoger\Exceptions\RuntimeException;
 
 /**
@@ -62,9 +63,9 @@ final class Request
 	 * 
 	 * @param Kernel &$kernel [description]
 	 */
-	public function __construct()
+	public function __construct(Application $app)
 	{
-		
+		$app -> make($this);
 	}
 
 	/**

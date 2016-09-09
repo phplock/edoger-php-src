@@ -97,7 +97,7 @@ final class Debug
 	 * @param  Logger $logger [description]
 	 * @return [type]         [description]
 	 */
-	public static function bindLogger(Logger $logger)
+	public function __construct(Logger $logger)
 	{
 		self::$logger = $logger;
 
@@ -298,6 +298,6 @@ final class Debug
 			self::writeLog($level, $log);
 		}
 
-		self::callHook();
+		Kernel::quit();
 	}
 }
