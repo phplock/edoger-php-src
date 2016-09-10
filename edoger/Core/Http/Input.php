@@ -52,57 +52,9 @@ class Input
 	 * 
 	 * @var array
 	 */
-	private static $filter = [];
+	private $filter = [];
 
-	/**
-	 * ----------------------------------------------------------------------------
-	 * 以URL方式传递的参数数据
-	 * ----------------------------------------------------------------------------
-	 * 
-	 * @var array
-	 */
-	private static $get = [];
 
-	/**
-	 * ----------------------------------------------------------------------------
-	 * 以POST方式传递的参数数据
-	 * ----------------------------------------------------------------------------
-	 * 
-	 * @var array
-	 */
-	private static $post = [];
-
-	/**
-	 * ----------------------------------------------------------------------------
-	 * 合并后的来自多个渠道传递的参数数据
-	 * ----------------------------------------------------------------------------
-	 * 
-	 * @var array
-	 */
-	private static $query = [];
-
-	/**
-	 * ----------------------------------------------------------------------------
-	 * 初始化，绑定全局变量到组件内部
-	 * ----------------------------------------------------------------------------
-	 *
-	 * @param  array $get  [description]
-	 * @param  array $post [description]
-	 * @return void
-	 */
-	public function __construct()
-	{
-		self::$get 	= $_GET;
-		self::$post = $_POST;
-
-		if (empty($_GET)) {
-			self::$query = $_POST;
-		} elseif (empty($_POST)) {
-			self::$query = $_GET;
-		} else {
-			self::$query = $_POST + $_GET;
-		}
-	}
 
 	/**
 	 * ----------------------------------------------------------------------------
@@ -114,21 +66,9 @@ class Input
 	 * @param  string | array | callable 	$filter 	要使用的过滤器或过滤器数组
 	 * @return mixed
 	 */
-	public function get(string $key, $def = null, $filter = null)
+	public function get(string $key, $def = null)
 	{
-		if (isset(self::$get[$key])) {
-			if (empty($filter)) {
-				return self::$get[$key];
-			} else {
-				if (self::callFilter($filter, self::$get[$key])) {
-					return self::$get[$key];
-				} else {
-					return $def;
-				}
-			}
-		} else {
-			return $def;
-		}
+		return $_GET[$key] ?? $def;
 	}
 
 	/**
@@ -141,21 +81,9 @@ class Input
 	 * @param  string | array 	$filter 	[description]
 	 * @return mixed
 	 */
-	public function post(string $key, $def = null, $filter = null)
+	public function post(string $key, $def = null)
 	{
-		if (isset(self::$post[$key])) {
-			if (empty($filter)) {
-				return self::$post[$key];
-			} else {
-				if (self::callFilter($filter, self::$post[$key])) {
-					return self::$post[$key];
-				} else {
-					return $def;
-				}
-			}
-		} else {
-			return $def;
-		}
+		return $_POST[$key] ?? $def;
 	}
 
 	/**
@@ -168,21 +96,9 @@ class Input
 	 * @param  [type] $filter [description]
 	 * @return [type]         [description]
 	 */
-	public function query(string $key, $def = null, $filter = null)
+	public function any(string $key, $def = null)
 	{
-		if (isset(self::$query[$key])) {
-			if ($filter) {
-				if (self::callFilter($filter, self::$query[$key])) {
-					return self::$query[$key];
-				} else {
-					return $def;
-				}
-			} else {
-				return self::$query[$key];
-			}
-		} else {
-			return $def;
-		}
+		return $_POST[$key] ?? $_GET[$key] ?? $def;
 	}
 
 	/**
@@ -196,28 +112,32 @@ class Input
 	 * @param  string $range  [description]
 	 * @return [type]         [description]
 	 */
-	public function search(array $keys, $def = null, $filter = null, string $range = 'any')
+	public function search(array $keys, $def = null, string $range = 'any')
 	{
-		$input = [];
-
 		switch ($range) {
-			case 'any':
-				$input = &self::$query;
-				break;
-			case 'get':
-				$input = &self::$get;
-				break;
-			case 'post':
-				$input = &self::$post;
-				break;
-		}
 
-		if (!empty($input)) {
-			foreach ($keys as $k) {
-				if (isset($input[$k])) {
-					return $input[$k];
+			case 'any':
+				foreach ($keys as $k) {
+					if (isset($_POST[$key])) {
+						return $_POST[$key];
+					} elseif (isset($_GET[$key])) {
+						return $_GET[$key];
+					}
 				}
-			}
+
+			case 'get':
+				foreach ($keys as $k) {
+					if (isset($_GET[$key])) {
+						return $_GET[$key];
+					}
+				}
+
+			case 'post':
+				foreach ($keys as $k) {
+					if (isset($_POST[$key])) {
+						return $_POST[$key];
+					}
+				}
 		}
 
 		return $def;
