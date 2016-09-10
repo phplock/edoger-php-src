@@ -82,8 +82,12 @@ final class Application
 	 * @param  Config 	$config  	应用程序自身的配置管理组件实例
 	 * @return void
 	 */
-	public function __construct(Kernel &$kernel, Config $config)
+	public function __construct(string $applicationRootDir)
 	{
+		$this -> root = rtrim($applicationRootDir, '/');
+
+		
+
 		$this -> config = $config;
 		$this -> kernel = &$kernel;
 
