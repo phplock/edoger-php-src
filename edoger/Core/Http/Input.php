@@ -45,6 +45,11 @@ use Edoger\Core\Http\Input\Modifier;
  */
 class Input
 {
+	const ERROR_NONE = 0;
+	const ERROR_NOT_FOUND = 1;
+	const ERROR_NOT_VALID = 2;
+	const ERROR_ARGUMENT = 128;
+
 	/**
 	 * ----------------------------------------------------------------------------
 	 * 已经加载的过滤器列表
@@ -156,13 +161,13 @@ class Input
 	{
 		switch ($range) {
 			case 'any':
-				return isset(self::$query[$key]);
+				return isset($_POST[$key]) || isset($_GET[$key]);
 			
 			case 'get':
-				return isset(self::$get[$key]);
+				return isset($_GET[$key]);
 
 			case 'post':
-				return isset(self::$post[$key]);
+				return isset($_POST[$key]);
 		}
 
 		return false;
@@ -172,6 +177,7 @@ class Input
 	 * ----------------------------------------------------------------------------
 	 * 以可选参数模式获取一组参数
 	 * ----------------------------------------------------------------------------
+	 * 别名 => [参数名称，查找范围，过滤器，修改器，缺省值]
 	 * 
 	 * @param  array         $keys     [description]
 	 * @param  callable|null $handler  [description]
@@ -236,6 +242,7 @@ class Input
 	 * ----------------------------------------------------------------------------
 	 * 以必选参数模式获取一组参数
 	 * ----------------------------------------------------------------------------
+	 * 别名 => [参数名称，查找范围，过滤器，修改器，缺省值]
 	 * 
 	 * @param  array         $keys     [description]
 	 * @param  callable|null $handler  [description]
