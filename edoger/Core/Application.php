@@ -31,6 +31,7 @@
  */
 namespace Edoger\Core;
 
+use Edoger\Interfaces\EdogerInterface;
 use Edoger\Core\App\App;
 use Edoger\Core\Log\Logger;
 use Edoger\Core\Log\Handlers\FileHandler;
@@ -81,8 +82,12 @@ final class Application
 	 * @param  Config 	$config  	应用程序自身的配置管理组件实例
 	 * @return void
 	 */
-	public function __construct(Kernel &$kernel, Config $config)
+	public function __construct(string $applicationRootDir)
 	{
+		$this -> root = rtrim($applicationRootDir, '/');
+
+		
+
 		$this -> config = $config;
 		$this -> kernel = &$kernel;
 
@@ -127,5 +132,20 @@ final class Application
 	public function run()
 	{
 		require $this -> root . '/routes.php';
+	}
+
+	public function make($object, string $name)
+	{
+		switch ($name) {
+			case 'request':
+				
+				break;
+			case 'respond':
+				
+				break;
+			default:
+				
+				break;
+		}
 	}
 }

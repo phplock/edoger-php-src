@@ -97,12 +97,8 @@ final class Cookie
 	 * 
 	 * @param Kernel &$kernel [description]
 	 */
-	public function __construct(Kernel &$kernel)
+	public function __construct(array $config)
 	{
-		self::$kernel = &$kernel;
-
-		$config = $kernel -> config() -> get('cookie');
-
 		self::$prefix 	= $config['security_prefix'];
 		self::$key 		= $config['key'];
 
