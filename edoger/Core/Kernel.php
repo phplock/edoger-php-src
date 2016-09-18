@@ -91,7 +91,7 @@ final class Kernel
 		self::$root 	= dirname(EDOGER_ROOT);
 		self::$config 	= $config;
 
-		Debug::
+		Debug::setDebugStatus((bool)$config -> get('debug'));
 
 		set_error_handler([Debug::class, 'edogerErrorHandler']);
 		set_exception_handler([Debug::class, 'edogerExceptionHandler']);
@@ -156,13 +156,6 @@ final class Kernel
 		$app -> make(self::$routing);
 	}
 
-	/**
-	 * ----------------------------------------------------------------------------
-	 * 创建并返回全局唯一的核心类的实例，核心对象只会创建一次
-	 * ----------------------------------------------------------------------------
-	 * 
-	 * @return Edoger\Core\Kernel
-	 */
 	public static function flush()
 	{
 		static $sent = false;
@@ -175,15 +168,18 @@ final class Kernel
 
 	}
 
-	/**
-	 * ----------------------------------------------------------------------------
-	 * 触发系统错误，立即结束程序的运行
-	 * ----------------------------------------------------------------------------
-	 * 
-	 * @param  string  	$message 	错误消息
-	 * @param  integer 	$code    	错误代码
-	 * @return void
-	 */
+	public static function error()
+	{
+		static $sent = false;
+
+		if ($sent) {
+			return;
+		}
+
+		$sent = true;
+
+	}
+
 	public static function quit(int $status = 0, bool $clean = false)
 	{
 		if ($clean) {
@@ -218,7 +214,7 @@ final class Kernel
 
 	/**
 	 * ----------------------------------------------------------------------------
-	 * 获取应用程序实例，在没有创建应用程序之前，返回 NULL
+	 * 获取应用程序实例
 	 * ----------------------------------------------------------------------------
 	 *
 	 * @return Edoger\Core\Application
@@ -235,21 +231,9 @@ final class Kernel
 	 *
 	 * @return Edoger\Core\Config
 	 */
-	public function config()
+	public static function config()
 	{
 		return self::$config;
-	}
-
-	/**
-	 * ----------------------------------------------------------------------------
-	 * 获取错误调试管理器
-	 * ----------------------------------------------------------------------------
-	 * 
-	 * @return Edoger\Core\Debug
-	 */
-	public function debug()
-	{
-		return self::$debug;
 	}
 
 	/**
@@ -271,7 +255,7 @@ final class Kernel
 	 *
 	 * @return Edoger\Core\Http\Respond
 	 */
-	public static function respond()
+	public static function response()
 	{
 		return self::$respond;
 	}
@@ -286,11 +270,9 @@ final class Kernel
 	public static function library()
 	{
 		static $library = null;
-
 		if (is_null($library)) {
-			$library = new Library($this);
+			$library = new Library(self::$config -> get('library', []));
 		}
-
 		return $library;
 	}
 }
