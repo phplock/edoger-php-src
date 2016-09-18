@@ -57,7 +57,7 @@ final class Kernel
 	private static $respond;
 	private static $routing;
 
-	private static $sendData = [];
+	private static $outputBuffer = [];
 	private static $sendOptions = [];
 
 	private static $routeParams = [];
@@ -113,84 +113,39 @@ final class Kernel
 
 		Logger::useHandler($logHandlerName, $logHandlerConfig);
 
-
-
-
 		//	创建请求组和响应组件实例
-		self::$request = new Request();
-		self::$respond = new Respond();
-
-		
-
-		//	设置触发日志记录的最低级别
-		switch (strtolower(self::$config -> get('log_level'))) {
-
-			case 'debug':		$level = Logger::LEVEL_DEBUG;		break;
-			case 'info':		$level = Logger::LEVEL_INFO;		break;
-			case 'notice':		$level = Logger::LEVEL_NOTICE;		break;
-			case 'warning':		$level = Logger::LEVEL_WARNING;		break;
-			case 'error':		$level = Logger::LEVEL_ERROR;		break;
-			case 'critical':	$level = Logger::LEVEL_CRITICAL;	break;
-			case 'alert':		$level = Logger::LEVEL_ALERT;		break;
-			case 'emergenc':	$level = Logger::LEVEL_EMERGENCY;	break;
-			
-			default:
-
-				//	系统默认最低记录级别为：错误
-				$level = Logger::LEVEL_ERROR;
-				break;
-		}
-
-		//	配置日志记录器的记录程序
-		self::$logger -> useHandler(self::$config -> get('log_handler'), $level);
-
-		$app -> make(self::$logger);
-
-		//	创建系统的全局错误捕获与管理器
-		self::$debug = new Debug(self::$logger);
-
-		$app -> make(self::$debug);
-
-		self::$routing = new Routing(self::$request);
-
-		$app -> make(self::$routing);
+		self::$request = new Request(new Routing());
+		self::$respond = new Respond(new Output(self::$outputBuffer));
 	}
 
 	public static function flush()
 	{
-		static $sent = false;
-
-		if ($sent) {
+		static $flushed = false;
+		if ($flushed) {
 			return;
 		}
-
-		$sent = true;
-
+		$flushed = true;
+		if (!empty(self::$outputBuffer)) {
+			echo implode(self::$outputBuffer);
+			self::$outputBuffer = [];
+		}
 	}
 
-	public static function error()
+	public static function error($debug = false)
 	{
-		static $sent = false;
-
-		if ($sent) {
-			return;
-		}
-
-		$sent = true;
-
-	}
-
-	public static function quit(int $status = 0, bool $clean = false)
-	{
-		if ($clean) {
-			self::$respond -> clean();
-		}
-
-		if ($status > 0) {
-			self::$respond -> status($status);
-		}
+		self::$outputBuffer = [];
 		
-		self::send();
+		if ($debug) {
+			
+		} else {
+			self::quit();
+		}
+
+	}
+
+	public static function quit()
+	{
+		self::flush();
 		exit(0);
 	}
 
