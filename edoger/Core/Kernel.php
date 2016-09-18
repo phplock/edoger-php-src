@@ -1,34 +1,36 @@
 <?php
-/*
- +-----------------------------------------------------------------------------+
- | Edoger PHP Framework (EdogerPHP)                                            |
- +-----------------------------------------------------------------------------+
- | Copyright (c) 2014 - 2016 QingShan Luo                                      |
- +-----------------------------------------------------------------------------+
- | The MIT License (MIT)                                                       |
- |                                                                             |
- | Permission is hereby granted, free of charge, to any person obtaining a     |
- | copy of this software and associated documentation files (the “Software”),  |
- | to deal in the Software without restriction, including without limitation   |
- | the rights to use, copy, modify, merge, publish, distribute, sublicense,    |
- | and/or sell copies of the Software, and to permit persons to whom the       |
- | Software is furnished to do so, subject to the following conditions:        |
- |                                                                             |
- | The above copyright notice and this permission notice shall be included in  |
- | all copies or substantial portions of the Software.                         |
- |                                                                             |
- | THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND,             |
- | EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF          |
- | MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.      |
- | IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, |
- | DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR       |
- | OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE   |
- | USE OR OTHER DEALINGS IN THE SOFTWARE.                                      |
- +-----------------------------------------------------------------------------+
- |  License: MIT                                                               |
- +-----------------------------------------------------------------------------+
- |  Authors: QingShan Luo <shanshan.lqs@gmail.com>                             |
- +-----------------------------------------------------------------------------+
+/**
+ *+----------------------------------------------------------------------------+
+ *| Edoger PHP Framework (Edoger)                                              |
+ *+----------------------------------------------------------------------------+
+ *| Copyright (c) 2014 - 2016 QingShan Luo (Reent)                             |
+ *+----------------------------------------------------------------------------+
+ *| The MIT License (MIT)                                                      |
+ *|                                                                            |
+ *| Permission is hereby granted, free of charge, to any person obtaining a    |
+ *| copy of this software and associated documentation files (the “Software”), |
+ *| to deal in the Software without restriction, including without limitation  |
+ *| the rights to use, copy, modify, merge, publish, distribute, sublicense,   |
+ *| and/or sell copies of the Software, and to permit persons to whom the      |
+ *| Software is furnished to do so, subject to the following conditions:       |
+ *|                                                                            |
+ *| The above copyright notice and this permission notice shall be included in |
+ *| all copies or substantial portions of the Software.                        |
+ *|                                                                            |
+ *| THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND,            |
+ *| EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF         |
+ *| MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.     |
+ *| IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,|
+ *| DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR      |
+ *| OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE  |
+ *| USE OR OTHER DEALINGS IN THE SOFTWARE.                                     |
+ *+----------------------------------------------------------------------------+
+ *| License: MIT                                                               |
+ *+----------------------------------------------------------------------------+
+ *| Authors: QingShan Luo <shanshan.lqs@gmail.com>                             |
+ *+----------------------------------------------------------------------------+
+ *| Link: https://www.edoger.com/                                              |
+ *+----------------------------------------------------------------------------+
  */
 namespace Edoger\Core;
 
@@ -55,7 +57,7 @@ final class Kernel
 	private static $respond;
 	private static $routing;
 
-	private static $sendData = [];
+	private static $outputBuffer = [];
 	private static $sendOptions = [];
 
 	private static $routeParams = [];
@@ -71,9 +73,9 @@ final class Kernel
 	 * 
 	 * @return string
 	 */
-	public static function version()
+	public static function version($getInteger = false)
 	{
-		return '1.0.0';
+		return $getInteger ? EDOGER_VERSION_INTEGER : EDOGER_VERSION;
 	}
 
 	/**
@@ -83,102 +85,67 @@ final class Kernel
 	 * 
 	 * @return void
 	 */
-	public function __construct(Application $app)
+	public function __construct(Config $config)
 	{
-		(function($kernel){$this -> kernel = $kernel;}) -> call($app, $this);
-
-
 		//	计算并绑定站点根目录
-		self::$root = dirname(dirname(__DIR__));
+		self::$root 	= dirname(EDOGER_ROOT);
+		self::$config 	= $config;
 
-		//	载入系统配置
-		$edogerConfigFile = self::$root . '/config/edoger.php';
-		$conf = require $edogerConfigFile;
+		Debug::setDebugStatus((bool)$config -> get('debug'));
+
+		set_error_handler([Debug::class, 'edogerErrorHandler']);
+		set_exception_handler([Debug::class, 'edogerExceptionHandler']);
+		register_shutdown_function([Debug::class, 'edogerFatalErrorHandler']);
+
+		switch (strtolower($config -> get('log.level'))) {
+			case 'debug':		Logger::setLevel(Logger::LEVEL_DEBUG);		break;
+			case 'info':		Logger::setLevel(Logger::LEVEL_INFO);		break;
+			case 'notice':		Logger::setLevel(Logger::LEVEL_NOTICE);		break;
+			case 'warning':		Logger::setLevel(Logger::LEVEL_WARNING);	break;
+			case 'error':		Logger::setLevel(Logger::LEVEL_ERROR);		break;
+			case 'critical':	Logger::setLevel(Logger::LEVEL_CRITICAL);	break;
+			case 'alert':		Logger::setLevel(Logger::LEVEL_ALERT);		break;
+			case 'emergenc':	Logger::setLevel(Logger::LEVEL_EMERGENCY);	break;
+		}
 		
-		//	绑定框架配置管理器实例
-		self::$config = new Config($conf);
+		$logHandlerName 	= strtolower($config -> get('log.handler', 'file'));
+		$logHandlerConfig 	= $config -> get('log.handlers.' . $logHandlerName, []);
+
+		Logger::useHandler($logHandlerName, $logHandlerConfig);
 
 		//	创建请求组和响应组件实例
-		self::$request = new Request();
-		self::$respond = new Respond();
-
-		//	创建并绑定系统日志记录器
-		//	系统日志通道名称为 "EDOGER"，请不要重复使用
-		self::$logger = new Logger('EDOGER');
-
-		//	设置触发日志记录的最低级别
-		switch (strtolower(self::$config -> get('log_level'))) {
-
-			case 'debug':		$level = Logger::LEVEL_DEBUG;		break;
-			case 'info':		$level = Logger::LEVEL_INFO;		break;
-			case 'notice':		$level = Logger::LEVEL_NOTICE;		break;
-			case 'warning':		$level = Logger::LEVEL_WARNING;		break;
-			case 'error':		$level = Logger::LEVEL_ERROR;		break;
-			case 'critical':	$level = Logger::LEVEL_CRITICAL;	break;
-			case 'alert':		$level = Logger::LEVEL_ALERT;		break;
-			case 'emergenc':	$level = Logger::LEVEL_EMERGENCY;	break;
-			
-			default:
-
-				//	系统默认最低记录级别为：错误
-				$level = Logger::LEVEL_ERROR;
-				break;
-		}
-
-		//	配置日志记录器的记录程序
-		self::$logger -> useHandler(self::$config -> get('log_handler'), $level);
-
-		$app -> make(self::$logger);
-
-		//	创建系统的全局错误捕获与管理器
-		self::$debug = new Debug(self::$logger);
-
-		$app -> make(self::$debug);
-
-		self::$routing = new Routing(self::$request);
-
-		$app -> make(self::$routing);
+		self::$request = new Request(new Routing());
+		self::$respond = new Respond(new Output(self::$outputBuffer));
 	}
 
-	/**
-	 * ----------------------------------------------------------------------------
-	 * 创建并返回全局唯一的核心类的实例，核心对象只会创建一次
-	 * ----------------------------------------------------------------------------
-	 * 
-	 * @return Edoger\Core\Kernel
-	 */
-	public static function send()
+	public static function flush()
 	{
-		static $sent = false;
-
-		if ($sent) {
+		static $flushed = false;
+		if ($flushed) {
 			return;
 		}
+		$flushed = true;
+		if (!empty(self::$outputBuffer)) {
+			echo implode(self::$outputBuffer);
+			self::$outputBuffer = [];
+		}
+	}
 
-		$sent = true;
+	public static function error($debug = false)
+	{
+		self::$outputBuffer = [];
+		
+		if ($debug) {
+			
+		} else {
+			self::quit();
+		}
 
 	}
 
-	/**
-	 * ----------------------------------------------------------------------------
-	 * 触发系统错误，立即结束程序的运行
-	 * ----------------------------------------------------------------------------
-	 * 
-	 * @param  string  	$message 	错误消息
-	 * @param  integer 	$code    	错误代码
-	 * @return void
-	 */
-	public static function quit(int $status = 0, bool $clean = false)
+	public static function quit()
 	{
-		if ($clean) {
-			self::$respond -> clean();
-		}
-
-		if ($status > 0) {
-			self::$respond -> status($status);
-		}
-		
-		self::send();
+		self::flush();
 		exit(0);
 	}
 
@@ -193,53 +160,21 @@ final class Kernel
 	public function root(string $uri = '')
 	{
 		if ($uri) {
-			return self::$root . '/' . ltrim($uri, '/');
+			return self::$root . '/' . trim($uri, '/');
 		} else {
 			return self::$root;
 		}
 	}
 
-	/**
-	 * ----------------------------------------------------------------------------
-	 * 创建应用程序实例
-	 * ----------------------------------------------------------------------------
-	 *
-	 * @param  string 	$fileName 	应用程序配置文件的名称
-	 * @return Edoger\Core\Kernel
-	 */
-	public function create(string $fileName = '')
-	{
-		//	默认情况下，使用 "application" 作为配置文件名称
-		if (!$fileName) {
-			$fileName = 'application';
-		}
-
-		$file = self::$root . '/config/' . $fileName . '.php';
-
-		if (!file_exists($file)) {
-			$this -> throwError(
-				"The application configuration file {$file} does not exist",
-				5001
-				);
-		}
-
-		$configuration = require $file;
-
-		//	创建应用程序
-		//	同时创建应用程序配置管理器
-		self::$application = new Application($this, new Config($configuration));
-
-		return $this;
-	}
 
 	/**
 	 * ----------------------------------------------------------------------------
-	 * 获取应用程序实例，在没有创建应用程序之前，返回 NULL
+	 * 获取应用程序实例
 	 * ----------------------------------------------------------------------------
 	 *
 	 * @return Edoger\Core\Application
 	 */
-	public static function app()
+	public static function application()
 	{
 		return self::$application;
 	}
@@ -251,21 +186,9 @@ final class Kernel
 	 *
 	 * @return Edoger\Core\Config
 	 */
-	public function config()
+	public static function config()
 	{
 		return self::$config;
-	}
-
-	/**
-	 * ----------------------------------------------------------------------------
-	 * 获取错误调试管理器
-	 * ----------------------------------------------------------------------------
-	 * 
-	 * @return Edoger\Core\Debug
-	 */
-	public function debug()
-	{
-		return self::$debug;
 	}
 
 	/**
@@ -287,7 +210,7 @@ final class Kernel
 	 *
 	 * @return Edoger\Core\Http\Respond
 	 */
-	public static function respond()
+	public static function response()
 	{
 		return self::$respond;
 	}
@@ -302,11 +225,9 @@ final class Kernel
 	public static function library()
 	{
 		static $library = null;
-
 		if (is_null($library)) {
-			$library = new Library($this);
+			$library = new Library(self::$config -> get('library', []));
 		}
-
 		return $library;
 	}
 }

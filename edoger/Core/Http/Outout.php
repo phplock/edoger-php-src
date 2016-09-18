@@ -87,7 +87,7 @@ final class Output
 	public static function pop()
 	{
 		if (!empty(self::$buffer)) {
-			array_shift(self::$buffer);
+			array_pop(self::$buffer);
 		}
 		return true;
 	}
