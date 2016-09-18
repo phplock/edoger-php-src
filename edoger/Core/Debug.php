@@ -1,34 +1,36 @@
 <?php
-/*
- +-----------------------------------------------------------------------------+
- | Edoger PHP Framework (EdogerPHP)                                            |
- +-----------------------------------------------------------------------------+
- | Copyright (c) 2014 - 2016 QingShan Luo                                      |
- +-----------------------------------------------------------------------------+
- | The MIT License (MIT)                                                       |
- |                                                                             |
- | Permission is hereby granted, free of charge, to any person obtaining a     |
- | copy of this software and associated documentation files (the “Software”),  |
- | to deal in the Software without restriction, including without limitation   |
- | the rights to use, copy, modify, merge, publish, distribute, sublicense,    |
- | and/or sell copies of the Software, and to permit persons to whom the       |
- | Software is furnished to do so, subject to the following conditions:        |
- |                                                                             |
- | The above copyright notice and this permission notice shall be included in  |
- | all copies or substantial portions of the Software.                         |
- |                                                                             |
- | THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND,             |
- | EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF          |
- | MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.      |
- | IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, |
- | DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR       |
- | OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE   |
- | USE OR OTHER DEALINGS IN THE SOFTWARE.                                      |
- +-----------------------------------------------------------------------------+
- |  License: MIT                                                               |
- +-----------------------------------------------------------------------------+
- |  Authors: QingShan Luo <shanshan.lqs@gmail.com>                             |
- +-----------------------------------------------------------------------------+
+/**
+ *+----------------------------------------------------------------------------+
+ *| Edoger PHP Framework (Edoger)                                              |
+ *+----------------------------------------------------------------------------+
+ *| Copyright (c) 2014 - 2016 QingShan Luo (Reent)                             |
+ *+----------------------------------------------------------------------------+
+ *| The MIT License (MIT)                                                      |
+ *|                                                                            |
+ *| Permission is hereby granted, free of charge, to any person obtaining a    |
+ *| copy of this software and associated documentation files (the “Software”), |
+ *| to deal in the Software without restriction, including without limitation  |
+ *| the rights to use, copy, modify, merge, publish, distribute, sublicense,   |
+ *| and/or sell copies of the Software, and to permit persons to whom the      |
+ *| Software is furnished to do so, subject to the following conditions:       |
+ *|                                                                            |
+ *| The above copyright notice and this permission notice shall be included in |
+ *| all copies or substantial portions of the Software.                        |
+ *|                                                                            |
+ *| THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND,            |
+ *| EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF         |
+ *| MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.     |
+ *| IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,|
+ *| DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR      |
+ *| OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE  |
+ *| USE OR OTHER DEALINGS IN THE SOFTWARE.                                     |
+ *+----------------------------------------------------------------------------+
+ *| License: MIT                                                               |
+ *+----------------------------------------------------------------------------+
+ *| Authors: QingShan Luo <shanshan.lqs@gmail.com>                             |
+ *+----------------------------------------------------------------------------+
+ *| Link: https://www.edoger.com/                                              |
+ *+----------------------------------------------------------------------------+
  */
 namespace Edoger\Core;
 
@@ -41,9 +43,6 @@ use Edoger\Exceptions\EdogerException;
 /**
  * =============================================================================
  * 系统错误和异常管理组件
- *
- * 这个组件用于捕获全局所有的错误和异常，同时提供友好的处理方式。这个组件依赖系
- * 统的日志记录器。
  * =============================================================================
  */
 final class Debug
@@ -73,15 +72,36 @@ final class Debug
 		E_USER_DEPRECATED   => Logger::LEVEL_NOTICE
 	];
 
+	/**
+	 * -------------------------------------------------------------------------
+	 * 系统当前的调试开启状态。
+	 * -------------------------------------------------------------------------
+	 * 
+	 * @var boolean
+	 */
 	private static $debug = false;
 
 	/**
 	 * -------------------------------------------------------------------------
-	 * [parseExceptionLevel description]
+	 * 设置系统调试开启状态。
 	 * -------------------------------------------------------------------------
 	 * 
-	 * @param  [type] $code [description]
-	 * @return [type]       [description]
+	 * @param  boolean 	$status 	调试开启状态
+	 * @return boolean
+	 */
+	public static function setDebugStatus(bool $status)
+	{
+		self::$debug = $status;
+		return self::$debug;
+	}
+
+	/**
+	 * -------------------------------------------------------------------------
+	 * 解析异常对象所包含的信息。
+	 * -------------------------------------------------------------------------
+	 * 
+	 * @param  Exception|Error 	$e 	异常对象
+	 * @return array
 	 */
 	public static function parseException($e)
 	{
@@ -120,7 +140,7 @@ final class Debug
 
 	/**
 	 * -------------------------------------------------------------------------
-	 * 错误处理程序，未知级别的错误将被识别成系统最高级别错误
+	 * 系统错误处理程序
 	 * -------------------------------------------------------------------------
 	 * 
 	 * @param  integer 	$code 		错误的严重级别
@@ -140,10 +160,10 @@ final class Debug
 
 	/**
 	 * -------------------------------------------------------------------------
-	 * 异常处理程序，异常的默认级别都是 ERROR，异常都会导致程序中断执行
+	 * 系统异常处理程序，异常的默认级别都是 ERROR，异常都会导致程序中断执行
 	 * -------------------------------------------------------------------------
 	 * 
-	 * @param  Exception | Error 	$e 	异常对象
+	 * @param  Exception|Error 	$e 	异常对象
 	 * @return void
 	 */
 	public static function edogerExceptionHandler($e)
