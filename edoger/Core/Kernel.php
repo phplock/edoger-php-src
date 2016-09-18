@@ -71,9 +71,9 @@ final class Kernel
 	 * 
 	 * @return string
 	 */
-	public static function version()
+	public static function version($getInteger = false)
 	{
-		return '1.0.0';
+		return $getInteger ? EDOGER_VERSION_INTEGER : EDOGER_VERSION;
 	}
 
 	/**
@@ -83,28 +83,40 @@ final class Kernel
 	 * 
 	 * @return void
 	 */
-	public function __construct(Application $app)
+	public function __construct(Config $config)
 	{
-		(function($kernel){$this -> kernel = $kernel;}) -> call($app, $this);
-
-
 		//	计算并绑定站点根目录
-		self::$root = dirname(dirname(__DIR__));
+		self::$root 	= dirname(EDOGER_ROOT);
+		self::$config 	= $config;
 
-		//	载入系统配置
-		$edogerConfigFile = self::$root . '/config/edoger.php';
-		$conf = require $edogerConfigFile;
+		set_error_handler([Debug::class, 'edogerErrorHandler']);
+		set_exception_handler([Debug::class, 'edogerExceptionHandler']);
+		register_shutdown_function([Debug::class, 'edogerFatalErrorHandler']);
+
+		switch (strtolower($config -> get('log.level'))) {
+			case 'debug':		Logger::setLevel(Logger::LEVEL_DEBUG);		break;
+			case 'info':		Logger::setLevel(Logger::LEVEL_INFO);		break;
+			case 'notice':		Logger::setLevel(Logger::LEVEL_NOTICE);		break;
+			case 'warning':		Logger::setLevel(Logger::LEVEL_WARNING);	break;
+			case 'error':		Logger::setLevel(Logger::LEVEL_ERROR);		break;
+			case 'critical':	Logger::setLevel(Logger::LEVEL_CRITICAL);	break;
+			case 'alert':		Logger::setLevel(Logger::LEVEL_ALERT);		break;
+			case 'emergenc':	Logger::setLevel(Logger::LEVEL_EMERGENCY);	break;
+		}
 		
-		//	绑定框架配置管理器实例
-		self::$config = new Config($conf);
+		$logHandlerName 	= strtolower($config -> get('log.handler', 'file'));
+		$logHandlerConfig 	= $config -> get('log.handlers.' . $logHandlerName, []);
+
+		Logger::useHandler($logHandlerName, $logHandlerConfig);
+
+
+
 
 		//	创建请求组和响应组件实例
 		self::$request = new Request();
 		self::$respond = new Respond();
 
-		//	创建并绑定系统日志记录器
-		//	系统日志通道名称为 "EDOGER"，请不要重复使用
-		self::$logger = new Logger('EDOGER');
+		
 
 		//	设置触发日志记录的最低级别
 		switch (strtolower(self::$config -> get('log_level'))) {
@@ -147,7 +159,7 @@ final class Kernel
 	 * 
 	 * @return Edoger\Core\Kernel
 	 */
-	public static function send()
+	public static function flush()
 	{
 		static $sent = false;
 
@@ -193,44 +205,12 @@ final class Kernel
 	public function root(string $uri = '')
 	{
 		if ($uri) {
-			return self::$root . '/' . ltrim($uri, '/');
+			return self::$root . '/' . trim($uri, '/');
 		} else {
 			return self::$root;
 		}
 	}
 
-	/**
-	 * ----------------------------------------------------------------------------
-	 * 创建应用程序实例
-	 * ----------------------------------------------------------------------------
-	 *
-	 * @param  string 	$fileName 	应用程序配置文件的名称
-	 * @return Edoger\Core\Kernel
-	 */
-	public function create(string $fileName = '')
-	{
-		//	默认情况下，使用 "application" 作为配置文件名称
-		if (!$fileName) {
-			$fileName = 'application';
-		}
-
-		$file = self::$root . '/config/' . $fileName . '.php';
-
-		if (!file_exists($file)) {
-			$this -> throwError(
-				"The application configuration file {$file} does not exist",
-				5001
-				);
-		}
-
-		$configuration = require $file;
-
-		//	创建应用程序
-		//	同时创建应用程序配置管理器
-		self::$application = new Application($this, new Config($configuration));
-
-		return $this;
-	}
 
 	/**
 	 * ----------------------------------------------------------------------------
@@ -239,7 +219,7 @@ final class Kernel
 	 *
 	 * @return Edoger\Core\Application
 	 */
-	public static function app()
+	public static function application()
 	{
 		return self::$application;
 	}

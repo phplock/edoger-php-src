@@ -197,8 +197,7 @@ final class Logger
 	 */
 	public static function useHandler(string $handler, array $config = [])
 	{
-		$handler 	= ucfirst(strtolower($handler));
-		$className 	= '\\Edoger\\Core\\Log\\Handlers\\' . $handler . 'Handler';
+		$className = '\\Edoger\\Core\\Log\\Handlers\\' . ucfirst($handler) . 'Handler';
 		
 		if (class_exists($className, true)) {
 			$handler = new $className($config);

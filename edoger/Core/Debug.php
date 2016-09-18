@@ -32,8 +32,10 @@
  */
 namespace Edoger\Core;
 
+use Error;
+use Exception;
 use Edoger\Core\Log\Logger;
-use Edoger\Interfaces\EdogerExceptionInterface;
+use Edoger\Exceptions\EdogerException;
 
 
 /**
@@ -46,24 +48,6 @@ use Edoger\Interfaces\EdogerExceptionInterface;
  */
 final class Debug
 {
-	/**
-	 * -------------------------------------------------------------------------
-	 * 绑定的日志记录器，如果没有绑定，捕获的错误将记录组件自身缓存
-	 * -------------------------------------------------------------------------
-	 *
-	 * @var Edoger\Core\Log\Logger
-	 */
-	private static $logger = null;
-
-	/**
-	 * -------------------------------------------------------------------------
-	 * 捕获的错误日志缓存，这在绑定日志记录器之后会自动写入日志
-	 * -------------------------------------------------------------------------
-	 *
-	 * @var array
-	 */
-	private static $logCache = [];
-
 	/**
 	 * -------------------------------------------------------------------------
 	 * PHP错误级别到日志级别的映射数组
@@ -89,118 +73,7 @@ final class Debug
 		E_USER_DEPRECATED   => Logger::LEVEL_NOTICE
 	];
 
-	/**
-	 * -------------------------------------------------------------------------
-	 * [bindLogger description]
-	 * -------------------------------------------------------------------------
-	 * 
-	 * @param  Logger $logger [description]
-	 * @return [type]         [description]
-	 */
-	public function __construct(Logger $logger)
-	{
-		self::$logger = $logger;
-
-		if (!empty(self::$logCache)) {
-			foreach (self::$logCache as $value) {
-				$logger -> log($value[0], $value[1]);
-			}
-			self::$logCache = [];
-		}
-		return true;
-	}
-
-	/**
-	 * -------------------------------------------------------------------------
-	 * [registerErrorHandler description]
-	 * -------------------------------------------------------------------------
-	 * 
-	 * @return [type] [description]
-	 */
-	public static function registerErrorHandler()
-	{
-		static $registered = false;
-		if (!$registered) {
-			$registered = true;
-			set_error_handler([__CLASS__, '_ErrorHandler']);
-		}
-		return $registered;
-	}
-
-	/**
-	 * -------------------------------------------------------------------------
-	 * [registerExceptionHandler description]
-	 * -------------------------------------------------------------------------
-	 * 
-	 * @return [type] [description]
-	 */
-	public static function registerExceptionHandler()
-	{
-		static $registered = false;
-		if (!$registered) {
-			$registered = true;
-			set_exception_handler([__CLASS__, '_ExceptionHandler']);
-		}
-		return $registered;
-	}
-
-	/**
-	 * -------------------------------------------------------------------------
-	 * [registerShutdownHandler description]
-	 * -------------------------------------------------------------------------
-	 * 
-	 * @return [type] [description]
-	 */
-	public static function registerShutdownHandler()
-	{
-		static $registered = false;
-		if (!$registered) {
-			$registered = true;
-			register_shutdown_function([__CLASS__, '_ShutdownHandler']);
-		}
-		return $registered;
-	}
-
-	/**
-	 * -------------------------------------------------------------------------
-	 * [callHook description]
-	 * -------------------------------------------------------------------------
-	 * 
-	 * @return [type] [description]
-	 */
-	private static function callHook()
-	{
-		static $called = false;
-
-		if (!$called) {
-			$called = true;
-
-			if (!Hook::call('shutdown')) {
-				self::writeLog(
-					self::parseExceptionLevel(Hook::getLastErrorCode()),
-					Hook::getLastErrorMessage()
-					);
-			}
-		}
-	}
-
-	/**
-	 * -------------------------------------------------------------------------
-	 * [writeLog description]
-	 * -------------------------------------------------------------------------
-	 * 
-	 * @param  int    $level   [description]
-	 * @param  string $message [description]
-	 * @return [type]          [description]
-	 */
-	private static function writeLog(int $level, string $message)
-	{
-		if (self::$logger) {
-			self::$logger -> log($level, $message);
-		} else {
-			self::$logCache[] = [$level, $message];
-		}
-	}
+	private static $debug = false;
 
 	/**
 	 * -------------------------------------------------------------------------
@@ -210,21 +83,38 @@ final class Debug
 	 * @param  [type] $code [description]
 	 * @return [type]       [description]
 	 */
-	private static function parseExceptionLevel(int $code)
+	public static function parseException($e)
 	{
-		if ($code < 5000000) {
-			return Logger::LEVEL_ERROR;
-		} elseif ($code < 6000000) {
-			return Logger::LEVEL_WARNING;
-		} elseif ($code < 7000000) {
-			return Logger::LEVEL_NOTICE;
-		} elseif ($code < 8000000) {
-			return Logger::LEVEL_INFO;
-		} elseif ($code < 9000000) {
-			return Logger::LEVEL_DEBUG;
+		$outcome = [];
+		if (is_object($e) && ($e instanceof Exception || $e instanceof Error)) {
+			if ($e instanceof EdogerException) {
+				$code = $e -> getCode();
+				if ($code <= 50000000) {
+					$outcome[] = Logger::LEVEL_ERROR;
+				} elseif ($code <= 60000000) {
+					$outcome[] = Logger::LEVEL_WARNING;
+				} elseif ($code <= 70000000) {
+					$outcome[] = Logger::LEVEL_NOTICE;
+				} elseif ($code <= 80000000) {
+					$outcome[] = Logger::LEVEL_INFO;
+				} elseif ($code <= 90000000) {
+					$outcome[] = Logger::LEVEL_DEBUG;
+				} else {
+					$outcome[] = Logger::LEVEL_CRITICAL;
+				}
+			} else {
+				$outcome[] = Logger::LEVEL_ERROR;
+			}
+			if (self::$debug) {
+				$outcome[] = $e -> __toString();
+			} else {
+				$outcome[] = $e -> getMessage() . ' at ' . $e -> getFile() . ' line ' . $e -> getLine();
+			}
 		} else {
-			return Logger::LEVEL_EMERGENCY;
+			$outcome[] = Logger::LEVEL_CRITICAL;
+			$outcome[] = 'Unknown exception object';
 		}
+		return $outcome;
 	}
 
 
@@ -239,16 +129,12 @@ final class Debug
 	 * @param  integer 	$line    	发生错误的行号
 	 * @return void
 	 */
-	public static function _ErrorHandler(int $code, string $message, string $file = '', int $line = 0)
+	public static function edogerErrorHandler(int $code, string $message, string $file = '', int $line = 0)
 	{
-		$level 	= self::$map[$code] ?? Logger::LEVEL_CRITICAL;
-		$log 	= $message . ' at ' . $file . ' line ' . $line;
-
-		self::writeLog($level, $log);
-
+		$level = self::$map[$code] ?? Logger::LEVEL_CRITICAL;
+		Logger::log($level, $message . ' at ' . $file . ' line ' . $line);
 		if ($level >= Logger::LEVEL_ERROR) {
-			self::callHook();
-			exit(0);
+			Kernel::error(self::$debug);
 		}
 	}
 
@@ -260,22 +146,11 @@ final class Debug
 	 * @param  Exception | Error 	$e 	异常对象
 	 * @return void
 	 */
-	public static function _ExceptionHandler($e)
+	public static function edogerExceptionHandler($e)
 	{
-		if ($e instanceof EdogerExceptionInterface) {
-			$level = self::parseExceptionLevel($e -> getCode());
-		} else {
-			$level = Logger::LEVEL_ERROR;
-		}
-		
-		$log = $e -> getMessage() . ' at ' . $e -> getFile() . ' line ' . $e -> getLine();
-
-		self::writeLog($level, $log);
-
-		if ($level >= Logger::LEVEL_ERROR) {
-			self::callHook();
-			exit(0);
-		}
+		$exceptionInfo = self::parseException($e);
+		Logger::log($exceptionInfo[0], $exceptionInfo[1]);
+		Kernel::error(self::$debug);
 	}
 
 	/**
@@ -285,19 +160,20 @@ final class Debug
 	 *
 	 * @return void
 	 */
-	public static function _ShutdownHandler()
+	public static function edogerFatalErrorHandler()
 	{
-		$error = error_get_last();
-
-		if ($error) {
+		$e = error_get_last();
+		if ($e) {
 			error_clear_last();
-
-			$level 	= self::$map[$error['type']] ?? Logger::LEVEL_CRITICAL;
-			$log 	= $error['message'] . ' at ' . $error['file'] . ' line ' . $error['line'];
-			
-			self::writeLog($level, $log);
+			$level = self::$map[$e['type']] ?? Logger::LEVEL_CRITICAL;
+			Logger::log($level, $e['message'] . ' at ' . $e['file'] . ' line ' . $e['line']);
+			if ($level >= Logger::LEVEL_ERROR) {
+				Kernel::error(self::$debug);
+			} else {
+				Kernel::flush();
+			}
+		} else {
+			Kernel::flush();
 		}
-
-		Kernel::quit();
 	}
 }
