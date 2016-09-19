@@ -248,13 +248,13 @@ final class Request
 	 * @param  string $protocol [description]
 	 * @return [type]           [description]
 	 */
-	public function baseUrl()
+	public function url()
 	{
-		if (!isset(self::$caches['baseUrl'])) {
-			self::$caches['baseUrl']
+		if (!isset(self::$caches['url'])) {
+			self::$caches['url']
 				= $this -> protocol() . '://' . $this -> hostname();
 		}
-		return self::$caches['baseUrl'];
+		return self::$caches['url'];
 	}
 
 	/**
@@ -264,68 +264,24 @@ final class Request
 	 * 
 	 * @return [type] [description]
 	 */
-	public function refererUrl()
+	public function referer()
 	{
-		if (!isset(self::$caches['refererUrl'])) {
-			self::$caches['refererUrl'] = Server::query('HTTP_REFERER');
+		if (!isset(self::$caches['referer'])) {
+			self::$caches['referer'] = Server::query('HTTP_REFERER');
 		}
-		return self::$caches['refererUrl'];
+		return self::$caches['referer'];
 	}
 
 	/**
 	 * -------------------------------------------------------------------------
-	 * [get description]
+	 * [referrer description]
 	 * -------------------------------------------------------------------------
 	 * 
-	 * @param  string $key [description]
-	 * @param  [type] $def [description]
-	 * @return [type]      [description]
+	 * @return [type] [description]
 	 */
-	public function get(string $key, $def = null)
+	public function referrer()
 	{
-		return $_GET[$key] ?? $def;
-	}
-
-	/**
-	 * -------------------------------------------------------------------------
-	 * [post description]
-	 * -------------------------------------------------------------------------
-	 * 
-	 * @param  string $key [description]
-	 * @param  [type] $def [description]
-	 * @return [type]      [description]
-	 */
-	public function post(string $key, $def = null)
-	{
-		return $_POST[$key] ?? $def;
-	}
-
-	/**
-	 * -------------------------------------------------------------------------
-	 * [getpost description]
-	 * -------------------------------------------------------------------------
-	 * 
-	 * @param  string $key [description]
-	 * @param  [type] $def [description]
-	 * @return [type]      [description]
-	 */
-	public function getpost(string $key, $def = null)
-	{
-		return $_GET[$key] ?? $_POST[$key] ?? $def;
-	}
-
-	/**
-	 * -------------------------------------------------------------------------
-	 * [postget description]
-	 * -------------------------------------------------------------------------
-	 * 
-	 * @param  string $key [description]
-	 * @param  [type] $def [description]
-	 * @return [type]      [description]
-	 */
-	public function postget(string $key, $def = null)
-	{
-		return $_POST[$key] ?? $_GET[$key] ?? $def;
+		return $this -> referer();
 	}
 
 	/**
