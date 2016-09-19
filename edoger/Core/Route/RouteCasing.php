@@ -40,63 +40,45 @@ namespace Edoger\Core\Route;
  */
 final class RouteCasing
 {
-	private static $middleware 	= [];
-	private static $filter 		= [];
-	private static $hook 		= null;
-	private static $isMatch 	= false;
-
-	/**
-	 * ----------------------------------------------------------------------------
-	 * [$domain description]
-	 * ----------------------------------------------------------------------------
-	 * 
-	 * @var [type]
-	 */
-	private static $domain;
-
-	/**
-	 * ----------------------------------------------------------------------------
-	 * [$port description]
-	 * ----------------------------------------------------------------------------
-	 * 
-	 * @var [type]
-	 */
-	private static $port;
-
-	/**
-	 * ----------------------------------------------------------------------------
-	 * [$scheme description]
-	 * ----------------------------------------------------------------------------
-	 * 
-	 * @var [type]
-	 */
-	private static $scheme;
-
-	/**
-	 * ----------------------------------------------------------------------------
-	 * [$xhr description]
-	 * ----------------------------------------------------------------------------
-	 * 
-	 * @var [type]
-	 */
-	private static $xhr;
+	private $filter;
+	private $middleware;
+	private $isMatch;
+	private $domain;
+	private $port;
+	private $scheme;
+	private $xhr;
 	
 	/**
 	 * ----------------------------------------------------------------------------
 	 * [__construct description]
 	 * ----------------------------------------------------------------------------
 	 * 
-	 * @param string $domain [description]
-	 * @param int    $port   [description]
-	 * @param string $scheme [description]
-	 * @param bool   $xhr    [description]
+	 * @param string $domain      [description]
+	 * @param int    $port        [description]
+	 * @param string $scheme      [description]
+	 * @param bool   $xhr         [description]
+	 * @param array  &$filter     [description]
+	 * @param array  &$middleware [description]
+	 * @param bool   &$isMatch    [description]
 	 */
-	public function __construct(string $domain, int $port, string $scheme, bool $xhr)
+	public function __construct(
+		string $domain,
+		int $port,
+		string $scheme,
+		bool $xhr,
+		array &$filter,
+		array &$middleware,
+		bool &$isMatch
+		)
 	{
-		self::$domain 	= $domain;
-		self::$port 	= $port;
-		self::$scheme 	= $scheme;
-		self::$xhr 		= $xhr;
+		$this -> domain 		= $domain;
+		$this -> port 			= $port;
+		$this -> scheme 		= $scheme;
+		$this -> xhr 			= $xhr;
+
+		$this -> filter			= &$filter;
+		$this -> middleware		= &$middleware;
+		$this -> isMatch		= &$isMatch;
 	}
 
 	/**
@@ -109,80 +91,8 @@ final class RouteCasing
 	 */
 	public function filter(array $filter)
 	{
-		if (self::$isMatch && !empty($filter)) {
-			self::$filter = $filter;
-		}
-
-		return $this;
-	}
-
-	/**
-	 * ----------------------------------------------------------------------------
-	 * [scheme description]
-	 * ----------------------------------------------------------------------------
-	 * 
-	 * @param  string $scheme [description]
-	 * @return [type]         [description]
-	 */
-	public function scheme(string $scheme)
-	{
-		if (self::$isMatch && self::$scheme !== strtolower($scheme)) {
-			self::$isMatch = false;
-		}
-
-		return $this;
-	}
-
-	/**
-	 * ----------------------------------------------------------------------------
-	 * [domain description]
-	 * ----------------------------------------------------------------------------
-	 * 
-	 * @param  string $domain [description]
-	 * @return [type]         [description]
-	 */
-	public function domain(string $domain)
-	{
-		if (self::$isMatch && self::$domain !== strtolower($domain)) {
-			self::$isMatch = false;
-		}
-
-		return $this;
-	}
-
-	/**
-	 * ----------------------------------------------------------------------------
-	 * [domains description]
-	 * ----------------------------------------------------------------------------
-	 * 
-	 * @param  array  $domains [description]
-	 * @return [type]          [description]
-	 */
-	public function domains(array $domains)
-	{
-		if (self::$isMatch && !empty($domains)) {
-			foreach ($domains as $d) {
-				if (self::$domain !== strtolower($d)) {
-					self::$isMatch = false;
-					break;
-				}
-			}
-		}
-
-		return $this;
-	}
-
-	/**
-	 * ----------------------------------------------------------------------------
-	 * [xhrOnly description]
-	 * ----------------------------------------------------------------------------
-	 * 
-	 * @return [type] [description]
-	 */
-	public function xhrOnly()
-	{
-		if (self::$isMatch && !self::$xhr) {
-			self::$isMatch = false;
+		if ($this -> isMatch) {
+			$this -> filter = $filter;
 		}
 
 		return $this;
@@ -198,12 +108,69 @@ final class RouteCasing
 	 */
 	public function middleware(array $middleware)
 	{
-		if (self::$isMatch) {
-			self::$middleware = $middleware;
+		if ($this -> isMatch) {
+			$this -> middleware = $middleware;
 		}
 
 		return $this;
 	}
+
+	/**
+	 * ----------------------------------------------------------------------------
+	 * [scheme description]
+	 * ----------------------------------------------------------------------------
+	 * 
+	 * @param  string $scheme [description]
+	 * @return [type]         [description]
+	 */
+	public function scheme($scheme)
+	{
+		if ($this -> isMatch) {
+			$this -> isMatch = in_array(
+				$this -> scheme,
+				array_map('strtolower', (array)$scheme)
+				)
+		}
+
+		return $this;
+	}
+
+	/**
+	 * ----------------------------------------------------------------------------
+	 * [domain description]
+	 * ----------------------------------------------------------------------------
+	 * 
+	 * @param  string $domain [description]
+	 * @return [type]         [description]
+	 */
+	public function domain($domain)
+	{
+		if ($this -> isMatch) {
+			$this -> isMatch = in_array(
+				$this -> domain,
+				array_map('strtolower', (array)$domain)
+				);
+		}
+
+		return $this;
+	}
+
+	/**
+	 * ----------------------------------------------------------------------------
+	 * [xhr description]
+	 * ----------------------------------------------------------------------------
+	 * 
+	 * @return [type] [description]
+	 */
+	public function xhr(bool $xhr)
+	{
+		if ($this -> isMatch) {
+			$this -> isMatch = $this -> xhr === $xhr;
+		}
+
+		return $this;
+	}
+
 
 	/**
 	 * ----------------------------------------------------------------------------
@@ -213,10 +180,12 @@ final class RouteCasing
 	 * @param  callable $hook [description]
 	 * @return [type]         [description]
 	 */
-	public function hook(callable $hook)
+	public function listen($port)
 	{
-		if (self::$isMatch) {
-			self::$hook = $hook;
+		if ($this -> isMatch) {
+			$this -> isMatch = in_array($this -> port, (array)$port);
 		}
+
+		return $this;
 	}
 }
