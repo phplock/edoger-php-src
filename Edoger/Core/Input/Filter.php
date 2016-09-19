@@ -36,49 +36,52 @@ namespace Edoger\Core\Input;
 
 
 /**
- * ================================================================================
- * 输入数据过滤器管理组件，该组件用于管理和调度输入数据管理器所使用到的全部过滤器，
- * 为整个系统输入数据提供安全过滤服务和验证拦截服务
- * ================================================================================
+ *==============================================================================
+ * 输入数据过滤器管理组件。
+ *==============================================================================
  */
 class Filter
 {
 	/**
-	 * ----------------------------------------------------------------------------
-	 * 本地通用过滤器，这些过滤器来自于系统本身自带的和用户自定义的全局过滤器，这些
-	 * 过滤器在整个程序脚本执行周期内都一直存在
-	 * ----------------------------------------------------------------------------
+	 * -------------------------------------------------------------------------
+	 * 可用的过滤器。
+	 * -------------------------------------------------------------------------
 	 * 
 	 * @var array
 	 */
 	private $pool = [];
 
-
-	public function register(string $name, callable $handler, bool $cover = true)
+	/**
+	 * -------------------------------------------------------------------------
+	 * [register description]
+	 * -------------------------------------------------------------------------
+	 * 
+	 * @param  string   $name    [description]
+	 * @param  callable $handler [description]
+	 * @return [type]            [description]
+	 */
+	public function register(string $name, callable $handler)
 	{
-		if ($cover || !isset(self::$filterList[$name])) {
-			self::$filterList[$name] = $handler;
-			return true;
-		}
-		return false;
+		$this -> pool[$name] = $handler;
+		return true;
 	}
 
 	/**
-	 * ----------------------------------------------------------------------------
+	 * -------------------------------------------------------------------------
 	 * 调用一个回调函数类型的过滤器
-	 * ----------------------------------------------------------------------------
+	 * -------------------------------------------------------------------------
 	 * 
 	 * @param  callable 		$filter 	过滤器
 	 * @param  string | array   $value  	等待过滤的数据或数据组
 	 * @return boolean
 	 */
-	private static function callFunctionFilter(callable $filter, $value)
+	private function callFunctionFilter(callable $filter, $value)
 	{
-		if (is_string($value) || is_numeric($value)) {
-			return (bool)call_user_func($filter, $value);
-		} elseif (is_array($value) && !empty($value)) {
+		if (is_scalar($value)) {
+			return (bool)call_user_func($filter, (string)$value);
+		} elseif (is_array($value)) {
 			foreach ($value as $v) {
-				if (!self::callFunctionFilter($filter, $v)) {
+				if (!$this -> callFunctionFilter($filter, $v)) {
 					return false;
 				}
 			}
@@ -89,46 +92,21 @@ class Filter
 	}
 
 	/**
-	 * ----------------------------------------------------------------------------
-	 * 调用一个指定名称的全局过滤器
-	 * ----------------------------------------------------------------------------
-	 * 
-	 * @param  string 			$filter 	过滤器
-	 * @param  string | array   $value  	等待过滤的数据或数据组
-	 * @return boolean
-	 */
-	private static function callPredefinedFilter(string $filter, $value)
-	{
-		if (is_string($value) || is_numeric($value)) {
-			return (bool)call_user_func(self::$filterList[$filter], $value);
-		} elseif (is_array($value) && !empty($value)) {
-			foreach ($value as $v) {
-				if (!self::callPredefinedFilter($filter, $v)) {
-					return false;
-				}
-			}
-			return true;
-		} else {
-			return false;
-		}
-	}
-
-	/**
-	 * ----------------------------------------------------------------------------
+	 * -------------------------------------------------------------------------
 	 * 调用一个给定正则表达式的过滤器
-	 * ----------------------------------------------------------------------------
+	 * -------------------------------------------------------------------------
 	 * 
 	 * @param  string 			$filter 	过滤器，这必须是一个有效的正则表达式
 	 * @param  string | array   $value  	等待过滤的数据或数据组
 	 * @return boolean
 	 */
-	private static function callPregFilter(string $filter, $value)
+	private function callPregFilter(string $filter, $value)
 	{
-		if (is_string($value) || is_numeric($value)) {
-			return (bool)preg_match($filter, $value);
-		} elseif (is_array($value) && !empty($value)) {
+		if (is_scalar($value)) {
+			return (bool)preg_match($filter, (string)$value);
+		} elseif (is_array($value)) {
 			foreach ($value as $v) {
-				if (!self::callPregFilter($filter, $v)) {
+				if (!$this -> callPregFilter($filter, $v)) {
 					return false;
 				}
 			}
@@ -139,32 +117,32 @@ class Filter
 	}
 
 	/**
-	 * ----------------------------------------------------------------------------
+	 * -------------------------------------------------------------------------
 	 * 使用给定的过滤器或过滤器组过滤给定的数据或数据组，返回数据或数据组中的全部数
 	 * 据是否通过了给定的过滤器或过滤器组中的全部过滤器
-	 * ----------------------------------------------------------------------------
+	 * -------------------------------------------------------------------------
 	 * 
 	 * @param  callable | string | arrray 	$filter 	过滤器或过滤器组
 	 * @param  string | array   			$value  	等待过滤的数据或数据组
 	 * @return boolean
 	 */
-	public static function call($filter, $value)
+	public function call($filter, $value)
 	{
 		if (is_null($filter)) {
 			return true;
 		} elseif (is_callable($filter)) {
-			return self::callFunctionFilter($filter, $value);
+			return $this -> callFunctionFilter($filter, $value);
 		} elseif (is_string($filter)) {
-			if (isset(self::$filterList[$filter])) {
-				return self::callPredefinedFilter($filter, $value);
-			} elseif (substr($filter, 0, 1) === '/' && substr($filter, -1) === '/') {
-				return self::callPregFilter($filter, $value);
+			if (isset($this -> pool[$filter])) {
+				return $this -> callFunctionFilter($this -> pool[$filter], $value);
+			} elseif (substr($filter, 0, 1) === '/') {
+				return $this -> callPregFilter($filter, $value);
 			} else {
 				return false;
 			}
-		} elseif (is_array($filter) && !empty($filter)) {
+		} elseif (is_array($filter)) {
 			foreach ($filter as $f) {
-				if (!self::call($f, $value)) {
+				if (!$this -> call($f, $value)) {
 					return false;
 				}
 			}
