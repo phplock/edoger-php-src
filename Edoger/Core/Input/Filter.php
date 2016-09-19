@@ -32,7 +32,7 @@
  *| Link: https://www.edoger.com/                                              |
  *+----------------------------------------------------------------------------+
  */
-namespace Edoger\Core\Http\Input;
+namespace Edoger\Core\Input;
 
 
 /**
@@ -51,33 +51,10 @@ class Filter
 	 * 
 	 * @var array
 	 */
-	private static $filterList = [];
+	private $pool = [];
 
-	/**
-	 * ----------------------------------------------------------------------------
-	 * 加载一个本地过滤器组件
-	 * ----------------------------------------------------------------------------
-	 * 
-	 * @param  string 	$group 	本地过滤器组件的名称
-	 * @param  boolean 	$cover 	是否覆盖名称冲突的过滤器
-	 * @return boolean
-	 */
-	public static function local(string $group, bool $cover = true)
-	{
-		//
-	}
 
-	/**
-	 * ----------------------------------------------------------------------------
-	 * 添加一个全局生效的用户级自定义过滤器
-	 * ----------------------------------------------------------------------------
-	 * 
-	 * @param  string 	$name    	过滤名称
-	 * @param  callable $handler 	过滤器执行函数
-	 * @param  boolean 	$cover   	是否覆盖名称冲突的过滤器
-	 * @return boolean
-	 */
-	public static function register(string $name, callable $handler, bool $cover = true)
+	public function register(string $name, callable $handler, bool $cover = true)
 	{
 		if ($cover || !isset(self::$filterList[$name])) {
 			self::$filterList[$name] = $handler;
