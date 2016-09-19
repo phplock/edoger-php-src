@@ -32,6 +32,8 @@
  */
 namespace Edoger\Core\Http;
 
+use Edoger\Core\Kernel;
+use Edoger\Core\Route\Routing;
 use Edoger\Core\Application;
 use Edoger\Exceptions\RuntimeException;
 
@@ -53,8 +55,8 @@ final class Request
 	 */
 	private static $caches = [];
 
-	private static $routeParams = [];
-	private static $routeShared = [];
+	private static $application = null;
+	private static $routeManager = null;
 	
 	/**
 	 * -------------------------------------------------------------------------
@@ -110,6 +112,18 @@ final class Request
 
 	/**
 	 * -------------------------------------------------------------------------
+	 * [ip description]
+	 * -------------------------------------------------------------------------
+	 * 
+	 * @return [type] [description]
+	 */
+	public function ip()
+	{
+		return $this -> clientIp();
+	}
+
+	/**
+	 * -------------------------------------------------------------------------
 	 * [serverIp description]
 	 * -------------------------------------------------------------------------
 	 * 
@@ -130,20 +144,20 @@ final class Request
 	 * 
 	 * @return [type] [description]
 	 */
-	public function requestUri()
+	public function path()
 	{
-		if (!isset(self::$caches['requestUri'])) {
+		if (!isset(self::$caches['path'])) {
 			$uri = parse_url(
 				urldecode(Server::query('REQUEST_URI', '/')),
 				PHP_URL_PATH
 				);
 			if (is_string($uri)) {
-				self::$caches['requestUri'] = $uri;
+				self::$caches['path'] = $uri;
 			} else {
-				self::$caches['requestUri'] = '/';
+				self::$caches['path'] = '/';
 			}
 		}
-		return self::$caches['requestUri'];
+		return self::$caches['path'];
 	}
 
 	/**
@@ -212,6 +226,30 @@ final class Request
 
 	/**
 	 * -------------------------------------------------------------------------
+	 * [host description]
+	 * -------------------------------------------------------------------------
+	 * 
+	 * @return [type] [description]
+	 */
+	public function host()
+	{
+		return $this -> hostname();
+	}
+
+	/**
+	 * -------------------------------------------------------------------------
+	 * [domain description]
+	 * -------------------------------------------------------------------------
+	 * 
+	 * @return [type] [description]
+	 */
+	public function domain()
+	{
+		return $this -> hostname();
+	}
+
+	/**
+	 * -------------------------------------------------------------------------
 	 * [port description]
 	 * -------------------------------------------------------------------------
 	 * 
@@ -248,13 +286,12 @@ final class Request
 	 * @param  string $protocol [description]
 	 * @return [type]           [description]
 	 */
-	public function baseUrl()
+	public function url()
 	{
-		if (!isset(self::$caches['baseUrl'])) {
-			self::$caches['baseUrl']
-				= $this -> protocol() . '://' . $this -> hostname();
+		if (!isset(self::$caches['url'])) {
+			self::$caches['url'] = $this -> protocol() . '://' . $this -> hostname();
 		}
-		return self::$caches['baseUrl'];
+		return self::$caches['url'];
 	}
 
 	/**
@@ -264,68 +301,24 @@ final class Request
 	 * 
 	 * @return [type] [description]
 	 */
-	public function refererUrl()
+	public function referer()
 	{
-		if (!isset(self::$caches['refererUrl'])) {
-			self::$caches['refererUrl'] = Server::query('HTTP_REFERER');
+		if (!isset(self::$caches['referer'])) {
+			self::$caches['referer'] = Server::query('HTTP_REFERER');
 		}
-		return self::$caches['refererUrl'];
+		return self::$caches['referer'];
 	}
 
 	/**
 	 * -------------------------------------------------------------------------
-	 * [get description]
+	 * [referrer description]
 	 * -------------------------------------------------------------------------
 	 * 
-	 * @param  string $key [description]
-	 * @param  [type] $def [description]
-	 * @return [type]      [description]
+	 * @return [type] [description]
 	 */
-	public function get(string $key, $def = null)
+	public function referrer()
 	{
-		return $_GET[$key] ?? $def;
-	}
-
-	/**
-	 * -------------------------------------------------------------------------
-	 * [post description]
-	 * -------------------------------------------------------------------------
-	 * 
-	 * @param  string $key [description]
-	 * @param  [type] $def [description]
-	 * @return [type]      [description]
-	 */
-	public function post(string $key, $def = null)
-	{
-		return $_POST[$key] ?? $def;
-	}
-
-	/**
-	 * -------------------------------------------------------------------------
-	 * [getpost description]
-	 * -------------------------------------------------------------------------
-	 * 
-	 * @param  string $key [description]
-	 * @param  [type] $def [description]
-	 * @return [type]      [description]
-	 */
-	public function getpost(string $key, $def = null)
-	{
-		return $_GET[$key] ?? $_POST[$key] ?? $def;
-	}
-
-	/**
-	 * -------------------------------------------------------------------------
-	 * [postget description]
-	 * -------------------------------------------------------------------------
-	 * 
-	 * @param  string $key [description]
-	 * @param  [type] $def [description]
-	 * @return [type]      [description]
-	 */
-	public function postget(string $key, $def = null)
-	{
-		return $_POST[$key] ?? $_GET[$key] ?? $def;
+		return $this -> referer();
 	}
 
 	/**
@@ -333,13 +326,11 @@ final class Request
 	 * [route description]
 	 * -------------------------------------------------------------------------
 	 * 
-	 * @param  string $name [description]
-	 * @param  [type] $def  [description]
 	 * @return [type]       [description]
 	 */
-	public function route(string $name, $def = null)
+	public function route()
 	{
-		return self::$routeParams[$name] ?? $def;
+		return self::$routeManager;
 	}
 
 	/**
@@ -351,8 +342,38 @@ final class Request
 	 * @param  [type] $def  [description]
 	 * @return [type]       [description]
 	 */
-	public function share(string $name, $def = null)
+	public function app()
 	{
-		return self::$routeShared[$name] ?? $def;
+		return self::$application;
+	}
+
+	public function cookie()
+	{
+
+	}
+
+	public function session()
+	{
+		
+	}
+
+	public function cookie()
+	{
+		
+	}
+
+	public function client()
+	{
+
+	}
+
+	public function server()
+	{
+
+	}
+
+	public function upload()
+	{
+		
 	}
 }

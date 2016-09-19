@@ -32,106 +32,92 @@
  *| Link: https://www.edoger.com/                                              |
  *+----------------------------------------------------------------------------+
  */
-namespace Edoger\Core\Http\Input;
+namespace Edoger\Core\Input;
 
 /**
- * ================================================================================
- *
- * ================================================================================
+ *==============================================================================
+ * 输入数据修改器管理组件。
+ *==============================================================================
  */
-class Poster
+class Modifier
 {
 	/**
-	 * ----------------------------------------------------------------------------
-	 * [fetch description]
-	 * ----------------------------------------------------------------------------
+	 * -------------------------------------------------------------------------
+	 * [$modifierList description]
+	 * -------------------------------------------------------------------------
 	 * 
-	 * @param  [type] $key      [description]
-	 * @param  [type] $def      [description]
-	 * @param  [type] $filter   [description]
-	 * @param  [type] $modifier [description]
-	 * @return [type]           [description]
+	 * @var array
 	 */
-	public function fetch($key, $def = null, $filter = null, $modifier = null)
-	{
-		$data = [null, 0];
+	private $pool = [];
 
-		if (isset($_POST[$key])) {
-			if ($filter !== null && !Filter::call($filter, $_POST[$key])) {
-				$data[0] = $def;
-				$data[1] = 2;
-			} else {
-				if ($modifier === null) {
-					$data[0] = $_POST[$key];
-				} else {
-					$data[0] = Modifier::call($modifier, $_POST[$key]);
-					if ($data[1] === null) {
-						$data[0] = 4;
-					}
-				}
+	/**
+	 * -------------------------------------------------------------------------
+	 * [register description]
+	 * -------------------------------------------------------------------------
+	 * 
+	 * @param string       $name    [description]
+	 * @param callable     $handler [description]
+	 * @param bool|boolean $cover   [description]
+	 */
+	public function register(string $name, callable $handler)
+	{
+		$this -> pool[$name] = $handler;
+		return true;
+	}
+
+	/**
+	 * -------------------------------------------------------------------------
+	 * [callFunctionModifier description]
+	 * -------------------------------------------------------------------------
+	 * 
+	 * @param  callable $modifier [description]
+	 * @param  [type]   $value    [description]
+	 * @return [type]             [description]
+	 */
+	private function callFunctionModifier(callable $modifier, $value)
+	{
+		if (is_scalar($value)) {
+			return call_user_func($modifier, $value);
+		} elseif (is_array($value)) {
+			$data = [];
+			foreach ($value as $k => $v) {
+				$data[$k] = $this -> callFunctionModifier($modifier, $v);
 			}
+			return $data;
 		} else {
-			$data[0] = $def;
-			$data[1] = 1;
+			return $value;
 		}
-
-		return $data;
 	}
 
 	/**
-	 * ----------------------------------------------------------------------------
-	 * [search description]
-	 * ----------------------------------------------------------------------------
+	 * -------------------------------------------------------------------------
+	 * [call description]
+	 * -------------------------------------------------------------------------
 	 * 
-	 * @param  array  $keys     [description]
-	 * @param  [type] $def      [description]
-	 * @param  [type] $filter   [description]
 	 * @param  [type] $modifier [description]
+	 * @param  [type] $value    [description]
 	 * @return [type]           [description]
 	 */
-	public static function search(array $keys, $def = null, $filter = null, $modifier = null)
+	public function call($modifier, $value)
 	{
-		$data = [null, 0, ''];
-
-		foreach ($keys as $v) {
-			if (isset($_POST[$v])) {
-				
-				$data[2] = $v;
-
-				if ($filter !== null && !Filter::call($filter, $_POST[$v])) {
-					$data[0] = $def;
-					$data[1] = 2;
-				} else {
-					if ($modifier === null) {
-						$data[0] = $_POST[$v];
-					} else {
-						$data[0] = Modifier::call($modifier, $_POST[$v]);
-						if ($data[1] === null) {
-							$data[0] = 4;
-						}
-					}
-				}
-
-				return $data;
+		if (is_null($modifier)) {
+			return $value;
+		} elseif (is_callable($modifier)) {
+			return $this -> callFunctionModifier($modifier, $value);
+		} elseif (is_string($modifier)) {
+			if (isset($this -> pool[$modifier])) {
+				return $this -> callFunctionModifier($this -> pool[$modifier], $value);
+			} else {
+				return $value;
 			}
+		} elseif (is_array($modifier)) {
+			$temp = $value;
+			foreach ($modifier as $m) {
+				$temp = $this -> call($m, $temp);
+			}
+			return $temp;
+		} else {
+			return $value;
 		}
-
-		$data[0] = $def;
-		$data[1] = 1;
-
-		return $data;
-	}
-
-	/**
-	 * ----------------------------------------------------------------------------
-	 * [has description]
-	 * ----------------------------------------------------------------------------
-	 * 
-	 * @param  string  $key [description]
-	 * @return boolean      [description]
-	 */
-	public function has(string $key)
-	{
-		return isset($_POST[$key]);
 	}
 }
