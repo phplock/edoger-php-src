@@ -59,6 +59,9 @@ final class Connect
 	 */
 	private $pdo = null;
 
+	private $message = '';
+	private $error = false;
+
 	/**
 	 * ----------------------------------------------------------------------------
 	 * [__construct description]
@@ -115,33 +118,100 @@ final class Connect
 	{
 		return $this -> pdo -> getAttribute(PDO::ATTR_SERVER_VERSION);
 	}
-
-	public function hasError(PDOStatement $statement = null)
+	public function error()
 	{
-		if ($statement) {
-			return PDO::ERR_NONE === $statement -> errorCode();
-		} else {
-			return PDO::ERR_NONE === $this -> pdo -> errorCode();
-		}
+		return $this -> error;
+	}
+	public function errorMessage()
+	{
+		return $this -> message;
 	}
 
-	public function errorMessage(PDOStatement $statement = null)
+	public function create(string $sql, array $params = [], array $options = [])
 	{
-		if ($statement) {
-			$info = $statement -> errorInfo()[2];
-		} else {
-			$info = $this -> pdo -> errorCode()[2];
-		}
+		$this -> message	= '';
+		$this -> error		= false;
 
-		if ($info && isset($info[2])) {
-			return $info[2];
-		} else {
-			return '';
-		}
-	}
+		$error		= false;
+		$message	= '';
 
-	public function create(string $sql, array $options = [])
-	{
+		try {
+			$statement = $this -> pdo -> prepare($sql, $options);
+			if ($statement) {
+				if (!$statement -> execute($params)) {
+					$error	= true;
+					$info	= $statement -> errorInfo();
+					
+					if ($info && isset($info[2])) {
+						$message = $info[2];
+					} else {
+						$message = 'Execute SQL statement error';
+					}
+				}
+			} else {
+				$error	= true;
+				$info	= $this -> pdo -> errorInfo();
+
+				if ($info && isset($info[2])) {
+					$message = $info[2];
+				} else {
+					$message = 'Unable to create PDOStatement object';
+				}
+			}
+		} catch(Exception $e) {
+			$error		= true;
+			$message	= $e -> getMessage();
+		} catch(Error $e) {
+			$error		= true;
+			$message	= $e -> getMessage();
+		}
 		
+		if ($error) {
+			$paramsInfo			= json_encode($params);
+			$this -> error		= true;
+			$this -> message	= "{$message}; With SQL: {$sql}; With params: {$paramsInfo}";
+			return false;
+		} else {
+			return $statement;
+		}
+	}
+
+	public function inTransaction()
+	{
+		return $this -> pdo -> inTransaction();
+	}
+
+	public function beginTransaction()
+	{
+		if ($this -> pdo -> inTransaction()) {
+			return true;
+		} else {
+			return $this -> pdo -> beginTransaction();
+		}
+	}
+
+	public function sendTransaction()
+	{
+		if ($this -> pdo -> inTransaction()) {
+			if ($this -> pdo -> commit()) {
+				return true;
+			} else {
+				if ($this -> pdo -> inTransaction()) {
+					$this -> pdo -> rollBack();
+				}
+				return false;
+			}
+		} else {
+			return true;
+		}
+	}
+
+	public function stopTransaction()
+	{
+		if ($this -> pdo -> inTransaction()) {
+			return $this -> pdo -> rollBack();
+		} else {
+			return true;
+		}
 	}
 }

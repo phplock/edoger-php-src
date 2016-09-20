@@ -50,12 +50,12 @@ $attr = [
 $pdo = new PDO('mysql:host=127.0.0.1;dbname=test;port=3306;charset=utf8', 'dev', '123456');
 
 // echo $pdo->getAttribute(PDO::ATTR_SERVER_INFO);
-echo $pdo ->quote(':a');
-// $sql = "INSERT INTO users (name,age) VALUES ('Ahua', 55)";
-// $row = $pdo -> exec($sql);
-// $id = $pdo->lastInsertId();
-// var_dump($row);
-// var_dump($id);
+// echo $pdo ->quote(':a');
+$sql = "INSERT INTO users (name,age) VALUES ('Ahuas', 12)";
+$row = $pdo -> exec($sql);
+$id = $pdo->lastInsertId('name');
+var_dump($row);
+var_dump($id);
 
 die;
 /**
