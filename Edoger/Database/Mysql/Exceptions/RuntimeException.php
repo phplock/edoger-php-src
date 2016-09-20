@@ -32,63 +32,16 @@
  *| Link: https://www.edoger.com/                                              |
  *+----------------------------------------------------------------------------+
  */
-$attr = [
-	PDO::ATTR_AUTOCOMMIT,
-	PDO::ATTR_CASE,
-	PDO::ATTR_CLIENT_VERSION,
-	PDO::ATTR_CONNECTION_STATUS,
-	PDO::ATTR_DRIVER_NAME,
-	PDO::ATTR_ERRMODE,
-	PDO::ATTR_ORACLE_NULLS,
-	PDO::ATTR_PERSISTENT,
-	// PDO::ATTR_PREFETCH,
-	PDO::ATTR_SERVER_INFO,
-	PDO::ATTR_SERVER_VERSION,
-	// PDO::ATTR_TIMEOUT
-];
+namespace Edoger\Database\Mysql\Exceptions;
 
-$pdo = new PDO('mysql:host=127.0.0.1;dbname=test;port=3306;charset=utf8', 'dev', '123456');
-
-// echo $pdo->getAttribute(PDO::ATTR_SERVER_INFO);
-echo $pdo ->quote(':a');
-// $sql = "INSERT INTO users (name,age) VALUES ('Ahua', 55)";
-// $row = $pdo -> exec($sql);
-// $id = $pdo->lastInsertId();
-// var_dump($row);
-// var_dump($id);
-
-die;
-/**
- *+----------------------------------------------------------------------------+
- *| 启动框架核心                                                               |
- *+----------------------------------------------------------------------------+
- */
-$kernel = require __DIR__ . '/../Edoger/launcher.php';
+use Edoger\Exceptions\EdoegrException;
 
 /**
  *+----------------------------------------------------------------------------+
- *| 创建应用服务                                                               |
+ *| 数据库运行过程中异常。                                                     |
  *+----------------------------------------------------------------------------+
  */
-$service = require __DIR__ . '/../Application/bootstrap.php';
-
-/**
- *+----------------------------------------------------------------------------+
- *| 绑定服务运行环境                                                           |
- *+----------------------------------------------------------------------------+
- */
-$service -> make($kernel);
-
-/**
- *+----------------------------------------------------------------------------+
- *| 启动服务                                                                   |
- *+----------------------------------------------------------------------------+
- */
-$service -> start();
-
-/**
- *+----------------------------------------------------------------------------+
- *| 输出框架捕获到的服务输出                                                   |
- *+----------------------------------------------------------------------------+
- */
-$kernel -> flush();
+class RuntimeException extends EdoegrException
+{
+	//
+}

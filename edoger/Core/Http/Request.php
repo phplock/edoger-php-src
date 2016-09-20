@@ -53,10 +53,10 @@ final class Request
 	 * 
 	 * @var array
 	 */
-	private static $caches = [];
-
-	private static $application = null;
-	private static $routeManager = null;
+	private static $caches			= [];
+	p
+	private static $application		= null;
+	private static $routeManager	= null;
 	
 	/**
 	 * -------------------------------------------------------------------------
