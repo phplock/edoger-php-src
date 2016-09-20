@@ -51,26 +51,38 @@ final class Connect
 	const ERR_CONNECT = 12000001;
 
 	/**
-	 * ----------------------------------------------------------------------------
+	 * -------------------------------------------------------------------------
 	 * [$pdo description]
-	 * ----------------------------------------------------------------------------
+	 * -------------------------------------------------------------------------
 	 * 
 	 * @var PDO
 	 */
 	private $pdo = null;
 
+	/**
+	 * -------------------------------------------------------------------------
+	 * [$message description]
+	 * -------------------------------------------------------------------------
+	 * 
+	 * @var  string
+	 */
 	private $message = '';
+
+	/**
+	 * -------------------------------------------------------------------------
+	 * [$error description]
+	 * -------------------------------------------------------------------------
+	 * 
+	 * @var  bool
+	 */
 	private $error = false;
 
 	/**
-	 * ----------------------------------------------------------------------------
+	 * -------------------------------------------------------------------------
 	 * [__construct description]
-	 * ----------------------------------------------------------------------------
+	 * -------------------------------------------------------------------------
 	 * 
-	 * @param string $dsn      [description]
-	 * @param string $user     [description]
-	 * @param string $password [description]
-	 * @param array  $options  [description]
+	 * @param  array  $config  [description]
 	 */
 	public function __construct(array $config)
 	{
@@ -103,30 +115,63 @@ final class Connect
 	}
 
 	/**
-	 * ----------------------------------------------------------------------------
-	 * [query description]
-	 * ----------------------------------------------------------------------------
+	 * -------------------------------------------------------------------------
+	 * [connected description]
+	 * -------------------------------------------------------------------------
 	 * 
-	 * @return [type] [description]
+	 * @return  [type]
 	 */
 	public function connected()
 	{
 		return $this -> pdo;
 	}
 
+	/**
+	 * -------------------------------------------------------------------------
+	 * [version description]
+	 * -------------------------------------------------------------------------
+	 * 
+	 * @return  [type]
+	 */
 	public function version()
 	{
 		return $this -> pdo -> getAttribute(PDO::ATTR_SERVER_VERSION);
 	}
+
+	/**
+	 * -------------------------------------------------------------------------
+	 * [error description]
+	 * -------------------------------------------------------------------------
+	 * 
+	 * @return  [type]
+	 */
 	public function error()
 	{
 		return $this -> error;
 	}
+
+	/**
+	 * -------------------------------------------------------------------------
+	 * [errorMessage description]
+	 * -------------------------------------------------------------------------
+	 * 
+	 * @return  [type]
+	 */
 	public function errorMessage()
 	{
 		return $this -> message;
 	}
 
+	/**
+	 * -------------------------------------------------------------------------
+	 * [create description]
+	 * -------------------------------------------------------------------------
+	 * 
+	 * @param   string  $sql      [description]
+	 * @param   array   $params   [description]
+	 * @param   array   $options  [description]
+	 * @return  [type]
+	 */
 	public function create(string $sql, array $params = [], array $options = [])
 	{
 		$this -> message	= '';
@@ -176,11 +221,25 @@ final class Connect
 		}
 	}
 
+	/**
+	 * -------------------------------------------------------------------------
+	 * [inTransaction description]
+	 * -------------------------------------------------------------------------
+	 * 
+	 * @return  [type]
+	 */
 	public function inTransaction()
 	{
 		return $this -> pdo -> inTransaction();
 	}
 
+	/**
+	 * -------------------------------------------------------------------------
+	 * [beginTransaction description]
+	 * -------------------------------------------------------------------------
+	 * 
+	 * @return  [type]
+	 */
 	public function beginTransaction()
 	{
 		if ($this -> pdo -> inTransaction()) {
@@ -190,6 +249,13 @@ final class Connect
 		}
 	}
 
+	/**
+	 * -------------------------------------------------------------------------
+	 * [sendTransaction description]
+	 * -------------------------------------------------------------------------
+	 * 
+	 * @return  [type]
+	 */
 	public function sendTransaction()
 	{
 		if ($this -> pdo -> inTransaction()) {
@@ -206,6 +272,13 @@ final class Connect
 		}
 	}
 
+	/**
+	 * -------------------------------------------------------------------------
+	 * [stopTransaction description]
+	 * -------------------------------------------------------------------------
+	 * 
+	 * @return  [type]
+	 */
 	public function stopTransaction()
 	{
 		if ($this -> pdo -> inTransaction()) {
