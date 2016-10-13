@@ -15,19 +15,4 @@
  *+------------------------------------------------------------------------------------------------+
  */
 
-// Automatic loader.
-final class EdogerAutoload
-{
-	public static function load(string $name)
-	{
-		if (preg_match('/^Edoger\\\\/', $name)) {
-			$path = EDOGER_PATH.ltrim(str_replace('\\', '/', $name), 'Edoger').'.php';
-			if (file_exists($path)) {
-				require $path;
-			}
-		}
-	}
-}
-
-// Registered automatic loader.
-spl_autoload_register([EdogerAutoload::class, 'load']);
+const EDOGER_VERSION = '1.0.0 Alpha';
