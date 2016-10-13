@@ -14,20 +14,23 @@
  *| @author    Qingshan Luo <shanshan.lqs@gmail.com>                                               |
  *+------------------------------------------------------------------------------------------------+
  */
+namespace Edoger\Core;
 
-// Automatic loader.
-final class EdogerAutoload
+final class Application
 {
-	public static function load(string $name)
+	public function __construct()
 	{
-		if (preg_match('/^Edoger\\\\/', $name)) {
-			$path = EDOGER_PATH.ltrim(str_replace('\\', '/', $name), 'Edoger').'.php';
-			if (file_exists($path)) {
-				require $path;
-			}
-		}
+		
+	}
+
+	public function bootstrap()
+	{
+
+		return $this;
+	}
+
+	public function run()
+	{
+
 	}
 }
-
-// Registered automatic loader.
-spl_autoload_register([EdogerAutoload::class, 'load']);

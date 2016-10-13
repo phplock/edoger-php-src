@@ -1,69 +1,32 @@
 <?php
 /**
- *+----------------------------------------------------------------------------+
- *| Edoger PHP Framework (Edoger)                                              |
- *+----------------------------------------------------------------------------+
- *| Copyright (c) 2014 - 2016 QingShan Luo (Reent)                             |
- *+----------------------------------------------------------------------------+
- *| The MIT License (MIT)                                                      |
- *|                                                                            |
- *| Permission is hereby granted, free of charge, to any person obtaining a    |
- *| copy of this software and associated documentation files (the “Software”), |
- *| to deal in the Software without restriction, including without limitation  |
- *| the rights to use, copy, modify, merge, publish, distribute, sublicense,   |
- *| and/or sell copies of the Software, and to permit persons to whom the      |
- *| Software is furnished to do so, subject to the following conditions:       |
- *|                                                                            |
- *| The above copyright notice and this permission notice shall be included in |
- *| all copies or substantial portions of the Software.                        |
- *|                                                                            |
- *| THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND,            |
- *| EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF         |
- *| MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.     |
- *| IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,|
- *| DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR      |
- *| OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE  |
- *| USE OR OTHER DEALINGS IN THE SOFTWARE.                                     |
- *+----------------------------------------------------------------------------+
- *| License: MIT                                                               |
- *+----------------------------------------------------------------------------+
- *| Authors: QingShan Luo <shanshan.lqs@gmail.com>                             |
- *+----------------------------------------------------------------------------+
- *| Link: https://www.edoger.com/                                              |
- *+----------------------------------------------------------------------------+
+ *+------------------------------------------------------------------------------------------------+
+ *| Edoger PHP Framework                                                                           |
+ *+------------------------------------------------------------------------------------------------+
+ *| A simple route analysis and matching module.                                                   |
+ *+------------------------------------------------------------------------------------------------+
+ *| @package   edoger-php-src                                                                      |
+ *| @license   MIT                                                                                 |
+ *| @link      https://www.edoger.com/                                                             |
+ *| @copyright Copyright (c) 2014 - 2016, QingShan Luo                                             |
+ *| @version   1.0.0 Alpha                                                                         |
+ *+------------------------------------------------------------------------------------------------+
+ *| @author    Qingshan Luo <shanshan.lqs@gmail.com>                                               |
+ *+------------------------------------------------------------------------------------------------+
  */
+define('ROOT_PATH', dirname(__DIR__));
+define('EDOGER_PATH', ROOT_PATH.'/edoger');
+define('APP_PATH', ROOT_PATH.'/application');
 
-/**
- *+----------------------------------------------------------------------------+
- *| 启动框架核心                                                               |
- *+----------------------------------------------------------------------------+
- */
-$kernel = require __DIR__ . '/../Edoger/launcher.php';
+// Load automatic loader.
+require EDOGER_PATH.'/autoload.php';
 
-/**
- *+----------------------------------------------------------------------------+
- *| 创建应用服务                                                               |
- *+----------------------------------------------------------------------------+
- */
-$service = require __DIR__ . '/../Application/bootstrap.php';
+// Load startup script.
+$kernel = require EDOGER_PATH.'/launcher.php';
 
-/**
- *+----------------------------------------------------------------------------+
- *| 绑定服务运行环境                                                           |
- *+----------------------------------------------------------------------------+
- */
-$service -> make($kernel);
+//	Create an application instance.
+$app = $kernel->app();
 
-/**
- *+----------------------------------------------------------------------------+
- *| 启动服务                                                                   |
- *+----------------------------------------------------------------------------+
- */
-$service -> start();
+$app->bootstrap()->run();
 
-/**
- *+----------------------------------------------------------------------------+
- *| 输出框架捕获到的服务输出                                                   |
- *+----------------------------------------------------------------------------+
- */
-$kernel -> flush();
+$kernel->termination();
