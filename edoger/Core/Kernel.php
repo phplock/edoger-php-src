@@ -16,14 +16,18 @@
  */
 namespace Edoger\Core;
 
+use Edoegr\Exception\EdogerException;
+
 final class Kernel
 {
 	private static $_instance = null;
 	private static $_application = null;
+	private static $_config = null;
 	
 	private function __construct()
 	{
-		
+		$conf = require ROOT_PATH.'/config/edoger.config.php';
+		self::$_config = new Config($conf);
 	}
 
 	public static function singleton()
@@ -38,10 +42,15 @@ final class Kernel
 	public function app()
 	{
 		if (!self::$_application) {
-			self::$_application = new Application();
+			self::$_application = new Application($this);
 		}
 
 		return self::$_application;
+	}
+
+	public function config()
+	{
+		return self::$_config;
 	}
 
 	public function termination()

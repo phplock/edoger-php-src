@@ -18,14 +18,25 @@ namespace Edoger\Core;
 
 final class Application
 {
-	public function __construct()
+	private static $_config = null;
+
+	public function __construct(Kernel $kernel)
 	{
-		
+		$conf = require ROOT_PATH.'/config/application.config.php';
+		self::$_config = new Config($conf);
+	}
+
+	public function config()
+	{
+		return self::$_config;
 	}
 
 	public function bootstrap()
 	{
-
+		$file = APP_PATH.'/bootstrap.php';
+		if (file_exists($file)) {
+			require $file;
+		}
 		return $this;
 	}
 

@@ -1,4 +1,4 @@
 *
 !.gitignore
-!application.php.templet
-!edoger.php
+!application.config.php.templet
+!edoger.config.php

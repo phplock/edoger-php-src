@@ -14,11 +14,19 @@
  *| @author    Qingshan Luo <shanshan.lqs@gmail.com>                                               |
  *+------------------------------------------------------------------------------------------------+
  */
-$conf = [];
-// -------------------------------------------------------------------------------------------------
+namespace Edoger\Log\Handlers;
 
+class FileHandler
+{
+	private $_file = '';
+	
+	public function __construct(array $config)
+	{
+		$this->_file = $config['dir'].'/'.date($config['format']).'.log';
+	}
 
-
-
-// -------------------------------------------------------------------------------------------------
-return $conf;
+	public function save(int $level, string $name, string $date, string $message)
+	{
+		error_log('['.$date.']['.$name.']'.$message.PHP_EOL, 3, $this->_file);
+	}
+}
