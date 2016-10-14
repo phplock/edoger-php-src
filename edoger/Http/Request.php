@@ -21,6 +21,6 @@ final class Request
 	
 	public function __construct()
 	{
-		# code...
+		
 	}
 }
