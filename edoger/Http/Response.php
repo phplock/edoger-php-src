@@ -14,45 +14,76 @@
  *| @author    Qingshan Luo <shanshan.lqs@gmail.com>                                               |
  *+------------------------------------------------------------------------------------------------+
  */
-namespace Edoger\Core;
+namespace Edoger\Http;
 
-use Edoger\Http\Request;
-use Edoger\Http\Response;
+use Edoger\Core\Kernel;
 
-final class Application
+final class Response
 {
-	private $_request;
-	private $_response;
-	public function __construct(Kernel $kernel)
+	private $_output = [];
+	public function __construct()
 	{
-		$this->_request = new Request();
-		$this->_response = new Response();
+		ob_start();
 	}
 
-	public function bootstrap()
+	public function send(string $data)
 	{
-		$file = APP_PATH.'/bootstrap.php';
-		if (file_exists($file)) {
-			require $file;
-		}
+		$this->_output[] = $data;
 		return $this;
 	}
 
-	public function request()
-	{
-		return $this->_request;
-	}
-
-	public function response()
-	{
-		return $this->_response;
-	}
-	public function error($error = null)
+	public function sendFile(string $path)
 	{
 
 	}
-	public function run()
+
+	public function sendView()
 	{
 
+	}
+
+	public function sendHeader(string $header, bool $replace = true, int $code = 0)
+	{
+		if ($code > 0) {
+			return header($header, $replace, $code);
+		} else {
+			return header($header, $replace);
+		}
+	}
+
+	public function location(string $url, int $code = 302)
+	{
+		$this->status($code);
+		if (substr($url, 0, 1) === '/') {
+			$url = Kernel::singleton()->app()->request()->url($url);
+		}
+		$this->clean();
+		$this->sendHeader('Location:'.$url);
+		exit(0);
+	}
+
+	public function status(int $code = 0)
+	{
+		if ($code <= 0) {
+			return http_response_code();
+		} else {
+			return http_response_code($code);
+		}
+	}
+
+	public function clean()
+	{
+		$this->_output = [];
+		return $this;
+	}
+
+	public function end(string $data = '')
+	{
+
+	}
+
+	public function getOutput()
+	{
+		return $this->_output;
 	}
 }

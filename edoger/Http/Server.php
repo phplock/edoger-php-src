@@ -14,45 +14,28 @@
  *| @author    Qingshan Luo <shanshan.lqs@gmail.com>                                               |
  *+------------------------------------------------------------------------------------------------+
  */
-namespace Edoger\Core;
+namespace Edoger\Http;
 
-use Edoger\Http\Request;
-use Edoger\Http\Response;
-
-final class Application
+final class Server
 {
-	private $_request;
-	private $_response;
-	public function __construct(Kernel $kernel)
+	public function get(string $key, string $def = '')
 	{
-		$this->_request = new Request();
-		$this->_response = new Response();
+		return $_SERVER[$key] ?? $def;
 	}
 
-	public function bootstrap()
+	public function search(array $keys, string $def = '')
 	{
-		$file = APP_PATH.'/bootstrap.php';
-		if (file_exists($file)) {
-			require $file;
+		foreach ($keys as $key) {
+			if (isset($_SERVER[$key])) {
+				return $_SERVER[$key];
+			}
 		}
-		return $this;
+
+		return $def;
 	}
 
-	public function request()
+	public function exists(string $key)
 	{
-		return $this->_request;
-	}
-
-	public function response()
-	{
-		return $this->_response;
-	}
-	public function error($error = null)
-	{
-
-	}
-	public function run()
-	{
-
+		return isset($_SERVER[$key]);
 	}
 }

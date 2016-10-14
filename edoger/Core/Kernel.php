@@ -75,9 +75,19 @@ final class Kernel
 		if (!self::$_terminated) {
 			self::$_terminated = true;
 
-
+			$response = $this->app()->response();
+			// echo $this->app()->request()->path();
+			if ($this->app()->request()->path() === '/') {
+				$response->location('/app');
+			}
 			
-			echo 'Hello World';
+
+
+
+			$response->send($this->app()->request()->path());
+			// $response->status(201);
+			// $response->send($response->status());
+			echo implode($this->app()->response()->getOutput());
 		}
 	}
 }
