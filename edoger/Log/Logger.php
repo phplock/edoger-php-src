@@ -29,6 +29,7 @@ final class Logger
 		EDOGER_LEVEL_CRITICAL	=> 'CRITICAL',
 		EDOGER_LEVEL_ALERT		=> 'ALERT',
 		EDOGER_LEVEL_EMERGENCY	=> 'EMERGENCY',
+		EDOGER_LEVEL_EXCEPTION	=> 'EXCEPTION',
 		EDOGER_LEVEL_UNKNOWN	=> 'UNKNOWN'
 	];
 	private static $logs	= [];
@@ -60,7 +61,7 @@ final class Logger
 		$name		= strtolower($name);
 		$className	= '\\Edoger\\Log\\Handlers\\' . ucfirst($name) . 'Handler';
 		if (class_exists($className, true)) {
-			$config = Kernel::singleton()->config()->get($name);
+			$config = Kernel::singleton()->config()->get('log.'.$name);
 			self::$handler = new $className($config);
 			if (!empty(self::$logs)) {
 				foreach (self::$logs as $log) {

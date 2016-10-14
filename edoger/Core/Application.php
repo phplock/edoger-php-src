@@ -16,19 +16,14 @@
  */
 namespace Edoger\Core;
 
+use Edoger\Http\Request;
+
 final class Application
 {
-	private static $_config = null;
-
+	private $_request;
 	public function __construct(Kernel $kernel)
 	{
-		$conf = require ROOT_PATH.'/config/application.config.php';
-		self::$_config = new Config($conf);
-	}
-
-	public function config()
-	{
-		return self::$_config;
+		$this->_request = new Request();
 	}
 
 	public function bootstrap()
@@ -40,6 +35,15 @@ final class Application
 		return $this;
 	}
 
+	public function request()
+	{
+		return $this->_request;
+	}
+
+	public function error($error = null)
+	{
+
+	}
 	public function run()
 	{
 
