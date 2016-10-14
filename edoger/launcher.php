@@ -15,6 +15,8 @@
  *+------------------------------------------------------------------------------------------------+
  */
 
+// Some predefined constants.
 require EDOGER_PATH.'/constant.php';
 
+// Create an instance of the core class of the framework.
 return Edoger\Core\Kernel::singleton();
