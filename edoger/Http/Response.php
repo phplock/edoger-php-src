@@ -16,6 +16,8 @@
  */
 namespace Edoger\Http;
 
+use Edoger\Core\Kernel;
+
 final class Response
 {
 	private $_output = [];
@@ -40,9 +42,24 @@ final class Response
 
 	}
 
-	public function sendHeader()
+	public function sendHeader(string $header, bool $replace = true, int $code = 0)
 	{
+		if ($code > 0) {
+			return header($header, $replace, $code);
+		} else {
+			return header($header, $replace);
+		}
+	}
 
+	public function location(string $url, int $code = 302)
+	{
+		$this->status($code);
+		if (substr($url, 0, 1) === '/') {
+			$url = Kernel::singleton()->app()->request()->url($url);
+		}
+		$this->clean();
+		$this->sendHeader('Location:'.$url);
+		exit(0);
 	}
 
 	public function status(int $code = 0)

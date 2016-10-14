@@ -38,6 +38,11 @@ final class Request
 			);
 	}
 
+	public function url(string $path = '/')
+	{
+		return $this->scheme().'://'.$this->domain().$path;
+	}
+
 	public function userAgent()
 	{
 		return $this->server()->get('HTTP_USER_AGENT');
@@ -72,6 +77,11 @@ final class Request
 		return strtolower($this->server()->get('REQUEST_SCHEME'));
 	}
 
+	public function isHttps()
+	{
+
+	}
+
 	public function clientIp()
 	{
 		if ($this->server()->exists('HTTP_CLIENT_IP')) {
@@ -83,7 +93,7 @@ final class Request
 			return $this->server()->get('REMOTE_ADDR', '0.0.0.0');
 		}
 	}
-	
+
 	public function host()
 	{
 		return $this->server()->get('HTTP_HOST');
