@@ -21,6 +21,7 @@ use Edoger\Core\Kernel;
 final class Response
 {
 	private $_output = [];
+	
 	public function __construct()
 	{
 		ob_start();
