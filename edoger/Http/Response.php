@@ -37,7 +37,7 @@ final class Response
 
 	public function sendView()
 	{
-		
+
 	}
 
 	public function sendHeader()
@@ -59,5 +59,10 @@ final class Response
 	public function end(string $data = '')
 	{
 
+	}
+
+	public function getOutput()
+	{
+		return $this->_output;
 	}
 }
