@@ -19,6 +19,7 @@ namespace Edoger\Http;
 final class Request
 {
 	private $_server;
+	private $_agent = null;
 	public function __construct()
 	{
 		$this->_server = new Server();
@@ -27,5 +28,19 @@ final class Request
 	public function server()
 	{
 		return $this->_server;
+	}
+
+	public function userAgent()
+	{
+		return $this->_server->get('HTTP_USER_AGENT');
+	}
+
+	public function agent()
+	{
+		if (!$this->_agent) {
+			$this->_agent = new Agent($this->userAgent());
+		}
+
+		return $this->_agent;
 	}
 }

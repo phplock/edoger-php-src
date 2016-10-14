@@ -76,8 +76,16 @@ final class Kernel
 			self::$_terminated = true;
 
 
-			
-			echo $this->app()->request()->server()->get('HTTP_USER_AGENT');
+			echo $this->app()->request()->userAgent().'<br/>';
+			$agent = $this->app()->request()->agent();
+			echo $agent->os().'<br/>';
+			echo $agent->isBrowser().'<br/>';
+			echo $agent->browserName().'<br/>';
+			echo $agent->browserVersion().'<br/>';
+			echo $agent->isMobile().'<br/>';
+			echo $agent->mobileName().'<br/>';
+			echo $agent->isRobot().'<br/>';
+			echo $agent->robotName().'<br/>';
 		}
 	}
 }
