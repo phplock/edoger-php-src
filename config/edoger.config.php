@@ -1,7 +1,7 @@
 <?php
 /**
  *+------------------------------------------------------------------------------------------------+
- *| Edoger PHP Framework                                                                           |
+ *| Edoger PHP Framework Configuration File                                                        |
  *+------------------------------------------------------------------------------------------------+
  *| A simple route analysis and matching module.                                                   |
  *+------------------------------------------------------------------------------------------------+
@@ -14,38 +14,19 @@
  *| @author    Qingshan Luo <shanshan.lqs@gmail.com>                                               |
  *+------------------------------------------------------------------------------------------------+
  */
-namespace Edoger\Core;
+$conf = [];
+// -------------------------------------------------------------------------------------------------
 
-use Edoger\Http\Request;
+//	Debug Module.
+$conf['debug'] = true;
 
-final class Application
-{
-	private $_request;
-	public function __construct(Kernel $kernel)
-	{
-		$this->_request = new Request();
-	}
+//	Log Module.
+$conf['log']['level'] = EDOGER_LEVEL_DEBUG;
+$conf['log']['handler'] = 'file';
 
-	public function bootstrap()
-	{
-		$file = APP_PATH.'/bootstrap.php';
-		if (file_exists($file)) {
-			require $file;
-		}
-		return $this;
-	}
+$conf['log']['file']['dir'] = ROOT_PATH.'/data/logs';
+$conf['log']['file']['format'] = 'Ymd';
 
-	public function request()
-	{
-		return $this->_request;
-	}
 
-	public function error($error = null)
-	{
-
-	}
-	public function run()
-	{
-
-	}
-}
+// -------------------------------------------------------------------------------------------------
+return $conf;

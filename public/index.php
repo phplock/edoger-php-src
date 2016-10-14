@@ -24,9 +24,10 @@ require EDOGER_PATH.'/autoload.php';
 // Load startup script.
 $kernel = require EDOGER_PATH.'/launcher.php';
 
-//	Create an application instance.
+// Create an application instance.
 $app = $kernel->app();
 
+// Start and run the application.
 $app->bootstrap()->run();
 
 $kernel->termination();

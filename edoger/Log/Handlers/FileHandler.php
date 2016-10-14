@@ -14,38 +14,22 @@
  *| @author    Qingshan Luo <shanshan.lqs@gmail.com>                                               |
  *+------------------------------------------------------------------------------------------------+
  */
-namespace Edoger\Core;
+namespace Edoger\Log\Handlers;
 
-use Edoger\Http\Request;
-
-final class Application
+class FileHandler
 {
-	private $_request;
-	public function __construct(Kernel $kernel)
+	private $_file = '';
+	
+	public function __construct(array $config)
 	{
-		$this->_request = new Request();
-	}
-
-	public function bootstrap()
-	{
-		$file = APP_PATH.'/bootstrap.php';
-		if (file_exists($file)) {
-			require $file;
+		if (!is_dir($config['dir'])) {
+			mkdir($config['dir'], 0777, true);
 		}
-		return $this;
+		$this->_file = $config['dir'].'/'.date($config['format']).'.log';
 	}
 
-	public function request()
+	public function save(int $level, string $name, string $date, string $message)
 	{
-		return $this->_request;
-	}
-
-	public function error($error = null)
-	{
-
-	}
-	public function run()
-	{
-
+		error_log('['.$date.']['.$name.']'.$message.PHP_EOL, 3, $this->_file);
 	}
 }

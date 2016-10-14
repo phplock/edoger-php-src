@@ -14,38 +14,11 @@
  *| @author    Qingshan Luo <shanshan.lqs@gmail.com>                                               |
  *+------------------------------------------------------------------------------------------------+
  */
-namespace Edoger\Core;
+namespace Edoger\Exception;
 
-use Edoger\Http\Request;
+use Exception;
 
-final class Application
+class EdogerException extends Exception
 {
-	private $_request;
-	public function __construct(Kernel $kernel)
-	{
-		$this->_request = new Request();
-	}
-
-	public function bootstrap()
-	{
-		$file = APP_PATH.'/bootstrap.php';
-		if (file_exists($file)) {
-			require $file;
-		}
-		return $this;
-	}
-
-	public function request()
-	{
-		return $this->_request;
-	}
-
-	public function error($error = null)
-	{
-
-	}
-	public function run()
-	{
-
-	}
+	//
 }

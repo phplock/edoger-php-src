@@ -14,38 +14,13 @@
  *| @author    Qingshan Luo <shanshan.lqs@gmail.com>                                               |
  *+------------------------------------------------------------------------------------------------+
  */
-namespace Edoger\Core;
+namespace Edoger\Http;
 
-use Edoger\Http\Request;
-
-final class Application
+final class Request
 {
-	private $_request;
-	public function __construct(Kernel $kernel)
+	
+	public function __construct()
 	{
-		$this->_request = new Request();
-	}
-
-	public function bootstrap()
-	{
-		$file = APP_PATH.'/bootstrap.php';
-		if (file_exists($file)) {
-			require $file;
-		}
-		return $this;
-	}
-
-	public function request()
-	{
-		return $this->_request;
-	}
-
-	public function error($error = null)
-	{
-
-	}
-	public function run()
-	{
-
+		# code...
 	}
 }
