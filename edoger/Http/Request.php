@@ -79,7 +79,7 @@ final class Request
 
 	public function isHttps()
 	{
-
+		return !empty($this->server()->get('HTTPS'));
 	}
 
 	public function clientIp()
