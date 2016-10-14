@@ -14,29 +14,9 @@
  *| @author    Qingshan Luo <shanshan.lqs@gmail.com>                                               |
  *+------------------------------------------------------------------------------------------------+
  */
+namespace Edoegr\View;
 
-// Automatic loader.
-final class EdogerAutoload
+interface ViewInterface
 {
-	public static function load(string $name)
-	{
-		if (preg_match('/^Edoger\\\\/', $name)) {
-
-			// Automatic loading the edoger PHP framework files.
-			$path = EDOGER_PATH.ltrim(str_replace('\\', '/', $name), 'Edoger').'.php';
-			if (file_exists($path)) {
-				require $path;
-			}
-		} elseif (preg_match('/^App\\\\/', $name)) {
-
-			// Automatically loading application files.
-			$path = APP_PATH.ltrim(str_replace('\\', '/', $name), 'App').'.php';
-			if (file_exists($path)) {
-				require $path;
-			}
-		}
-	}
+	
 }
-
-// Registered automatic loader.
-spl_autoload_register([EdogerAutoload::class, 'load']);

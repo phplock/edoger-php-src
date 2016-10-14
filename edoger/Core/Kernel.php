@@ -3,7 +3,7 @@
  *+------------------------------------------------------------------------------------------------+
  *| Edoger PHP Framework                                                                           |
  *+------------------------------------------------------------------------------------------------+
- *| A simple route analysis and matching module.                                                   |
+ *| A simple and efficient PHP framework.                                                          |
  *+------------------------------------------------------------------------------------------------+
  *| @package   edoger-php-src                                                                      |
  *| @license   MIT                                                                                 |
@@ -77,9 +77,9 @@ final class Kernel
 
 			$response = $this->app()->response();
 			// echo $this->app()->request()->path();
-			if ($this->app()->request()->path() === '/') {
-				$response->location('/app');
-			}
+			// if ($this->app()->request()->path() === '/') {
+			// 	$response->location('/app');
+			// }
 			
 
 

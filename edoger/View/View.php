@@ -14,29 +14,70 @@
  *| @author    Qingshan Luo <shanshan.lqs@gmail.com>                                               |
  *+------------------------------------------------------------------------------------------------+
  */
+namespace Edoegr\View;
 
-// Automatic loader.
-final class EdogerAutoload
+
+class View implements ViewInterface
 {
-	public static function load(string $name)
+	private $_file;
+	private $_variables = [];
+	private $_view = '';
+	public function __construct(string $file)
 	{
-		if (preg_match('/^Edoger\\\\/', $name)) {
+		$this->_file = $file;
+	}
 
-			// Automatic loading the edoger PHP framework files.
-			$path = EDOGER_PATH.ltrim(str_replace('\\', '/', $name), 'Edoger').'.php';
-			if (file_exists($path)) {
-				require $path;
-			}
-		} elseif (preg_match('/^App\\\\/', $name)) {
-
-			// Automatically loading application files.
-			$path = APP_PATH.ltrim(str_replace('\\', '/', $name), 'App').'.php';
-			if (file_exists($path)) {
-				require $path;
-			}
+	public function assign(array $values)
+	{
+		foreach ($values as $key => $value) {
+			$this->_variables[$key] = $value;
 		}
+		
+		return $this;
+	}
+
+	public function delete(string $key)
+	{
+		if (array_key_exists($key, $this->_variables)) {
+			unset($this->_variables[$key]);
+		}
+
+		return $this;
+	}
+
+	public function set(string $key, $value)
+	{
+		$this->_variables[$key] = $value;
+		return $this;
+	}
+
+	public function get(string $key)
+	{
+		return $this->_variables[$key] ?? null;
+	}
+
+	public function getAll()
+	{
+		return $this->_variables;
+	}
+
+	public function display(array $variables = [])
+	{
+		if (!file_exists($this->_file)) {
+			
+		}
+		
+		if (!empty($variables)) {
+			
+		}
+
+		ob_start();
+		require $this->_file;
+		$this->_view = ob_get_clean();
+	}
+
+	public function flush()
+	{
+
 	}
 }
-
-// Registered automatic loader.
-spl_autoload_register([EdogerAutoload::class, 'load']);

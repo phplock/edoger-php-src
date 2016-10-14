@@ -3,7 +3,7 @@
  *+------------------------------------------------------------------------------------------------+
  *| Edoger PHP Framework                                                                           |
  *+------------------------------------------------------------------------------------------------+
- *| A simple route analysis and matching module.                                                   |
+ *| A simple and efficient PHP framework.                                                          |
  *+------------------------------------------------------------------------------------------------+
  *| @package   edoger-php-src                                                                      |
  *| @license   MIT                                                                                 |
@@ -93,81 +93,81 @@ final class Agent
 		'Ubuntu'			=> 'Ubuntu Web Browser'
 	];
 	private $_mobile = [
-		'mobileexplorer'	=> 'Mobile Explorer',
-		'palmsource'		=> 'Palm',
-		'palmscape'			=> 'Palmscape',
-		'motorola'		=> 'Motorola',
-		'nokia'			=> 'Nokia',
-		'palm'			=> 'Palm',
-		'iphone'		=> 'Apple iPhone',
-		'ipad'			=> 'iPad',
-		'ipod'			=> 'Apple iPod Touch',
-		'sony'			=> 'Sony Ericsson',
-		'ericsson'		=> 'Sony Ericsson',
-		'blackberry'	=> 'BlackBerry',
-		'cocoon'		=> 'O2 Cocoon',
-		'blazer'		=> 'Treo',
-		'lg'			=> 'LG',
-		'amoi'			=> 'Amoi',
-		'xda'			=> 'XDA',
-		'mda'			=> 'MDA',
-		'vario'			=> 'Vario',
-		'htc'			=> 'HTC',
-		'samsung'		=> 'Samsung',
-		'sharp'			=> 'Sharp',
-		'sie-'			=> 'Siemens',
-		'alcatel'		=> 'Alcatel',
-		'benq'			=> 'BenQ',
-		'ipaq'			=> 'HP iPaq',
-		'mot-'			=> 'Motorola',
+		'mobileexplorer'		=> 'Mobile Explorer',
+		'palmsource'			=> 'Palm',
+		'palmscape'				=> 'Palmscape',
+		'motorola'				=> 'Motorola',
+		'nokia'					=> 'Nokia',
+		'palm'					=> 'Palm',
+		'iphone'				=> 'Apple iPhone',
+		'ipad'					=> 'iPad',
+		'ipod'					=> 'Apple iPod Touch',
+		'sony'					=> 'Sony Ericsson',
+		'ericsson'				=> 'Sony Ericsson',
+		'blackberry'			=> 'BlackBerry',
+		'cocoon'				=> 'O2 Cocoon',
+		'blazer'				=> 'Treo',
+		'lg'					=> 'LG',
+		'amoi'					=> 'Amoi',
+		'xda'					=> 'XDA',
+		'mda'					=> 'MDA',
+		'vario'					=> 'Vario',
+		'htc'					=> 'HTC',
+		'samsung'				=> 'Samsung',
+		'sharp'					=> 'Sharp',
+		'sie-'					=> 'Siemens',
+		'alcatel'				=> 'Alcatel',
+		'benq'					=> 'BenQ',
+		'ipaq'					=> 'HP iPaq',
+		'mot-'					=> 'Motorola',
 		'playstation portable'	=> 'PlayStation Portable',
-		'playstation 3'		=> 'PlayStation 3',
-		'playstation vita'  	=> 'PlayStation Vita',
-		'hiptop'		=> 'Danger Hiptop',
-		'nec-'			=> 'NEC',
-		'panasonic'		=> 'Panasonic',
-		'philips'		=> 'Philips',
-		'sagem'			=> 'Sagem',
-		'sanyo'			=> 'Sanyo',
-		'spv'			=> 'SPV',
-		'zte'			=> 'ZTE',
-		'sendo'			=> 'Sendo',
-		'nintendo dsi'	=> 'Nintendo DSi',
-		'nintendo ds'	=> 'Nintendo DS',
-		'nintendo 3ds'	=> 'Nintendo 3DS',
-		'wii'			=> 'Nintendo Wii',
-		'open web'		=> 'Open Web',
-		'openweb'		=> 'OpenWeb',
-		'android'		=> 'Android',
-		'symbian'		=> 'Symbian',
-		'SymbianOS'		=> 'SymbianOS',
-		'elaine'		=> 'Palm',
-		'series60'		=> 'Symbian S60',
-		'windows ce'	=> 'Windows CE',
-		'obigo'			=> 'Obigo',
-		'netfront'		=> 'Netfront Browser',
-		'openwave'		=> 'Openwave Browser',
-		'mobilexplorer'	=> 'Mobile Explorer',
-		'operamini'		=> 'Opera Mini',
-		'opera mini'	=> 'Opera Mini',
-		'opera mobi'	=> 'Opera Mobile',
-		'fennec'		=> 'Firefox Mobile',
-		'digital paths'	=> 'Digital Paths',
-		'avantgo'		=> 'AvantGo',
-		'xiino'			=> 'Xiino',
-		'novarra'		=> 'Novarra Transcoder',
-		'vodafone'		=> 'Vodafone',
-		'docomo'		=> 'NTT DoCoMo',
-		'o2'			=> 'O2',
-		'mobile'		=> 'Generic Mobile',
-		'wireless'		=> 'Generic Mobile',
-		'j2me'			=> 'Generic Mobile',
-		'midp'			=> 'Generic Mobile',
-		'cldc'			=> 'Generic Mobile',
-		'up.link'		=> 'Generic Mobile',
-		'up.browser'	=> 'Generic Mobile',
-		'smartphone'	=> 'Generic Mobile',
-		'cellphone'		=> 'Generic Mobile'
+		'playstation 3'			=> 'PlayStation 3',
+		'playstation vita'		=> 'PlayStation Vita',
+		'hiptop'				=> 'Danger Hiptop',
+		'nec-'					=> 'NEC',
+		'panasonic'				=> 'Panasonic',
+		'philips'				=> 'Philips',
+		'sagem'					=> 'Sagem',
+		'sanyo'					=> 'Sanyo',
+		'spv'					=> 'SPV',
+		'zte'					=> 'ZTE',
+		'sendo'					=> 'Sendo',
+		'nintendo dsi'			=> 'Nintendo DSi',
+		'nintendo ds'			=> 'Nintendo DS',
+		'nintendo 3ds'			=> 'Nintendo 3DS',
+		'wii'					=> 'Nintendo Wii',
+		'open web'				=> 'Open Web',
+		'openweb'				=> 'OpenWeb',
+		'android'				=> 'Android',
+		'symbian'				=> 'Symbian',
+		'SymbianOS'				=> 'SymbianOS',
+		'elaine'				=> 'Palm',
+		'series60'				=> 'Symbian S60',
+		'windows ce'			=> 'Windows CE',
+		'obigo'					=> 'Obigo',
+		'netfront'				=> 'Netfront Browser',
+		'openwave'				=> 'Openwave Browser',
+		'mobilexplorer'			=> 'Mobile Explorer',
+		'operamini'				=> 'Opera Mini',
+		'opera mini'			=> 'Opera Mini',
+		'opera mobi'			=> 'Opera Mobile',
+		'fennec'				=> 'Firefox Mobile',
+		'digital paths'			=> 'Digital Paths',
+		'avantgo'				=> 'AvantGo',
+		'xiino'					=> 'Xiino',
+		'novarra'				=> 'Novarra Transcoder',
+		'vodafone'				=> 'Vodafone',
+		'docomo'				=> 'NTT DoCoMo',
+		'o2'					=> 'O2',
+		'mobile'				=> 'Generic Mobile',
+		'wireless'				=> 'Generic Mobile',
+		'j2me'					=> 'Generic Mobile',
+		'midp'					=> 'Generic Mobile',
+		'cldc'					=> 'Generic Mobile',
+		'up.link'				=> 'Generic Mobile',
+		'up.browser'			=> 'Generic Mobile',
+		'smartphone'			=> 'Generic Mobile',
+		'cellphone'				=> 'Generic Mobile'
 	];
 	private $_robot = [
 		'googlebot'				=> 'Googlebot',
@@ -191,16 +191,24 @@ final class Agent
 		'Uptimebot'				=> 'Uptimebot'
 	];
 
-	private $_osName = 'Unknown';
-	private $_browserName = 'Unknown';
-	private $_browserVersion = '';
-	private $_isBrowser = false;
-	private $_mobileName = 'Unknown';
-	private $_isMobile = false;
-	private $_robotName = 'Unknown';
-	private $_isRobot = false;
+	private $_osName			= 'Unknown';
+	private $_browserName		= 'Unknown';
+	private $_browserVersion	= '';
+	private $_isBrowser			= false;
+	private $_mobileName		= 'Unknown';
+	private $_isMobile			= false;
+	private $_robotName			= 'Unknown';
+	private $_isRobot			= false;
 
 	public function __construct(string $agent)
+	{
+		$this->parseOs();
+		$this->parseBrowser();
+		$this->parseMobile();
+		$this->parseRobot();
+	}
+
+	private function parseOs()
 	{
 		foreach ($this->_os as $key => $value) {
 			if (preg_match('/'.preg_quote($key).'/i', $agent)) {
@@ -208,7 +216,10 @@ final class Agent
 				break;
 			}
 		}
+	}
 
+	private function parseBrowser()
+	{
 		foreach ($this->_browser as $key => $value) {
 			if (preg_match('/'.$key.'.*?([0-9\.]+)/i', $agent, $m)) {
 				$this->_browserName		= $value;
@@ -217,7 +228,10 @@ final class Agent
 				break;
 			}
 		}
+	}
 
+	private function parseMobile()
+	{
 		foreach ($this->_mobile as $key => $value) {
 			if (stripos($agent, $key) !== false) {
 				$this->_mobileName	= $value;
@@ -225,7 +239,10 @@ final class Agent
 				break;
 			}
 		}
+	}
 
+	private function parseRobot()
+	{
 		foreach ($this->_robot as $key => $value) {
 			if (preg_match('/'.preg_quote($key).'/i', $agent)) {
 				$this->_robotName	= $value;
