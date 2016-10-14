@@ -21,7 +21,7 @@ final class Response
 	private $_output = [];
 	public function __construct()
 	{
-		
+		ob_start();
 	}
 
 	public function send(string $data)
@@ -47,7 +47,11 @@ final class Response
 
 	public function status(int $code = 0)
 	{
-
+		if ($code <= 0) {
+			return http_response_code();
+		} else {
+			return http_response_code($code);
+		}
 	}
 
 	public function clean()

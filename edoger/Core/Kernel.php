@@ -75,8 +75,10 @@ final class Kernel
 		if (!self::$_terminated) {
 			self::$_terminated = true;
 
-			$this->app()->response()->send($this->app()->request()->userAgent());
-
+			$response = $this->app()->response();
+			$response->send($response->status());
+			$response->status(201);
+			$response->send($response->status());
 			echo implode($this->app()->response()->getOutput());
 		}
 	}
