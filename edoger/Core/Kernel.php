@@ -77,7 +77,7 @@ final class Kernel
 
 
 			
-			echo 'Hello World';
+			echo $this->app()->request()->server()->get('HTTP_USER_AGENT');
 		}
 	}
 }

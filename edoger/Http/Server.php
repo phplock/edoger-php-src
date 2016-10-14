@@ -16,16 +16,26 @@
  */
 namespace Edoger\Http;
 
-final class Request
+final class Server
 {
-	private $_server;
-	public function __construct()
+	public function get(string $key, string $def = '')
 	{
-		$this->_server = new Server();
+		return $_SERVER[$key] ?? $def;
 	}
 
-	public function server()
+	public function search(array $keys, string $def = '')
 	{
-		return $this->_server;
+		foreach ($keys as $key) {
+			if (isset($_SERVER[$key])) {
+				return $_SERVER[$key];
+			}
+		}
+
+		return $def;
+	}
+
+	public function exists(string $key)
+	{
+		return isset($_SERVER[$key]);
 	}
 }
