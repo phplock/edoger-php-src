@@ -20,6 +20,7 @@ final class Request
 {
 	private $_server;
 	private $_agent = null;
+
 	public function __construct()
 	{
 		$this->_server = new Server();
@@ -28,6 +29,13 @@ final class Request
 	public function server()
 	{
 		return $this->_server;
+	}
+
+	public function path()
+	{
+		return urldecode(
+			parse_url($this->server()->search(['PATH_INFO', 'REQUEST_URI'], '/'), PHP_URL_PATH)
+			);
 	}
 
 	public function userAgent()
@@ -75,6 +83,7 @@ final class Request
 			return $this->server()->get('REMOTE_ADDR', '0.0.0.0');
 		}
 	}
+	
 	public function host()
 	{
 		return $this->server()->get('HTTP_HOST');
