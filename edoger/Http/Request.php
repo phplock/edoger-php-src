@@ -32,7 +32,7 @@ final class Request
 
 	public function userAgent()
 	{
-		return $this->_server->get('HTTP_USER_AGENT');
+		return $this->server()->get('HTTP_USER_AGENT');
 	}
 
 	public function agent()
@@ -42,5 +42,51 @@ final class Request
 		}
 
 		return $this->_agent;
+	}
+
+	public function referrer()
+	{
+		return $this->server()->get('HTTP_REFERER');
+	}
+
+	public function port()
+	{
+		return (int)$this->server()->get('SERVER_PORT', 0);
+	}
+
+	public function method()
+	{
+		return strtolower($this->server()->get('REQUEST_METHOD'));
+	}
+
+	public function scheme()
+	{
+		return strtolower($this->server()->get('REQUEST_SCHEME'));
+	}
+
+	public function clientIp()
+	{
+		if ($this->server()->exists('HTTP_CLIENT_IP')) {
+			return $this->server()->get('HTTP_CLIENT_IP');
+		} elseif ($this->server()->exists('HTTP_X_FORWARDED_FOR')) {
+			$temp = explode(',', $this->server()->get('HTTP_X_FORWARDED_FOR'));
+			return trim(reset($temp));
+		} else {
+			return $this->server()->get('REMOTE_ADDR', '0.0.0.0');
+		}
+	}
+	public function host()
+	{
+		return $this->server()->get('HTTP_HOST');
+	}
+
+	public function domain()
+	{
+		return $this->server()->get('HTTP_HOST');
+	}
+
+	public function isXhr()
+	{
+		return strtoupper($this->server()->get('HTTP_X_REQUESTED_WITH')) === 'XMLHTTPREQUEST';
 	}
 }

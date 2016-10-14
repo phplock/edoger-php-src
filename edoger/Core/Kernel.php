@@ -86,6 +86,14 @@ final class Kernel
 			echo $agent->mobileName().'<br/>';
 			echo $agent->isRobot().'<br/>';
 			echo $agent->robotName().'<br/>';
+
+			echo $this->app()->request()->referrer().'<br/>';
+			echo $this->app()->request()->port().'<br/>';
+			echo $this->app()->request()->method().'<br/>';
+			echo $this->app()->request()->scheme().'<br/>';
+			echo $this->app()->request()->clientIp().'<br/>';
+			echo $this->app()->request()->host().'<br/>';
+			echo $this->app()->request()->isXhr().'<br/>';
 		}
 	}
 }
