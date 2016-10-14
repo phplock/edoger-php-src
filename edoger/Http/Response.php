@@ -18,9 +18,46 @@ namespace Edoger\Http;
 
 final class Response
 {
-	
+	private $_output = [];
 	public function __construct()
 	{
 		
+	}
+
+	public function send(string $data)
+	{
+		$this->_output[] = $data;
+		return $this;
+	}
+
+	public function sendFile(string $path)
+	{
+
+	}
+
+	public function sendView()
+	{
+		
+	}
+
+	public function sendHeader()
+	{
+
+	}
+
+	public function status(int $code = 0)
+	{
+
+	}
+
+	public function clean()
+	{
+		$this->_output = [];
+		return $this;
+	}
+
+	public function end(string $data = '')
+	{
+
 	}
 }
