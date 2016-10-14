@@ -15,6 +15,7 @@
  *+------------------------------------------------------------------------------------------------+
  */
 
+// Basic constants.
 define('ROOT_PATH', dirname(__DIR__));
 define('EDOGER_PATH', ROOT_PATH.'/edoger');
 define('APP_PATH', ROOT_PATH.'/application');
@@ -23,12 +24,11 @@ define('APP_PATH', ROOT_PATH.'/application');
 require EDOGER_PATH.'/autoload.php';
 
 // Load startup script.
+// Create and get an instance of the core object of the framework.
 $kernel = require EDOGER_PATH.'/launcher.php';
 
-// Create an application instance.
-$app = $kernel->app();
+// Create an application instance and start the application instance immediately.
+$kernel->app()->bootstrap()->run();
 
-// Start and run the application.
-$app->bootstrap()->run();
-
+// End.
 $kernel->termination();
