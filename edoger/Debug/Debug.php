@@ -25,7 +25,7 @@ use Edoger\Exception\EdogerException;
 
 final class Debug
 {
-	private static $map = [
+	private $_map = [
 		E_ERROR             => EDOGER_LEVEL_CRITICAL,
 		E_WARNING           => EDOGER_LEVEL_WARNING,
 		E_PARSE             => EDOGER_LEVEL_ALERT,
@@ -43,39 +43,54 @@ final class Debug
 		E_USER_DEPRECATED   => EDOGER_LEVEL_NOTICE
 	];
 
-	public static function edogerErrorHandler(int $code, string $message, string $file = '', int $line = 0)
+	private $_registered = false;
+
+	public function register()
 	{
-		$level = self::$map[$code] ?? EDOGER_LEVEL_UNKNOWN;
-		self::edogerExceptionHandler(new ErrorException($message, $level, $code, $file, $line));
+		if (!$this->_registered) {
+			$this->_registered = true;
+
+			set_error_handler([$this, '_edogerErrorHandler']);
+			set_exception_handler([$this, '_edogerExceptionHandler']);
+			register_shutdown_function([$this, '_edogerFatalErrorHandler']);
+		}
+
+		return true;
 	}
 
-	public static function edogerExceptionHandler($e)
+	public function _edogerErrorHandler(int $code, string $message, string $file = '', int $line = 0)
 	{
-		$log = $e->getMessage().' at '.$e->getFile().' line '.$e->getLine();
-		$quit = true;
-		if ($e instanceof ErrorException) {
-			$severity = $e->getSeverity();
+		$level = $this->_map[$code] ?? EDOGER_LEVEL_UNKNOWN;
+		$this->_edogerExceptionHandler(new ErrorException($message, $level, $code, $file, $line));
+	}
+
+	public function _edogerExceptionHandler($exception)
+	{
+		$log	= $exception->getMessage().' at '.$exception->getFile().' line '.$exception->getLine();
+		$quit	= true;
+		if ($exception instanceof ErrorException) {
+			$severity = $exception->getSeverity();
 			if ($severity < EDOGER_LEVEL_ERROR) {
 				$quit = false;
 			}
-			Logger::log($severity, $log);
+			Kernel::singleton()->logger()->log($severity, $log);
 		} else {
-			Logger::log(EDOGER_LEVEL_EXCEPTION, $log);
+			Kernel::singleton()->logger()->log(EDOGER_LEVEL_EXCEPTION, $log);
 		}
 
 		if ($quit) {
-			Kernel::singleton()->error($e)->termination();
+			Kernel::singleton()->error($exception)->termination();
 		}
 	}
 
-	public static function edogerFatalErrorHandler()
+	public function _edogerFatalErrorHandler()
 	{
-		$e = error_get_last();
-		if ($e) {
+		$error = error_get_last();
+		if ($error) {
 			error_clear_last();
-			$level = self::$map[$e['type']] ?? EDOGER_LEVEL_UNKNOWN;
-			self::edogerExceptionHandler(
-				new ErrorException($e['message'], $level, $e['type'], $e['file'], $e['line'])
+			$level = $this->_map[$error['type']] ?? EDOGER_LEVEL_UNKNOWN;
+			$this->_edogerExceptionHandler(
+				new ErrorException($error['message'], $level, $error['type'], $error['file'], $error['line'])
 				);
 		} else {
 			Kernel::singleton()->termination();

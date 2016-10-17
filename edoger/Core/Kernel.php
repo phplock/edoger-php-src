@@ -37,11 +37,7 @@ final class Kernel
 	{
 		if (!self::$_instance) {
 			self::$_instance = new self();
-			if (self::$_config->get('debug')) {
-				set_error_handler([Debug::class, 'edogerErrorHandler']);
-				set_exception_handler([Debug::class, 'edogerExceptionHandler']);
-				register_shutdown_function([Debug::class, 'edogerFatalErrorHandler']);
-			}
+			
 			Logger::setLevel(self::$_config->get('log_level'));
 		}
 		

@@ -18,7 +18,7 @@ namespace Edoger\Log;
 
 final class Logger
 {
-	private static $map = [
+	private $_map = [
 		EDOGER_LEVEL_DEBUG		=> 'DEBUG',
 		EDOGER_LEVEL_INFO		=> 'INFO',
 		EDOGER_LEVEL_NOTICE		=> 'NOTICE',
@@ -30,92 +30,93 @@ final class Logger
 		EDOGER_LEVEL_EXCEPTION	=> 'EXCEPTION',
 		EDOGER_LEVEL_UNKNOWN	=> 'UNKNOWN'
 	];
-	private static $logs	= [];
-	private static $handler	= null;
-	private static $level	= EDOGER_LEVEL_ERROR;
+	private $_logs		= [];
+	private $_handler	= null;
+	private $_level		= EDOGER_LEVEL_ERROR;
 
-	public static function setLevel(int $level)
+	public function setLevel(int $level)
 	{
-		if ($level !== EDOGER_LEVEL_UNKNOWN && isset(self::$map[$level])) {
-			self::$level = $level;
+		if ($level !== EDOGER_LEVEL_UNKNOWN && isset($this->_map[$level])) {
+			$this->_level = $level;
 			return true;
 		} else {
 			return false;
 		}
 	}
 
-	public static function getLevel()
+	public function getLevel()
 	{
-		return self::$level;
+		return $this->_level;
 	}
 
-	public static function getLogs()
+	public function getLogs()
 	{
-		return self::$logs;
+		return $this->_logs;
 	}
 
-	public static function useHandler(LoggerHandlerInterface $handler)
+	public function setHandler(LoggerHandlerInterface $handler)
 	{
-		self::$handler = $handler;
-		if (!empty(self::$logs)) {
-			foreach (self::$logs as $log) {
+		$this->_handler = $handler;
+		if (!empty($this->_logs)) {
+			foreach ($this->_logs as $log) {
 				$handler->save($log[0], $log[1], $log[2], $log[3]);
 			}
 		}
 	}
 
-	public static function log(int $level, string $message)
+	public function log(int $level, string $message)
 	{
-		if (!isset(self::$map[$level])) {
+		if (!isset($this->_map[$level])) {
 			$level = EDOGER_LEVEL_UNKNOWN;
 		}
-		if ($level >= self::$level) {
+		
+		if ($level >= $this->_level) {
 			$date = date('Y-m-d H:i:s');
-			$name = self::$map[$level];
-			self::$logs[] = [$level, $name, $date, $message];
-			if (self::$handler) {
-				self::$handler->save($level, $name, $date, $message);
+			$name = $this->_map[$level];
+			$this->_logs[] = [$level, $name, $date, $message];
+			if ($this->_handler) {
+				$this->_handler->save($level, $name, $date, $message);
 			}
 		}
 	}
 
-	public static function debug(string $message)
+	public function debug(string $message)
 	{
-		self::log(EDOGER_LEVEL_DEBUG, $message);
+		$this->log(EDOGER_LEVEL_DEBUG, $message);
 	}
 
-	public static function info(string $message)
+	public function info(string $message)
 	{
-		self::log(EDOGER_LEVEL_INFO, $message);
+		$this->log(EDOGER_LEVEL_INFO, $message);
 	}
 
-	public static function notice(string $message)
+	public function notice(string $message)
 	{
-		self::log(EDOGER_LEVEL_NOTICE, $message);
+		$this->log(EDOGER_LEVEL_NOTICE, $message);
 	}
 
-	public static function warning(string $message)
+	public function warning(string $message)
 	{
-		self::log(EDOGER_LEVEL_WARNING, $message);
+		$this->log(EDOGER_LEVEL_WARNING, $message);
 	}
 
-	public static function error(string $message)
+	public function error(string $message)
 	{
-		self::log(EDOGER_LEVEL_ERROR, $message);
+		$this->log(EDOGER_LEVEL_ERROR, $message);
 	}
 
-	public static function critical(string $message)
+	public function critical(string $message)
 	{
-		self::log(EDOGER_LEVEL_CRITICAL, $message);
+		$this->log(EDOGER_LEVEL_CRITICAL, $message);
 	}
 
-	public static function alert(string $message)
+	public function alert(string $message)
 	{
-		self::log(EDOGER_LEVEL_ALERT, $message);
+		$this->log(EDOGER_LEVEL_ALERT, $message);
 	}
 
-	public static function emergency(string $message)
+	public function emergency(string $message)
 	{
-		self::log(EDOGER_LEVEL_EMERGENCY, $message);
+		$this->log(EDOGER_LEVEL_EMERGENCY, $message);
 	}
 }
