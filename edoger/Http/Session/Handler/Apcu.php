@@ -27,27 +27,12 @@ class Apcu implements SessionHandlerInterface
 		$this->_timeout = $config['timeout'];
 	}
 
-	public function close()
-	{
-		return true;
-	}
-
-	public function destroy($sid)
-	{
-		$key = 'session_'.$sid;
-		if (apcu_exists($key)) {
-			apcu_delete($key);
-		}
-
-		return true;
-	}
-
-	public function gc($maxLifeTime)
-	{
-		return true;
-	}
-
 	public function open($path, $name)
+	{
+		return true;
+	}
+
+	public function close()
 	{
 		return true;
 	}
@@ -68,5 +53,20 @@ class Apcu implements SessionHandlerInterface
 	public function write($sid, $data)
 	{
 		return apcu_store('session_'.$sid, $data, $this->_timeout);
+	}
+
+	public function destroy($sid)
+	{
+		$key = 'session_'.$sid;
+		if (apcu_exists($key)) {
+			apcu_delete($key);
+		}
+
+		return true;
+	}
+
+	public function gc($maxLifeTime)
+	{
+		return true;
 	}
 }
