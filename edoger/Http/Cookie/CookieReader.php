@@ -18,9 +18,37 @@ namespace Edoger\Http\Cookie;
 
 class CookieReader
 {
-	
-	public function __construct()
+	private $_cookie = [];
+
+	public function __construct(string $secretKey = '')
 	{
-		
+		if (!empty($_COOKIE)) {
+			foreach ($_COOKIE as $key => $value) {
+				if (substr($key, 0, 7) === 'edoger_') {
+					$key	= substr($key, 7);
+					$temp	= explode('|', $value);
+					$text	= reset($temp);
+					$sign	= end($temp);
+					if (md5($text.$secretKey) === $sign) {
+						$value = base64_decode($text);
+						if ($value !== false) {
+							$this->_cookie[$key] = $value;
+						}
+					}
+				} else {
+					$this->_cookie[$key] = $value;
+				}
+			}
+		}
+	}
+
+	public function get(string $key, $def = null)
+	{
+		return $this->_cookie[$key] ?? $def;
+	}
+
+	public function exists(string $key)
+	{
+		return isset($this->_cookie[$key]);
 	}
 }

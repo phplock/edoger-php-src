@@ -14,14 +14,50 @@
  *| @author    Qingshan Luo <shanshan.lqs@gmail.com>                                               |
  *+------------------------------------------------------------------------------------------------+
  */
-$conf = [];
-// -------------------------------------------------------------------------------------------------
+namespace Edoger\Http\Cookie;
 
-$conf['debug'] = true;
+class CookieAuthor
+{
+	private $_secretKey;
+	private $_option = [];
 
-$conf['log_level'] = EDOGER_LEVEL_DEBUG;
+	public function __construct(string $secretKey = '', array $option = [])
+	{
+		$this->_secretKey = $secretKey;
 
-$conf['cookie_secret_key'] = 'u8P9FwdiiAXmKbKT';
+		$this->_option['expire']	= $option['expire'] ?? 86400;
+		$this->_option['path']		= $option['path'] ?? '/';
+		$this->_option['domain']	= $option['domain'] ?? '';
+		$this->_option['secure']	= $option['secure'] ?? false;
+		$this->_option['httponly']	= $option['httponly'] ?? false;
+	}
 
-// -------------------------------------------------------------------------------------------------
-return $conf;
+	public function send(string $key, string $value, array $option = [])
+	{
+		$option = array_merge($this->_option, $option);
+		
+		if ($option['expire'] < 0) {
+			$option['expire'] = 1;
+		} elseif ($option['expire'] > 0) {
+			$option['expire'] = time() + $option['expire'];
+		} else {
+			$option['expire'] = 0;
+		}
+
+		return setcookie(
+			$key,
+			$value,
+			$option['expire'],
+			$option['path'],
+			$option['domain'],
+			$option['secure'],
+			$option['httponly']
+			);
+	}
+
+	public function forever(string $key, string $value, array $option = [])
+	{
+		$option['expire'] = 157680000;
+		return $this->send($key, $value, $option);
+	}
+}
