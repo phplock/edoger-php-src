@@ -29,7 +29,7 @@ class File implements SessionHandlerInterface
 		$this->_dir		= $config['dir'];
 	}
 
-	public function open(string $path, string $name)
+	public function open($path, $name)
 	{
 		if (!is_dir($this->_dir)) {
 			mkdir($this->_dir, 0777, true);
@@ -43,7 +43,7 @@ class File implements SessionHandlerInterface
 		return true;
 	}
 
-	public function read(string $sid)
+	public function read($sid)
 	{
 		$file = $this->_dir.'/session_'.$sid;
 		if (file_exists($file)) {
@@ -56,13 +56,13 @@ class File implements SessionHandlerInterface
 		return '';
 	}
 
-	public function write(string $sid, string $data)
+	public function write($sid, $data)
 	{
 		$file = $this->_dir.'/session_'.$sid;
-		return (bool)file_put_contents($file, $data);;
+		return file_put_contents($file, $data) !== false;
 	}
 
-	public function destroy(string $sid)
+	public function destroy($sid)
 	{
 		$file = $this->_dir.'/session_'.$sid;
 		if (file_exists($file)) {
@@ -72,7 +72,7 @@ class File implements SessionHandlerInterface
 		return true;
 	}
 
-	public function gc(int $maxLifeTime)
+	public function gc($maxLifeTime)
 	{
 		$files = scandir($this->_dir);
 		if (is_array($files)) {

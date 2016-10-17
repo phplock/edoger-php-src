@@ -22,17 +22,14 @@ use SessionHandlerInterface;
 class Session
 {
 	private $_started = false;
-	private $_config;
 	private $_sessionId;
 
-	public function __construct(array $config)
+	public function __construct()
 	{
 		$this->_sessionId = session_id();
 		if ($this->_sessionId) {
 			$this->_started = true;
 		}
-
-		$this->_config = $config;
 	}
 
 	public function start(string $sid, SessionHandlerInterface $handler)

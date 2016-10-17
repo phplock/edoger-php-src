@@ -32,7 +32,7 @@ class Apcu implements SessionHandlerInterface
 		return true;
 	}
 
-	public function destroy(string $sid)
+	public function destroy($sid)
 	{
 		$key = 'session_'.$sid;
 		if (apcu_exists($key)) {
@@ -42,17 +42,17 @@ class Apcu implements SessionHandlerInterface
 		return true;
 	}
 
-	public function gc(int $maxLifeTime)
+	public function gc($maxLifeTime)
 	{
 		return true;
 	}
 
-	public function open(string $path, string $name)
+	public function open($path, $name)
 	{
 		return true;
 	}
 
-	public function read(string $sid)
+	public function read($sid)
 	{
 		$key = 'session_'.$sid;
 		if (apcu_exists($key)) {
@@ -65,7 +65,7 @@ class Apcu implements SessionHandlerInterface
 		return '';
 	}
 
-	public function write(string $sid, string $data)
+	public function write($sid, $data)
 	{
 		return apcu_store('session_'.$sid, $data, $this->_timeout);
 	}

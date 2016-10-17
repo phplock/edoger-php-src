@@ -51,7 +51,7 @@ class CookieAuthor
 			$option['expire'] = 0;
 		}
 
-		$this->_names[$name] = true;
+		$this->_names[$key] = true;
 
 		return setcookie(
 			$key,
