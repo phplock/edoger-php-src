@@ -19,7 +19,7 @@
 // You can start the session or connect to the database and other initialization action.
 // But you shouldn't add business logic here.
 
-$conf = Edoger\Core\Kernel::singleton()->config();
+$kernel = Edoger\Core\Kernel::singleton();
 
 // Set log handler.
 // System has achieved several basic log processing program, you can directly use, 
@@ -34,3 +34,8 @@ $loggerHandler->init([
 
 Edoger\Log\Logger::useHandler($loggerHandler);
 
+
+$sessionId = $kernel->app()->request()->cookie()->get('EDOGER_SID', '');
+$sessionHandler = new Edoger\Http\Session\Handler\Apcu($kernel->config()->get('session_timeout'));
+
+$kernel->app()->request()->session()->start($sessionId, $sessionHandler);

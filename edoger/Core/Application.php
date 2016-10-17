@@ -31,9 +31,8 @@ final class Application
 
 	public function bootstrap()
 	{
-		$file = APP_PATH.'/bootstrap.php';
-		if (file_exists($file)) {
-			require $file;
+		if (file_exists(APP_PATH.'/bootstrap.php')) {
+			require APP_PATH.'/bootstrap.php';
 		}
 		return $this;
 	}

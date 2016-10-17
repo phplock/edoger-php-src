@@ -22,6 +22,11 @@ $conf['debug'] = true;
 $conf['log_level'] = EDOGER_LEVEL_DEBUG;
 
 $conf['cookie_secret_key'] = 'u8P9FwdiiAXmKbKT';
+$conf['cookie_expire'] = 86400;
+$conf['cookie_path'] = '/';
+$conf['cookie_domain'] = '';
+$conf['cookie_secure'] = false;
+$conf['cookie_httponly'] = false;
 
 // -------------------------------------------------------------------------------------------------
 return $conf;

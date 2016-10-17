@@ -20,6 +20,7 @@ class CookieAuthor
 {
 	private $_secretKey;
 	private $_option = [];
+	private $_names = [];
 
 	public function __construct(string $secretKey = '', array $option = [])
 	{
@@ -30,6 +31,12 @@ class CookieAuthor
 		$this->_option['domain']	= $option['domain'] ?? '';
 		$this->_option['secure']	= $option['secure'] ?? false;
 		$this->_option['httponly']	= $option['httponly'] ?? false;
+
+		if (!empty($_COOKIE)) {
+			foreach (array_keys($_COOKIE) as $name) {
+				$this->_names[$name] = true;
+			}
+		}
 	}
 
 	public function send(string $key, string $value, array $option = [])
@@ -43,6 +50,8 @@ class CookieAuthor
 		} else {
 			$option['expire'] = 0;
 		}
+
+		$this->_names[$name] = true;
 
 		return setcookie(
 			$key,
@@ -59,5 +68,42 @@ class CookieAuthor
 	{
 		$option['expire'] = 157680000;
 		return $this->send($key, $value, $option);
+	}
+
+	public function interim(string $key, string $value, array $option = [])
+	{
+		$option['expire'] = 0;
+		return $this -> send($key, $value, $option);
+	}
+
+	public function secure(string $key, string $value, array $option = [])
+	{
+		$option['httponly'] = true;
+		$temp = base64_encode($value);
+		return $this -> send('edoger_'.$key, $temp.'|'.md5($temp.$this->_secretKey), $option);
+	}
+
+	public function secureInterim(string $key, string $value, array $option = [])
+	{
+		$option['expire'] = 0;
+		return $this -> secure($key, $value, $option);
+	}
+
+	public function secureForever(string $key, string $value, array $option = [])
+	{
+		$option['expire'] = 157680000;
+		return $this -> secure($key, $value, $option);
+	}
+
+	public function forget(string $key)
+	{
+		foreach ([$key, 'edoger_'.$key] as $value) {
+			if (isset($this->_names[$value]) ) {
+				$this->send($value, '', ['expire' => -1]);
+				unset($this->_names[$value]);
+			}
+		}
+
+		return true;
 	}
 }

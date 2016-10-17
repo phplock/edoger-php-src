@@ -29,7 +29,6 @@ final class Kernel
 	
 	private function __construct()
 	{
-
 		$conf = require ROOT_PATH.'/config/edoger.config.php';
 		self::$_config = new Config($conf);
 	}
