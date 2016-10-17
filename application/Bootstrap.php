@@ -14,21 +14,41 @@
  *| @author    Qingshan Luo <shanshan.lqs@gmail.com>                                               |
  *+------------------------------------------------------------------------------------------------+
  */
-$conf = [];
-// -------------------------------------------------------------------------------------------------
+namespace App;
 
-$conf['debug'] = true;
+use Edoegr\Common\BootstrapInterface;
+use Edoegr\Core\Kernel;
+use Edoger\Log\Logger;
+use Edoger\Log\Handler\File as LoggerHandler;
+use Edoger\Http\Session\Handler\Apcu as SessionHandler;
 
-$conf['log_level'] = EDOGER_LEVEL_DEBUG;
+// The bootstrap class for application.
+// The initialization of the application will be done here.
 
-$conf['cookie_secret_key'] = 'u8P9FwdiiAXmKbKT';
-$conf['cookie_expire'] = 86400;
-$conf['cookie_path'] = '/';
-$conf['cookie_domain'] = '';
-$conf['cookie_secure'] = false;
-$conf['cookie_httponly'] = false;
+class Bootstrap implements BootstrapInterface
+{
+	public function initDebug(Kernel $kernel)
+	{
+		$kernel->debugger()->register();
+	}
 
-$conf['session_timeout'] = 86400;
+	public function initLogger(Kernel $kernel)
+	{
+		$handler = new LoggerHandler([
+			'dir'		=> ROOT_PATH.'/data/logs',
+			'format'	=> 'Ymd',
+			'ext'		=> 'log'
+			]);
+		$kernel->logger()->setLevel(EDOGER_LEVEL_DEBUG);
+		$kernel->logger()->setHandler($handler);
+	}
 
-// -------------------------------------------------------------------------------------------------
-return $conf;
+	public function initSession(Kernel $kernel)
+	{
+		$sid = $kernel->app()->request()->cookie()->get('EDOGER_SID', '');
+		$handler = new SessionHandler([
+			'timeout' => 86400
+			]);
+		$kernel->app()->request()->session()->start($sid, $handler);
+	}
+}

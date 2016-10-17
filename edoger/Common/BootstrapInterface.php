@@ -14,28 +14,9 @@
  *| @author    Qingshan Luo <shanshan.lqs@gmail.com>                                               |
  *+------------------------------------------------------------------------------------------------+
  */
+namespace Edoegr\Common;
 
-// The bootstrap script for application.
-// You can start the session or connect to the database and other initialization action.
-// But you shouldn't add business logic here.
-
-$kernel = Edoger\Core\Kernel::singleton();
-
-// Set log handler.
-// System has achieved several basic log processing program, you can directly use, 
-// please refer to the configuration file before use.
-// If you need to implement your own log handler, refer to the relevant documentation for help.
-$loggerHandler = new Edoger\Log\Handler\File();
-$loggerHandler->init([
-	'dir'		=> ROOT_PATH.'/data/logs',
-	'format'	=> 'Ymd',
-	'ext'		=> 'log'
-	]);
-
-Edoger\Log\Logger::useHandler($loggerHandler);
-
-
-$sessionId = $kernel->app()->request()->cookie()->get('EDOGER_SID', '');
-$sessionHandler = new Edoger\Http\Session\Handler\Apcu($kernel->config()->get('session_timeout'));
-
-$kernel->app()->request()->session()->start($sessionId, $sessionHandler);
+interface BootstrapInterface
+{
+	//
+}
