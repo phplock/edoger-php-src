@@ -52,7 +52,6 @@ class Bootstrap implements BootstrapInterface
 			]);
 		$session = $kernel->app()->request()->session();
 		$session->start($sid, $handler);
-		$sid = $session->sessionId();
-		$kernel->app()->response()->cookie()->secure('EDOGER_SID', $sid);
+		$kernel->app()->response()->cookie()->secure('EDOGER_SID', $session->sessionId());
 	}
 }

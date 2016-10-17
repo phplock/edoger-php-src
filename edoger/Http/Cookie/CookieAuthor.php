@@ -80,7 +80,7 @@ class CookieAuthor
 	{
 		$option['httponly'] = true;
 		$temp = base64_encode($value);
-		return $this -> send('edoger_'.$key, $temp.'|'.md5($temp.$this->_secretKey), $option);
+		return $this -> send('SECURE_'.$key, $temp.md5($temp.$this->_secretKey), $option);
 	}
 
 	public function secureInterim(string $key, string $value, array $option = [])
@@ -97,7 +97,7 @@ class CookieAuthor
 
 	public function forget(string $key)
 	{
-		foreach ([$key, 'edoger_'.$key] as $value) {
+		foreach ([$key, 'SECURE_'.$key] as $value) {
 			if (isset($this->_names[$value]) ) {
 				$this->send($value, '', ['expire' => -1]);
 				unset($this->_names[$value]);

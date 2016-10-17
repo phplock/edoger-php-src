@@ -24,11 +24,10 @@ class CookieReader
 	{
 		if (!empty($_COOKIE)) {
 			foreach ($_COOKIE as $key => $value) {
-				if (substr($key, 0, 7) === 'edoger_') {
+				if (substr($key, 0, 7) === 'SECURE_') {
 					$key	= substr($key, 7);
-					$temp	= explode('|', $value);
-					$text	= reset($temp);
-					$sign	= end($temp);
+					$text	= substr($value, 0, -32);
+					$sign	= substr($value, -32);
 					if (md5($text.$secretKey) === $sign) {
 						$value = base64_decode($text);
 						if ($value !== false) {
