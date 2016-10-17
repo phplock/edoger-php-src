@@ -23,14 +23,21 @@ use Edoger\Http\Session\Handler\File as EdogerSessionHandler;
 
 // The bootstrap class for application.
 // The initialization of the application will be done here.
+// Here, you can't get the information about the route, because the route hasn't started yet.
 
 class Bootstrap
 {
+	// Open global auto error capture.
+	// If it is in the development environment, you can remove this function, 
+	// while the error will be exported to the browser.
 	public function initDebug(Kernel $kernel)
 	{
 		$kernel->debugger()->register();
 	}
 
+	// Set the log handler for the log module.
+	// If you do not set, then the log will not be persistent, 
+	// they will be cleared after the completion of the request.
 	public function initLogger(Kernel $kernel)
 	{
 		$handler = new EdogerLoggerHandler([
@@ -42,6 +49,8 @@ class Bootstrap
 		$kernel->logger()->setHandler($handler);
 	}
 
+	// Set user session.
+	// We get the session ID through cookie, you can change this behavior.
 	public function initSession(Kernel $kernel)
 	{
 		$sid = $kernel->app()->request()->cookie()->get('EDOGER_SID', '');
