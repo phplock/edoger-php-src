@@ -18,6 +18,5 @@ namespace Edoger\Log;
 
 interface LoggerHandlerInterface
 {
-	public function init(array $config);
 	public function save(int $level, string $name, string $date, string $message);
 }

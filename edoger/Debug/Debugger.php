@@ -19,11 +19,9 @@ namespace Edoger\Debug;
 use Error;
 use Exception;
 use ErrorException;
-use Edoger\Log\Logger;
 use Edoger\Core\Kernel;
-use Edoger\Exception\EdogerException;
 
-final class Debug
+final class Debugger
 {
 	private $_map = [
 		E_ERROR             => EDOGER_LEVEL_CRITICAL,
@@ -61,7 +59,9 @@ final class Debug
 	public function _edogerErrorHandler(int $code, string $message, string $file = '', int $line = 0)
 	{
 		$level = $this->_map[$code] ?? EDOGER_LEVEL_UNKNOWN;
-		$this->_edogerExceptionHandler(new ErrorException($message, $level, $code, $file, $line));
+		$this->_edogerExceptionHandler(
+			new ErrorException($message, $level, $code, $file, $line)
+			);
 	}
 
 	public function _edogerExceptionHandler($exception)

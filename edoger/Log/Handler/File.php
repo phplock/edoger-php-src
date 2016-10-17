@@ -22,7 +22,7 @@ class File implements LoggerHandlerInterface
 {
 	private $_file = '';
 	
-	public function init(array $config)
+	public function __construct(array $config)
 	{
 		if (!is_dir($config['dir'])) {
 			mkdir($config['dir'], 0777, true);

@@ -16,8 +16,8 @@
  */
 namespace App;
 
-use Edoegr\Common\BootstrapInterface;
-use Edoegr\Core\Kernel;
+use Edoger\Common\BootstrapInterface;
+use Edoger\Core\Kernel;
 use Edoger\Log\Logger;
 use Edoger\Log\Handler\File as LoggerHandler;
 use Edoger\Http\Session\Handler\Apcu as SessionHandler;

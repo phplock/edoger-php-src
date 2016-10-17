@@ -14,7 +14,7 @@
  *| @author    Qingshan Luo <shanshan.lqs@gmail.com>                                               |
  *+------------------------------------------------------------------------------------------------+
  */
-namespace Edoegr\Common;
+namespace Edoger\Common;
 
 interface BootstrapInterface
 {
