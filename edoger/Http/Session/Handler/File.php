@@ -14,40 +14,85 @@
  *| @author    Qingshan Luo <shanshan.lqs@gmail.com>                                               |
  *+------------------------------------------------------------------------------------------------+
  */
-namespace Edoger\Http\Cookie;
+namespace Edoger\Http\Session\Handler;
 
-class CookieReader
+use SessionHandlerInterface;
+
+class File implements SessionHandlerInterface
 {
-	private $_cookie = [];
+	private $_timeout;
+	private $_dir;
 
-	public function __construct(string $secretKey = '')
+	public function __construct(array $config)
 	{
-		if (!empty($_COOKIE)) {
-			foreach ($_COOKIE as $key => $value) {
-				if (substr($key, 0, 7) === 'SECURE_') {
-					$key	= substr($key, 7);
-					$text	= substr($value, 0, -32);
-					$sign	= substr($value, -32);
-					if (md5($text.$secretKey) === $sign) {
-						$value = base64_decode($text);
-						if ($value !== false) {
-							$this->_cookie[$key] = $value;
-						}
+		$this->_timeout	= $config['timeout'];
+		$this->_dir		= $config['dir'];
+	}
+
+	public function open($path, $name)
+	{
+		if (!is_dir($this->_dir)) {
+			mkdir($this->_dir, 0777, true);
+		}
+
+		return true;
+	}
+
+	public function close()
+	{
+		return true;
+	}
+
+	public function read($sid)
+	{
+		$file = $this->_dir.'/session_'.$sid;
+		if (file_exists($file)) {
+			$data = file_get_contents($file);
+			if ($data !== false) {
+				return $data;
+			}
+		}
+
+		return '';
+	}
+
+	public function write($sid, $data)
+	{
+		$file = $this->_dir.'/session_'.$sid;
+		return file_put_contents($file, $data) !== false;
+	}
+
+	public function destroy($sid)
+	{
+		$file = $this->_dir.'/session_'.$sid;
+		if (file_exists($file)) {
+			unlink($file);
+		}
+
+		return true;
+	}
+
+	public function gc($maxLifeTime)
+	{
+		$files = scandir($this->_dir);
+		if (is_array($files)) {
+			$now = time();
+			foreach ($files as $file) {
+				if (substr($file, 0, 8) === 'session_') {
+					$file = $this->_dir.'/'.$file;
+					if (filemtime($file) + $maxLifeTime < $now && file_exists($file)) {
+						unlink($file);
 					}
-				} else {
-					$this->_cookie[$key] = $value;
 				}
 			}
 		}
+
+		return true;
 	}
 
-	public function get(string $key, $def = null)
-	{
-		return $this->_cookie[$key] ?? $def;
-	}
+	
 
-	public function exists(string $key)
-	{
-		return isset($this->_cookie[$key]);
-	}
+	
+
+	
 }

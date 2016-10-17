@@ -14,7 +14,7 @@
  *| @author    Qingshan Luo <shanshan.lqs@gmail.com>                                               |
  *+------------------------------------------------------------------------------------------------+
  */
-namespace Edoegr\View;
+namespace Edoger\View;
 
 interface ViewInterface
 {

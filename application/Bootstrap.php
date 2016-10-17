@@ -16,11 +16,11 @@
  */
 namespace App;
 
-use Edoegr\Common\BootstrapInterface;
-use Edoegr\Core\Kernel;
+use Edoger\Common\BootstrapInterface;
+use Edoger\Core\Kernel;
 use Edoger\Log\Logger;
-use Edoger\Log\Handler\File as LoggerHandler;
-use Edoger\Http\Session\Handler\Apcu as SessionHandler;
+use Edoger\Log\Handler\File as EdogerLoggerHandler;
+use Edoger\Http\Session\Handler\File as EdogerSessionHandler;
 
 // The bootstrap class for application.
 // The initialization of the application will be done here.
@@ -34,7 +34,7 @@ class Bootstrap implements BootstrapInterface
 
 	public function initLogger(Kernel $kernel)
 	{
-		$handler = new LoggerHandler([
+		$handler = new EdogerLoggerHandler([
 			'dir'		=> ROOT_PATH.'/data/logs',
 			'format'	=> 'Ymd',
 			'ext'		=> 'log'
@@ -46,9 +46,12 @@ class Bootstrap implements BootstrapInterface
 	public function initSession(Kernel $kernel)
 	{
 		$sid = $kernel->app()->request()->cookie()->get('EDOGER_SID', '');
-		$handler = new SessionHandler([
-			'timeout' => 86400
+		$handler = new EdogerSessionHandler([
+			'timeout' => 86400,
+			'dir' => ROOT_PATH.'/data/session'
 			]);
-		$kernel->app()->request()->session()->start($sid, $handler);
+		$session = $kernel->app()->request()->session();
+		$session->start($sid, $handler);
+		$kernel->app()->response()->cookie()->secure('EDOGER_SID', $session->sessionId());
 	}
 }

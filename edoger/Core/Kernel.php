@@ -16,33 +16,31 @@
  */
 namespace Edoger\Core;
 
-use Edoger\Debug\Debug;
 use Edoger\Log\Logger;
-use Edoger\Exception\EdogerException;
+use Edoger\Debug\Debugger;
 
 final class Kernel
 {
 	private static $_instance = null;
 	private static $_application = null;
 	private static $_config = null;
+	private static $_logger = null;
+	private static $_debugger = null;
 	private static $_terminated = false;
 	
 	private function __construct()
 	{
 		$conf = require ROOT_PATH.'/config/edoger.config.php';
-		self::$_config = new Config($conf);
+
+		self::$_config		= new Config($conf);
+		self::$_logger		= new Logger();
+		self::$_debugger	= new Debugger();
 	}
 
 	public static function singleton()
 	{
 		if (!self::$_instance) {
 			self::$_instance = new self();
-			if (self::$_config->get('debug')) {
-				set_error_handler([Debug::class, 'edogerErrorHandler']);
-				set_exception_handler([Debug::class, 'edogerExceptionHandler']);
-				register_shutdown_function([Debug::class, 'edogerFatalErrorHandler']);
-			}
-			Logger::setLevel(self::$_config->get('log_level'));
 		}
 		
 		return self::$_instance;
@@ -51,7 +49,7 @@ final class Kernel
 	public function app()
 	{
 		if (!self::$_application) {
-			self::$_application = new Application($this);
+			self::$_application = new Application();
 		}
 
 		return self::$_application;
@@ -61,6 +59,17 @@ final class Kernel
 	{
 		return self::$_config;
 	}
+
+	public function debugger()
+	{
+		return self::$_debugger;
+	}
+
+	public function logger()
+	{
+		return self::$_logger;
+	}
+
 	public function error($exception)
 	{
 		if (self::$_application) {
@@ -68,6 +77,7 @@ final class Kernel
 		}
 		return $this;
 	}
+
 	public function termination()
 	{
 		if (!self::$_terminated) {
