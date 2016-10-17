@@ -16,12 +16,40 @@
  */
 namespace Edoger\Route;
 
+use Edoger\Core\Kernel;
 
-class Manager
+class RouteManager
 {
+	private $_routes = [];
+	private $_bind = [];
+
 	public function __construct()
 	{
 		
 	}
 
+	public function add(array $method, $uri, $action)
+	{
+		$uri	= '/'.trim($uri, '/');
+		$method	= array_map('strtolower', $method);
+		$route	= new Route($method, $uri, $action);
+
+		$this->_routes[] = $route;
+		return $route;
+	}
+
+	public function bind($name, $mw)
+	{
+		if (!isset($this->_bind[$name])) {
+			$this->_bind[$name] = [];
+		}
+
+		$this->_bind[$name][] = $mw;
+		return $this;
+	}
+
+	public function loop()
+	{
+		
+	}
 }

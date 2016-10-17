@@ -26,6 +26,7 @@ final class Kernel
 	private static $_config = null;
 	private static $_logger = null;
 	private static $_debugger = null;
+	private static $_route = null;
 	private static $_terminated = false;
 	
 	private function __construct()
@@ -68,6 +69,14 @@ final class Kernel
 	public function logger()
 	{
 		return self::$_logger;
+	}
+
+	public function route()
+	{
+		if (!$this->_route) {
+			$this->_route = new RouteManager();
+		}
+		return $this->_route;
 	}
 
 	public function error($exception)
