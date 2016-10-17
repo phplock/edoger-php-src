@@ -14,23 +14,59 @@
  *| @author    Qingshan Luo <shanshan.lqs@gmail.com>                                               |
  *+------------------------------------------------------------------------------------------------+
  */
+namespace Edoger\Http\Session\Handler;
 
-// The bootstrap script for application.
-// You can start the session or connect to the database and other initialization action.
-// But you shouldn't add business logic here.
+use SessionHandlerInterface;
 
-$conf = Edoger\Core\Kernel::singleton()->config();
+class Apcu implements SessionHandlerInterface
+{
+	private $_timeout;
 
-// Set log handler.
-// System has achieved several basic log processing program, you can directly use, 
-// please refer to the configuration file before use.
-// If you need to implement your own log handler, refer to the relevant documentation for help.
-$loggerHandler = new Edoger\Log\Handler\File();
-$loggerHandler->init([
-	'dir'		=> ROOT_PATH.'/data/logs',
-	'format'	=> 'Ymd',
-	'ext'		=> 'log'
-	]);
+	public function __construct(int $timeout)
+	{
+		$this->_timeout = $timeout;
+	}
 
-Edoger\Log\Logger::useHandler($loggerHandler);
+	public function close()
+	{
+		return true;
+	}
 
+	public function destroy(string $sid)
+	{
+		$key = 'session_'.$sid;
+		if (apcu_exists($key)) {
+			apcu_delete($key);
+		}
+
+		return true;
+	}
+
+	public function gc(int $maxlifetime)
+	{
+		return true;
+	}
+
+	public function open(string $path, string $name)
+	{
+		return true;
+	}
+
+	public function read(string $sid)
+	{
+		$key = 'session_'.$sid;
+		if (apcu_exists($key)) {
+			$data = apcu_fetch($key, $success);
+			if ($success) {
+				return $data;
+			}
+		}
+
+		return '';
+	}
+
+	public function write(string $sid, string $data)
+	{
+		return apcu_store('session_'.$sid, $data, $this->_timeout);
+	}
+}

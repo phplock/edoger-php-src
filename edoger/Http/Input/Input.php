@@ -14,23 +14,37 @@
  *| @author    Qingshan Luo <shanshan.lqs@gmail.com>                                               |
  *+------------------------------------------------------------------------------------------------+
  */
+namespace Edoger\Http\Input;
 
-// The bootstrap script for application.
-// You can start the session or connect to the database and other initialization action.
-// But you shouldn't add business logic here.
+class Input
+{
+	private $_get = [];
+	private $_post = [];
+	private $_input = [];
+	public function __construct(string $method)
+	{
+		$this->_get = $_GET;
+		$this->_post = $_POST;
+		
+		if (in_array($method, ['get', 'header'])) {
+			$this->_input = array_merge($this->_post, $this->_get);
+		} else {
+			$this->_input = array_merge($this->_get, $this->_post);
+		}
+	}
 
-$conf = Edoger\Core\Kernel::singleton()->config();
+	public function get(string $key, $def = null)
+	{
+		return $this->_get[$key] ?? $def;
+	}
 
-// Set log handler.
-// System has achieved several basic log processing program, you can directly use, 
-// please refer to the configuration file before use.
-// If you need to implement your own log handler, refer to the relevant documentation for help.
-$loggerHandler = new Edoger\Log\Handler\File();
-$loggerHandler->init([
-	'dir'		=> ROOT_PATH.'/data/logs',
-	'format'	=> 'Ymd',
-	'ext'		=> 'log'
-	]);
+	public function post(string $key, $def = null)
+	{
+		return $this->_post[$key] ?? $def;
+	}
 
-Edoger\Log\Logger::useHandler($loggerHandler);
-
+	public function any(string $key, $def = null)
+	{
+		return $this->_input[$key] ?? $def;
+	}
+}

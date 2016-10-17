@@ -14,23 +14,25 @@
  *| @author    Qingshan Luo <shanshan.lqs@gmail.com>                                               |
  *+------------------------------------------------------------------------------------------------+
  */
+namespace Edoger\Log\Handler;
 
-// The bootstrap script for application.
-// You can start the session or connect to the database and other initialization action.
-// But you shouldn't add business logic here.
+use Edoger\Log\LoggerHandlerInterface;
 
-$conf = Edoger\Core\Kernel::singleton()->config();
+class File implements LoggerHandlerInterface
+{
+	private $_file = '';
+	
+	public function init(array $config)
+	{
+		if (!is_dir($config['dir'])) {
+			mkdir($config['dir'], 0777, true);
+		}
 
-// Set log handler.
-// System has achieved several basic log processing program, you can directly use, 
-// please refer to the configuration file before use.
-// If you need to implement your own log handler, refer to the relevant documentation for help.
-$loggerHandler = new Edoger\Log\Handler\File();
-$loggerHandler->init([
-	'dir'		=> ROOT_PATH.'/data/logs',
-	'format'	=> 'Ymd',
-	'ext'		=> 'log'
-	]);
+		$this->_file = $config['dir'].'/'.date($config['format']).'.'.$config['ext'];
+	}
 
-Edoger\Log\Logger::useHandler($loggerHandler);
-
+	public function save(int $level, string $name, string $date, string $message)
+	{
+		error_log('['.$date.']['.$name.']'.$message.PHP_EOL, 3, $this->_file);
+	}
+}

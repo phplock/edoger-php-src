@@ -202,13 +202,13 @@ final class Agent
 
 	public function __construct(string $agent)
 	{
-		$this->parseOs();
-		$this->parseBrowser();
-		$this->parseMobile();
-		$this->parseRobot();
+		$this->parseOs($agent);
+		$this->parseBrowser($agent);
+		$this->parseMobile($agent);
+		$this->parseRobot($agent);
 	}
 
-	private function parseOs()
+	private function parseOs(string $agent)
 	{
 		foreach ($this->_os as $key => $value) {
 			if (preg_match('/'.preg_quote($key).'/i', $agent)) {
@@ -218,7 +218,7 @@ final class Agent
 		}
 	}
 
-	private function parseBrowser()
+	private function parseBrowser(string $agent)
 	{
 		foreach ($this->_browser as $key => $value) {
 			if (preg_match('/'.$key.'.*?([0-9\.]+)/i', $agent, $m)) {
@@ -230,7 +230,7 @@ final class Agent
 		}
 	}
 
-	private function parseMobile()
+	private function parseMobile(string $agent)
 	{
 		foreach ($this->_mobile as $key => $value) {
 			if (stripos($agent, $key) !== false) {
@@ -241,7 +241,7 @@ final class Agent
 		}
 	}
 
-	private function parseRobot()
+	private function parseRobot(string $agent)
 	{
 		foreach ($this->_robot as $key => $value) {
 			if (preg_match('/'.preg_quote($key).'/i', $agent)) {
