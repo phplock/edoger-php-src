@@ -80,7 +80,7 @@ class File implements SessionHandlerInterface
 			foreach ($files as $file) {
 				if (substr($file, 0, 8) === 'session_') {
 					$file = $this->_dir.'/'.$file;
-					if (filemtime($file) + $maxLifeTime < $now && file_exists($file)) {
+					if (filemtime($file) + $this->_timeout < $now && file_exists($file)) {
 						unlink($file);
 					}
 				}
@@ -89,10 +89,4 @@ class File implements SessionHandlerInterface
 
 		return true;
 	}
-
-	
-
-	
-
-	
 }
