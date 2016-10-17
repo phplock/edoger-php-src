@@ -16,7 +16,6 @@
  */
 namespace App;
 
-use Edoger\Common\BootstrapInterface;
 use Edoger\Core\Kernel;
 use Edoger\Log\Logger;
 use Edoger\Log\Handler\File as EdogerLoggerHandler;
@@ -25,7 +24,7 @@ use Edoger\Http\Session\Handler\File as EdogerSessionHandler;
 // The bootstrap class for application.
 // The initialization of the application will be done here.
 
-class Bootstrap implements BootstrapInterface
+class Bootstrap
 {
 	public function initDebug(Kernel $kernel)
 	{
