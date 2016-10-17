@@ -17,40 +17,29 @@
 namespace Edoger\Route;
 
 
-final class Route
+class Node
 {
-	private $_methods;
+	private $_method;
 	private $_uri;
 	private $_action;
 
-	private $_wheres = [];
-	private $_middlewares = [];
+	private $_where = [];
+	private $_middleware = [];
 
-	private $_port = null;
-	private $_ip = null;
-	private $_scheme = null;
-	private $_domain = null;
-	private $_xhr = null;
-
-	public function __construct(array $method, $uri, $action)
+	public function __construct($method, $uri, $action)
 	{
-		$this->_methods	= array_map('strtolower', $method);
-		$this->_uri		= '/'.trim($uri, '/');
-		$this->_action	= $action;
+		$this->_method = $method;
+		$this->_uri = $uri;
+		$this->_action = $action;
 	}
 
-	public static function where($name, $filter)
+	public function where($name, $filter)
 	{
-		$this->_wheres[$name] = $filter;
-		return $this;
+
 	}
 
-	public static function middleware(array $middleware)
+	public function middleware(array $middlewares)
 	{
-		foreach ($middleware as $mw) {
-			$this->_middlewares[] = strtolower($mw);
-		}
 
-		return $this;
 	}
 }
