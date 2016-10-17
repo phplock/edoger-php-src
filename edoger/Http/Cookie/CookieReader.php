@@ -14,21 +14,41 @@
  *| @author    Qingshan Luo <shanshan.lqs@gmail.com>                                               |
  *+------------------------------------------------------------------------------------------------+
  */
-$conf = [];
-// -------------------------------------------------------------------------------------------------
+namespace Edoger\Http\Cookie;
 
-$conf['debug'] = true;
+class CookieReader
+{
+	private $_cookie = [];
 
-$conf['log_level'] = EDOGER_LEVEL_DEBUG;
+	public function __construct(string $secretKey = '')
+	{
+		if (!empty($_COOKIE)) {
+			foreach ($_COOKIE as $key => $value) {
+				if (substr($key, 0, 7) === 'edoger_') {
+					$key	= substr($key, 7);
+					$temp	= explode('|', $value);
+					$text	= reset($temp);
+					$sign	= end($temp);
+					if (md5($text.$secretKey) === $sign) {
+						$value = base64_decode($text);
+						if ($value !== false) {
+							$this->_cookie[$key] = $value;
+						}
+					}
+				} else {
+					$this->_cookie[$key] = $value;
+				}
+			}
+		}
+	}
 
-$conf['cookie_secret_key'] = 'u8P9FwdiiAXmKbKT';
-$conf['cookie_expire'] = 86400;
-$conf['cookie_path'] = '/';
-$conf['cookie_domain'] = '';
-$conf['cookie_secure'] = false;
-$conf['cookie_httponly'] = false;
+	public function get(string $key, $def = null)
+	{
+		return $this->_cookie[$key] ?? $def;
+	}
 
-$conf['session_timeout'] = 86400;
-
-// -------------------------------------------------------------------------------------------------
-return $conf;
+	public function exists(string $key)
+	{
+		return isset($this->_cookie[$key]);
+	}
+}

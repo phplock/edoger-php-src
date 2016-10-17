@@ -14,21 +14,37 @@
  *| @author    Qingshan Luo <shanshan.lqs@gmail.com>                                               |
  *+------------------------------------------------------------------------------------------------+
  */
-$conf = [];
-// -------------------------------------------------------------------------------------------------
+namespace Edoger\Http\Input;
 
-$conf['debug'] = true;
+class Input
+{
+	private $_get = [];
+	private $_post = [];
+	private $_input = [];
+	public function __construct(string $method)
+	{
+		$this->_get = $_GET;
+		$this->_post = $_POST;
+		
+		if (in_array($method, ['get', 'header'])) {
+			$this->_input = array_merge($this->_post, $this->_get);
+		} else {
+			$this->_input = array_merge($this->_get, $this->_post);
+		}
+	}
 
-$conf['log_level'] = EDOGER_LEVEL_DEBUG;
+	public function get(string $key, $def = null)
+	{
+		return $this->_get[$key] ?? $def;
+	}
 
-$conf['cookie_secret_key'] = 'u8P9FwdiiAXmKbKT';
-$conf['cookie_expire'] = 86400;
-$conf['cookie_path'] = '/';
-$conf['cookie_domain'] = '';
-$conf['cookie_secure'] = false;
-$conf['cookie_httponly'] = false;
+	public function post(string $key, $def = null)
+	{
+		return $this->_post[$key] ?? $def;
+	}
 
-$conf['session_timeout'] = 86400;
-
-// -------------------------------------------------------------------------------------------------
-return $conf;
+	public function any(string $key, $def = null)
+	{
+		return $this->_input[$key] ?? $def;
+	}
+}

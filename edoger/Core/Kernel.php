@@ -29,7 +29,6 @@ final class Kernel
 	
 	private function __construct()
 	{
-
 		$conf = require ROOT_PATH.'/config/edoger.config.php';
 		self::$_config = new Config($conf);
 	}
@@ -43,8 +42,7 @@ final class Kernel
 				set_exception_handler([Debug::class, 'edogerExceptionHandler']);
 				register_shutdown_function([Debug::class, 'edogerFatalErrorHandler']);
 			}
-			Logger::setLevel(self::$_config->get('log.level'));
-			Logger::useHandler(self::$_config->get('log.handler'));
+			Logger::setLevel(self::$_config->get('log_level'));
 		}
 		
 		return self::$_instance;

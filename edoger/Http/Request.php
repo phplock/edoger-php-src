@@ -16,11 +16,19 @@
  */
 namespace Edoger\Http;
 
+use Edoger\Http\Input\Input;
+use Edoger\Http\Session\Session;
+use Edoger\Http\Cookie\CookieReader;
+use Edoger\Core\Kernel;
+
 // Request component class.
 final class Request
 {
 	private $_server;
 	private $_agent = null;
+	private $_input = null;
+	private $_cookie = null;
+	private $_session = null;
 	private $_cache = [];
 
 	public function __construct()
@@ -31,6 +39,45 @@ final class Request
 	public function server()
 	{
 		return $this->_server;
+	}
+
+	public function input()
+	{
+		if (!$this->_input) {
+			$this->_input = new Input($this->method());
+		}
+
+		return $this->_input;
+	}
+
+	public function get(string $key, $def = null)
+	{
+		return $this->input()->get($key, $def);
+	}
+
+	public function post(string $key, $def = null)
+	{
+		return $this->input()->post($key, $def);
+	}
+
+	public function cookie()
+	{
+		if (!$this->_cookie) {
+			$this->_cookie = new CookieReader(
+				Kernel::singleton()->config()->get('cookie_secret_key')
+				);
+		}
+		
+		return $this->_cookie;
+	}
+
+	public function session()
+	{
+		if (!$this->_session) {
+			$this->_session = new Session();
+		}
+		
+		return $this->_session;
 	}
 
 	public function path()

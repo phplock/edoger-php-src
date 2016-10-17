@@ -14,21 +14,59 @@
  *| @author    Qingshan Luo <shanshan.lqs@gmail.com>                                               |
  *+------------------------------------------------------------------------------------------------+
  */
-$conf = [];
-// -------------------------------------------------------------------------------------------------
+namespace Edoger\Http\Session\Handler;
 
-$conf['debug'] = true;
+use SessionHandlerInterface;
 
-$conf['log_level'] = EDOGER_LEVEL_DEBUG;
+class Apcu implements SessionHandlerInterface
+{
+	private $_timeout;
 
-$conf['cookie_secret_key'] = 'u8P9FwdiiAXmKbKT';
-$conf['cookie_expire'] = 86400;
-$conf['cookie_path'] = '/';
-$conf['cookie_domain'] = '';
-$conf['cookie_secure'] = false;
-$conf['cookie_httponly'] = false;
+	public function __construct(int $timeout)
+	{
+		$this->_timeout = $timeout;
+	}
 
-$conf['session_timeout'] = 86400;
+	public function close()
+	{
+		return true;
+	}
 
-// -------------------------------------------------------------------------------------------------
-return $conf;
+	public function destroy(string $sid)
+	{
+		$key = 'session_'.$sid;
+		if (apcu_exists($key)) {
+			apcu_delete($key);
+		}
+
+		return true;
+	}
+
+	public function gc(int $maxlifetime)
+	{
+		return true;
+	}
+
+	public function open(string $path, string $name)
+	{
+		return true;
+	}
+
+	public function read(string $sid)
+	{
+		$key = 'session_'.$sid;
+		if (apcu_exists($key)) {
+			$data = apcu_fetch($key, $success);
+			if ($success) {
+				return $data;
+			}
+		}
+
+		return '';
+	}
+
+	public function write(string $sid, string $data)
+	{
+		return apcu_store('session_'.$sid, $data, $this->_timeout);
+	}
+}

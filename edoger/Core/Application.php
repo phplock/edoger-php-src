@@ -18,22 +18,29 @@ namespace Edoger\Core;
 
 use Edoger\Http\Request;
 use Edoger\Http\Response;
+use App\Bootstrap;
 
 final class Application
 {
 	private $_request;
 	private $_response;
-	public function __construct(Kernel $kernel)
+	public function __construct()
 	{
-		$this->_request = new Request();
-		$this->_response = new Response();
+		$this->_request		= new Request();
+		$this->_response	= new Response();
 	}
 
 	public function bootstrap()
 	{
-		$file = APP_PATH.'/bootstrap.php';
-		if (file_exists($file)) {
-			require $file;
+		$bootstrap	= new Bootstrap();
+		$methods	= get_class_methods($bootstrap);
+		if (is_array($methods)) {
+			$kernel = Kernel::singleton();
+			foreach ($methods as $method) {
+				if (substr($method, 0, 4) === 'init') {
+					$bootstrap->$method($kernel);
+				}
+			}
 		}
 		return $this;
 	}

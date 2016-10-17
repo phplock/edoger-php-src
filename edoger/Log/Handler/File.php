@@ -14,21 +14,25 @@
  *| @author    Qingshan Luo <shanshan.lqs@gmail.com>                                               |
  *+------------------------------------------------------------------------------------------------+
  */
-$conf = [];
-// -------------------------------------------------------------------------------------------------
+namespace Edoger\Log\Handler;
 
-$conf['debug'] = true;
+use Edoger\Log\LoggerHandlerInterface;
 
-$conf['log_level'] = EDOGER_LEVEL_DEBUG;
+class File implements LoggerHandlerInterface
+{
+	private $_file = '';
+	
+	public function init(array $config)
+	{
+		if (!is_dir($config['dir'])) {
+			mkdir($config['dir'], 0777, true);
+		}
 
-$conf['cookie_secret_key'] = 'u8P9FwdiiAXmKbKT';
-$conf['cookie_expire'] = 86400;
-$conf['cookie_path'] = '/';
-$conf['cookie_domain'] = '';
-$conf['cookie_secure'] = false;
-$conf['cookie_httponly'] = false;
+		$this->_file = $config['dir'].'/'.date($config['format']).'.'.$config['ext'];
+	}
 
-$conf['session_timeout'] = 86400;
-
-// -------------------------------------------------------------------------------------------------
-return $conf;
+	public function save(int $level, string $name, string $date, string $message)
+	{
+		error_log('['.$date.']['.$name.']'.$message.PHP_EOL, 3, $this->_file);
+	}
+}

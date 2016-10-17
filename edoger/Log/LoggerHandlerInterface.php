@@ -14,7 +14,10 @@
  *| @author    Qingshan Luo <shanshan.lqs@gmail.com>                                               |
  *+------------------------------------------------------------------------------------------------+
  */
+namespace Edoger\Log;
 
-// The bootstrap script for application.
-// You can start the session or connect to the database and other initialization action.
-// But you shouldn't add business logic here.
+interface LoggerHandlerInterface
+{
+	public function init(array $config);
+	public function save(int $level, string $name, string $date, string $message);
+}

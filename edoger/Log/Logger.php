@@ -16,8 +16,6 @@
  */
 namespace Edoger\Log;
 
-use Edoger\Core\Kernel;
-
 final class Logger
 {
 	private static $map = [
@@ -56,21 +54,13 @@ final class Logger
 		return self::$logs;
 	}
 
-	public static function useHandler(string $name)
+	public static function useHandler(LoggerHandlerInterface $handler)
 	{
-		$name		= strtolower($name);
-		$className	= '\\Edoger\\Log\\Handlers\\' . ucfirst($name) . 'Handler';
-		if (class_exists($className, true)) {
-			$config = Kernel::singleton()->config()->get('log.'.$name);
-			self::$handler = new $className($config);
-			if (!empty(self::$logs)) {
-				foreach (self::$logs as $log) {
-					self::$handler->save($log[0], $log[1], $log[2], $log[3]);
-				}
+		self::$handler = $handler;
+		if (!empty(self::$logs)) {
+			foreach (self::$logs as $log) {
+				$handler->save($log[0], $log[1], $log[2], $log[3]);
 			}
-			return true;
-		} else {
-			return false;
 		}
 	}
 

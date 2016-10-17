@@ -17,14 +17,35 @@
 namespace Edoger\Http;
 
 use Edoger\Core\Kernel;
+use Edoger\Http\Cookie\CookieAuthor;
 
 final class Response
 {
 	private $_output = [];
+	private $_cookie = null;
 	
 	public function __construct()
 	{
 		ob_start();
+	}
+
+	public function cookie()
+	{
+		if (!$this->_cookie) {
+			$conf = Kernel::singleton()->config();
+			$this->_cookie = new CookieAuthor(
+				$conf->get('cookie_secret_key'),
+				[
+					'expire'	=> $conf->get('cookie_expire'),
+					'path'		=> $conf->get('cookie_path'),
+					'domain'	=> $conf->get('cookie_domain'),
+					'secure'	=> $conf->get('cookie_secure'),
+					'httponly'	=> $conf->get('cookie_httponly')
+				]
+				);
+		}
+
+		return $this->_cookie;
 	}
 
 	public function send(string $data)
