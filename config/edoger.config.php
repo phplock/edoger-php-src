@@ -21,11 +21,7 @@ $conf = [];
 $conf['debug'] = true;
 
 //	Log Module.
-$conf['log']['level'] = EDOGER_LEVEL_DEBUG;
-$conf['log']['handler'] = 'file';
-
-$conf['log']['file']['dir'] = ROOT_PATH.'/data/logs';
-$conf['log']['file']['format'] = 'Ymd';
+$conf['log_level'] = EDOGER_LEVEL_DEBUG;
 
 
 // -------------------------------------------------------------------------------------------------
