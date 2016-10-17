@@ -17,18 +17,13 @@
 $conf = [];
 // -------------------------------------------------------------------------------------------------
 
-$conf['debug'] = true;
+$conf['cookie_secret_key']	= 'ORqCwo4wmMNJhutnB4CSYq6m9KqQAvoH';
+$conf['cookie_expire']		= 86400;
+$conf['cookie_path']		= '/';
+$conf['cookie_domain']		= '';
+$conf['cookie_secure']		= false;
+$conf['cookie_httponly']	= false;
 
-$conf['log_level'] = EDOGER_LEVEL_DEBUG;
-
-$conf['cookie_secret_key'] = 'u8P9FwdiiAXmKbKT';
-$conf['cookie_expire'] = 86400;
-$conf['cookie_path'] = '/';
-$conf['cookie_domain'] = '';
-$conf['cookie_secure'] = false;
-$conf['cookie_httponly'] = false;
-
-$conf['session_timeout'] = 86400;
 
 // -------------------------------------------------------------------------------------------------
 return $conf;

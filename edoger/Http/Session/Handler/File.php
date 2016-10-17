@@ -18,13 +18,24 @@ namespace Edoger\Http\Session\Handler;
 
 use SessionHandlerInterface;
 
-class Apcu implements SessionHandlerInterface
+class File implements SessionHandlerInterface
 {
 	private $_timeout;
+	private $_dir;
 
 	public function __construct(array $config)
 	{
-		$this->_timeout = $config['timeout'];
+		$this->_timeout	= $config['timeout'];
+		$this->_dir		= $config['dir'];
+	}
+
+	public function open(string $path, string $name)
+	{
+		if (!is_dir($this->_dir)) {
+			mkdir($this->_dir, 0777, true);
+		}
+
+		return true;
 	}
 
 	public function close()
@@ -32,32 +43,12 @@ class Apcu implements SessionHandlerInterface
 		return true;
 	}
 
-	public function destroy(string $sid)
-	{
-		$key = 'session_'.$sid;
-		if (apcu_exists($key)) {
-			apcu_delete($key);
-		}
-
-		return true;
-	}
-
-	public function gc(int $maxLifeTime)
-	{
-		return true;
-	}
-
-	public function open(string $path, string $name)
-	{
-		return true;
-	}
-
 	public function read(string $sid)
 	{
-		$key = 'session_'.$sid;
-		if (apcu_exists($key)) {
-			$data = apcu_fetch($key, $success);
-			if ($success) {
+		$file = $this->_dir.'/session_'.$sid;
+		if (file_exists($file)) {
+			$data = file_get_contents($file);
+			if ($data !== false) {
 				return $data;
 			}
 		}
@@ -67,6 +58,41 @@ class Apcu implements SessionHandlerInterface
 
 	public function write(string $sid, string $data)
 	{
-		return apcu_store('session_'.$sid, $data, $this->_timeout);
+		$file = $this->_dir.'/session_'.$sid;
+		return (bool)file_put_contents($file, $data);;
 	}
+
+	public function destroy(string $sid)
+	{
+		$file = $this->_dir.'/session_'.$sid;
+		if (file_exists($file)) {
+			unlink($file);
+		}
+
+		return true;
+	}
+
+	public function gc(int $maxLifeTime)
+	{
+		$files = scandir($this->_dir);
+		if (is_array($files)) {
+			$now = time();
+			foreach ($files as $file) {
+				if (substr($file, 0, 8) === 'session_') {
+					$file = $this->_dir.'/'.$file;
+					if (filemtime($file) + $maxLifeTime < $now && file_exists($file)) {
+						unlink($file);
+					}
+				}
+			}
+		}
+
+		return true;
+	}
+
+	
+
+	
+
+	
 }

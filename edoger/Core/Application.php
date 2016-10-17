@@ -54,10 +54,12 @@ final class Application
 	{
 		return $this->_response;
 	}
+
 	public function error($error = null)
 	{
 
 	}
+	
 	public function run()
 	{
 
