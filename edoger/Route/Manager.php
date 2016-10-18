@@ -18,14 +18,16 @@ namespace Edoger\Route;
 
 use Edoger\Core\Kernel;
 
-class RouteManager
+class Manager
 {
+	private $_casing;
+	private $_casingRoute = null;
 	private $_route = [];
 	private $_bind = [];
 
 	public function __construct()
 	{
-		Kernel::singleton()->app()->request()->path();
+		$this->_casing = new Casing($this->_casingRoute);
 	}
 
 	public function add(array $method, $uri, $action)
@@ -34,8 +36,10 @@ class RouteManager
 		$method	= array_map('strtolower', $method);
 		$route	= new Route($method, $uri, $action);
 
-		$this->_route[] = $route;
-		return $route->node();
+		$this->_route[]		= $route;
+		$this->_casingRoute	= $route;
+
+		return $this->_casing;
 	}
 
 	public function bind($name, $mw)
@@ -46,5 +50,15 @@ class RouteManager
 
 		$this->_bind[$name][] = $mw;
 		return $this;
+	}
+
+	public function setRouteMiddlewareNamespace()
+	{
+
+	}
+
+	public function setParamMiddlewareNamespace()
+	{
+		
 	}
 }
