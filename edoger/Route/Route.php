@@ -23,95 +23,85 @@ final class Route
 	private $_methods;
 	private $_uri;
 	private $_action;
+	private $_node;
 
-	private $_wheres = [];
-	private $_middlewares = [];
-
-	private $_port = [];
-	private $_ip = [];
-	private $_scheme = [];
-	private $_domain = [];
-	private $_xhr = false;
+	private $_wheres		= [];
+	private $_middlewares	= [];
+	private $_port			= [];
+	private $_ip			= [];
+	private $_scheme		= [];
+	private $_domain		= [];
+	private $_xhr			= false;
+	
+	private $_compiler		= null;
 
 	public function __construct(array $method, $uri, $action)
 	{
 		$this->_methods	= array_map('strtolower', $method);
 		$this->_uri		= '/'.trim($uri, '/');
 		$this->_action	= $action;
+		$this->_node	= new Node(
+			$this->_wheres,
+			$this->_middlewares,
+			$this->_port,
+			$this->_ip,
+			$this->_scheme,
+			$this->_domain,
+			$this->_xhr
+			);
 	}
 
-	public function where($name, $filter)
+	public function node()
 	{
-		if (!isset($this->_wheres[$name])) {
-			$this->_wheres[$name] = [];
-		}
-		$this->_wheres[$name][] = $filter;
-		return $this;
+		return $this->_node;
 	}
 
-	public function middleware($middleware)
+	public function getCompiler()
 	{
-		foreach ((array)$middleware as $mw) {
-			$this->_middlewares[] = strtolower($mw);
-		}
-		
-		return $this;
-	}
-
-	public function domain($domain)
-	{
-		foreach ((array)$domain as $dm) {
-			$host = parse_url($dm, PHP_URL_HOST);
-			if ($host !== false) {
-				$this->_domain[] = $host;
-			}
-		}
-		
-		return $this;
-	}
-
-	public function scheme($scheme)
-	{
-		foreach ((array)$scheme as $se) {
-			$this->_scheme[] = strtolower($se);
+		if (!$this->_compiler) {
+			$this->_compiler = new Compiler($this->_uri, $this->_action);
 		}
 
-		return $this;
+		return $this->_compiler;
 	}
 
-	public function httpOnly()
+	public function getMethods()
 	{
-		$this->_scheme = ['http'];
-		return $this;
+		return $this->_methods;
 	}
 
-	public function httpsOnly()
+	public function getWheres()
 	{
-		$this->_scheme = ['https'];
-		return $this;
+		return $this->_wheres;
 	}
 
-	public function ip($ip)
+	public function getMiddlewares()
 	{
-		foreach ((array)$ip as $p) {
-			$this->_ip[] = $ip;
-		}
-
-		return $this;
+		return $this->_middlewares;
 	}
 
-	public function listen($port)
+	public function getPorts()
 	{
-		foreach ((array)$port as $p) {
-			$this->_port[] = $p;
-		}
-		
-		return $this;
+		return $this->_port;
 	}
 
-	public function xhrOnly()
+	public function getIps()
 	{
-		$this->_xhr = true;
-		return $this;
+		return $this->_ip;
+	}
+
+	public function getSchemes()
+	{
+		return $this->_scheme;
+	}
+
+	public function getDomains()
+	{
+		return $this->_domain;
+	}
+
+	public function isXhrOnly()
+	{
+		return $this->_xhr;
 	}
 }

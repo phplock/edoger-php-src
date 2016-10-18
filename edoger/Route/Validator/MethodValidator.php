@@ -14,21 +14,17 @@
  *| @author    Qingshan Luo <shanshan.lqs@gmail.com>                                               |
  *+------------------------------------------------------------------------------------------------+
  */
-namespace Edoger\Route;
+namespace Edoger\Route\Validator;
 
-// Routing compiler.
-// Through the compiler, to obtain the matching resources related to the routing.
-class RouteCompiler
+use Edoegr\Route\Route;
+use Edoegr\Http\Request;
+
+class MethodValidator implements ValidatorInterface
 {
-	private $_route;
 	
-	public function __construct(array $method, $uri, $action)
+	public function verify(Route $route, Request $request)
 	{
-		$this->_route = new Route($method, $uri, $action);
-	}
-
-	public function getRoute()
-	{
-		return $this->_route;
+		
+		return in_array($request->method(), $route->getMethod());
 	}
 }

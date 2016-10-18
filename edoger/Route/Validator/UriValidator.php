@@ -14,37 +14,17 @@
  *| @author    Qingshan Luo <shanshan.lqs@gmail.com>                                               |
  *+------------------------------------------------------------------------------------------------+
  */
-namespace Edoger\Route;
+namespace Edoger\Route\Validator;
 
-use Edoger\Core\Kernel;
+use Edoegr\Route\Route;
+use Edoegr\Http\Request;
 
-class RouteManager
+class UriValidator implements ValidatorInterface
 {
-	private $_route = [];
-	private $_bind = [];
 
-	public function __construct()
+	public function verify(Route $route, Request $request)
 	{
-		Kernel::singleton()->app()->request()->path();
-	}
-
-	public function add(array $method, $uri, $action)
-	{
-		$uri	= '/'.trim($uri, '/');
-		$method	= array_map('strtolower', $method);
-		$route	= new Route($method, $uri, $action);
-
-		$this->_route[] = $route;
-		return $route->node();
-	}
-
-	public function bind($name, $mw)
-	{
-		if (!isset($this->_bind[$name])) {
-			$this->_bind[$name] = [];
-		}
-
-		$this->_bind[$name][] = $mw;
-		return $this;
+		
+		return preg_match($route->getRegex(), $request->path());
 	}
 }

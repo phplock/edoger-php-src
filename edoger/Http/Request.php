@@ -16,10 +16,10 @@
  */
 namespace Edoger\Http;
 
+use Edoger\Core\Kernel;
 use Edoger\Http\Input\Input;
 use Edoger\Http\Session\Session;
 use Edoger\Http\Cookie\CookieReader;
-use Edoger\Core\Kernel;
 
 // Request component class.
 final class Request
@@ -63,9 +63,7 @@ final class Request
 	public function cookie()
 	{
 		if (!$this->_cookie) {
-			$this->_cookie = new CookieReader(
-				Kernel::singleton()->config()->get('cookie_secret_key')
-				);
+			$this->_cookie = new CookieReader(Kernel::singleton()->config()->get('cookie_secret_key'));
 		}
 		
 		return $this->_cookie;
@@ -128,7 +126,7 @@ final class Request
 		if ($path && substr($path, 0, 1) !== '/') {
 			$path = '/'.$path;
 		}
-		
+
 		return $this->_cache['url'].$path;
 	}
 

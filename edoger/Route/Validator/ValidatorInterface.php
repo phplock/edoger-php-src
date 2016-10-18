@@ -14,13 +14,12 @@
  *| @author    Qingshan Luo <shanshan.lqs@gmail.com>                                               |
  *+------------------------------------------------------------------------------------------------+
  */
-namespace Edoger\Route;
+namespace Edoger\Route\Validator;
 
+use Edoegr\Route\Route;
+use Edoegr\Http\Request;
 
-final class Collector
+interface ValidatorInterface
 {
-	public function get($uri, $action)
-	{
-		
-	}
+	public function verify(Route $route, Request $request);
 }
