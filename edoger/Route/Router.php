@@ -18,82 +18,14 @@ namespace Edoger\Route;
 
 use Edoger\Core\Kernel;
 
-final class Route
+class Router
 {
-	private $_methods;
-	private $_uri;
-	private $_action;
-	private $_node;
+	private $_inGroup 	= false;
+	private $_prefix 	= '';
+	private $_middlewares = [];
 
-	private $_wheres		= [];
-	private $_middlewares	= [];
-	private $_port			= [];
-	private $_ip			= [];
-	private $_scheme		= [];
-	private $_domain		= [];
-	private $_xhr			= false;
-	
-	private $_compiler		= null;
-
-	public function __construct(array $method, $uri, $action)
+	public function __construct()
 	{
-		$this->_methods	= array_map('strtolower', $method);
-		$this->_uri		= '/'.trim($uri, '/');
-		$this->_action	= $action;
-		$this->_node	= new Node($this);
-	}
-
-	public function node()
-	{
-		return $this->_node;
-	}
-
-	public function getCompiler()
-	{
-		if (!$this->_compiler) {
-			$this->_compiler = new Compiler($this->_uri, $this->_action);
-		}
-
-		return $this->_compiler;
-	}
-
-	public function getMethods()
-	{
-		return $this->_methods;
-	}
-
-	public function getWheres()
-	{
-		return $this->_wheres;
-	}
-
-	public function getMiddlewares()
-	{
-		return $this->_middlewares;
-	}
-
-	public function getPorts()
-	{
-		return $this->_port;
-	}
-
-	public function getIps()
-	{
-		return $this->_ip;
-	}
-
-	public function getSchemes()
-	{
-		return $this->_scheme;
-	}
-
-	public function getDomains()
-	{
-		return $this->_domain;
-	}
-
-	public function isXhrOnly()
-	{
-		return $this->_xhr;
+		
 	}
 }

@@ -19,39 +19,23 @@ namespace Edoger\Route;
 
 class Node
 {
-	private $_wheres;
-	private $_middlewares;
-	private $_port;
-	private $_ip;
-	private $_scheme;
-	private $_domain;
-	private $_xhr;
+	private $_route;
 
-
-	public function __construct(&$wheres, &$middlewares, &$port, &$ip, &$scheme, &$domain, &$xhr)
+	public function __construct(Route $route)
 	{
-		$this->_wheres		= &$wheres;
-		$this->_middlewares	= &$middlewares;
-		$this->_port		= &$port;
-		$this->_ip			= &$ip;
-		$this->_scheme		= &$scheme;
-		$this->_domain		= &$domain;
-		$this->_xhr			= &$xhr;
+		$this->_route = $route;
 	}
 
 	public function where($name, $filter)
 	{
-		if (!isset($this->_wheres[$name])) {
-			$this->_wheres[$name] = [];
-		}
-		$this->_wheres[$name][] = $filter;
+		$this->_route->addWhere($name, $filter);
 		return $this;
 	}
 
 	public function middleware($middleware)
 	{
 		foreach ((array)$middleware as $mw) {
-			$this->_middlewares[] = strtolower($mw);
+			$this->_route->addMiddleware(strtolower($mw));
 		}
 		
 		return $this;
@@ -62,38 +46,29 @@ class Node
 		foreach ((array)$domain as $dm) {
 			$host = parse_url($dm, PHP_URL_HOST);
 			if ($host !== false) {
-				$this->_domain[] = $host;
+				$this->_route->addDomain($host);
 			}
 		}
 		
 		return $this;
 	}
 
-	public function scheme($scheme)
-	{
-		foreach ((array)$scheme as $se) {
-			$this->_scheme[] = strtolower($se);
-		}
-
-		return $this;
-	}
-
 	public function httpOnly()
 	{
-		$this->_scheme = ['http'];
+		$this->_route->setScheme('http');
 		return $this;
 	}
 
 	public function httpsOnly()
 	{
-		$this->_scheme = ['https'];
+		$this->_route->setScheme('https');
 		return $this;
 	}
 
 	public function ip($ip)
 	{
 		foreach ((array)$ip as $p) {
-			$this->_ip[] = $ip;
+			$this->_route->addIp($p);
 		}
 
 		return $this;
@@ -101,16 +76,13 @@ class Node
 
 	public function listen($port)
 	{
-		foreach ((array)$port as $p) {
-			$this->_port[] = $p;
-		}
-		
+		$this->_route->addPort($port);
 		return $this;
 	}
 
 	public function xhrOnly()
 	{
-		$this->_xhr = true;
+		$this->_route->xhrOnly();
 		return $this;
 	}
 }

@@ -16,25 +16,22 @@
  */
 namespace Edoger\Route;
 
+use Edoger\Core\Kernel;
+use Edoegr\Http\Request;
+
 // Routing compiler.
 // Through the compiler, to obtain the matching resources related to the routing.
 class Compiler
 {
 	private $_uri;
-	private $_info = [];
-	private $_size = 0;
 	private $_action;
 	private $_weight = 0;
+	private $_regex = '';
 	
 	public function __construct(&$uri, &$action)
 	{
 		$this->_uri		= &$uri;
 		$this->_action	= &$action;
-
-		if ($uri !== '/') {
-			$this->_info = preg_split('/\//', $uri, 0, PREG_SPLIT_NO_EMPTY);
-			$this->_size = count($this->_info);
-		}
 	}
 
 	public function weight()
@@ -42,24 +39,34 @@ class Compiler
 		return $this->_weight;
 	}
 
-	public function congruence()
+	public function parseAction()
 	{
+		if (is_callable($this->_action)) {
+			return $this->_action;
+		}
 
+		if (is_string($this->_action)) {
+			$temp = explode('@', $this->_action);
+		}
 	}
 
-	public function equal()
+	public function getUriInfo(Request $request)
 	{
-		return $this->_route;
-	}
+		if ($this->_uri === '/') {
+			return [];
+		} else {
+			$info = preg_split('/\//', $this->_uri, 0, PREG_SPLIT_NO_EMPTY);
+			$temp = [];
+			foreach ($info as $key => $value) {
+				if (preg_match('/^\:(\w+)(\??)$/', $value, $m)) {
+					$temp[] = [2, $m[1], (bool)$m[2]];
+				} else {
+					$temp[] = [1, $value];
+				}
+			}
 
-	public function obligatory()
-	{
-
-	}
-
-	public function optional()
-	{
-
+			return $temp;
+		}
 	}
 
 	public function callAction()
