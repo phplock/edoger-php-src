@@ -16,40 +16,19 @@
  */
 namespace Edoger\Route;
 
-use Edoger\Core\Kernel;
-
-class RouteManager
+// Routing compiler.
+// Through the compiler, to obtain the matching resources related to the routing.
+class RouteCompiler
 {
-	private $_compiler = [];
-	private $_bind = [];
-
-	public function __construct()
+	private $_route;
+	
+	public function __construct(array $method, $uri, $action)
 	{
-		Kernel::singleton()->app()->request()->path();
+		$this->_route = new Route($method, $uri, $action);
 	}
 
-	public function add(array $method, $uri, $action)
+	public function getRoute()
 	{
-		$uri		= '/'.trim($uri, '/');
-		$method		= array_map('strtolower', $method);
-		$compiler	= new RouteCompiler($method, $uri, $action);
-
-		$this->_compiler[] = $compiler;
-		return $compiler->getRoute();
-	}
-
-	public function bind($name, $mw)
-	{
-		if (!isset($this->_bind[$name])) {
-			$this->_bind[$name] = [];
-		}
-
-		$this->_bind[$name][] = $mw;
-		return $this;
-	}
-
-	public function loop()
-	{
-		
+		return $this->_route;
 	}
 }

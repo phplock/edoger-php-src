@@ -31,7 +31,7 @@ final class Route
 	private $_ip = [];
 	private $_scheme = [];
 	private $_domain = [];
-	private $_xhr = [];
+	private $_xhr = false;
 
 	public function __construct(array $method, $uri, $action)
 	{
@@ -42,51 +42,76 @@ final class Route
 
 	public function where($name, $filter)
 	{
-		$this->_wheres[$name] = $filter;
+		if (!isset($this->_wheres[$name])) {
+			$this->_wheres[$name] = [];
+		}
+		$this->_wheres[$name][] = $filter;
 		return $this;
 	}
 
-	public function middleware(array $middleware)
+	public function middleware($middleware)
 	{
-		foreach ($middleware as $mw) {
+		foreach ((array)$middleware as $mw) {
 			$this->_middlewares[] = strtolower($mw);
 		}
-
+		
 		return $this;
 	}
 
 	public function domain($domain)
 	{
-		preg_match('/^https?\:\/\/(.+)/', $domain)
+		foreach ((array)$domain as $dm) {
+			$host = parse_url($dm, PHP_URL_HOST);
+			if ($host !== false) {
+				$this->_domain[] = $host;
+			}
+		}
+		
+		return $this;
 	}
 
-	public function scheme()
+	public function scheme($scheme)
 	{
+		foreach ((array)$scheme as $se) {
+			$this->_scheme[] = strtolower($se);
+		}
 
-	}
-
-	public function ip()
-	{
-
-	}
-
-	public function listen()
-	{
-
-	}
-
-	public function xhrOnly()
-	{
-
+		return $this;
 	}
 
 	public function httpOnly()
 	{
-
+		$this->_scheme = ['http'];
+		return $this;
 	}
 
 	public function httpsOnly()
 	{
+		$this->_scheme = ['https'];
+		return $this;
+	}
 
+	public function ip($ip)
+	{
+		foreach ((array)$ip as $p) {
+			$this->_ip[] = $ip;
+		}
+
+		return $this;
+	}
+
+	public function listen($port)
+	{
+		foreach ((array)$port as $p) {
+			$this->_port[] = $p;
+		}
+		
+		return $this;
+	}
+
+	public function xhrOnly()
+	{
+		$this->_xhr = true;
+		return $this;
 	}
 }
