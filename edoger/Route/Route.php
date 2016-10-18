@@ -71,29 +71,4 @@ final class Route
 	{
 		return $this->_middlewares;
 	}
-
-	public function getPorts()
-	{
-		return $this->_port;
-	}
-
-	public function getIps()
-	{
-		return $this->_ip;
-	}
-
-	public function getSchemes()
-	{
-		return $this->_scheme;
-	}
-
-	public function getDomains()
-	{
-		return $this->_domain;
-	}
-
-	public function isXhrOnly()
-	{
-		return $this->_xhr;
-	}
 }

@@ -19,9 +19,34 @@ namespace Edoger\Route;
 
 class Casing
 {
-	public function __construct()
+	private $_route;
+
+	public function __construct(&$route)
 	{
-		
+		$this->_route = &$route;
 	}
 
+	public function where($name, $filter)
+	{
+		if ($this->_route) {
+			$this->_route->setWhere($name, $filter);
+		}
+
+		return $this;
+	}
+
+	public function middleware($middleware)
+	{
+		if ($this->_route) {
+			if (is_string($middleware)) {
+				$this->_route->setMiddleware(strtolower($mw));
+			} elseif (is_array($middleware)) {
+				foreach ($middleware as $mw) {
+					$this->middleware($mw);
+				}
+			}
+		}
+		
+		return $this;
+	}
 }

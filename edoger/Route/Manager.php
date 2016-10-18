@@ -16,6 +16,7 @@
  */
 namespace Edoger\Route;
 
+use Closure;
 use Edoger\Core\Kernel;
 
 class Manager
