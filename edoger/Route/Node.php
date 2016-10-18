@@ -14,40 +14,75 @@
  *| @author    Qingshan Luo <shanshan.lqs@gmail.com>                                               |
  *+------------------------------------------------------------------------------------------------+
  */
-namespace Edoger\Core;
+namespace Edoger\Route;
 
-// System configuration manager.
-// This is a very independent component, you can make the appropriate changes, 
-// but you have to implement the "Config::get(string $key, mixed $def = null)" method.
-final class Config
+
+class Node
 {
-	private $_config = [];
+	private $_route;
 
-	public function __construct()
+	public function __construct(Route $route)
 	{
-		$conf = require ROOT_PATH.'/config/edoger.config.php';
-
-		$this->_config = $conf;
+		$this->_route = $route;
 	}
 
-	public function get(string $key, $def = null)
+	public function where($name, $filter)
 	{
-		if (isset($this->_config[$key])) {
-			return $this->_config[$key];
-		} else {
-			if (empty($this->_config)) {
-				return $def;
-			}
-			$config = $this->_config;
-			foreach (explode('.', $key) as $query) {
-				if (isset($config[$query])) {
-					$config = $config[$query];
-				} else {
-					$config = $def;
-					break;
-				}
-			}
-			return $config;
+		$this->_route->addWhere($name, $filter);
+		return $this;
+	}
+
+	public function middleware($middleware)
+	{
+		foreach ((array)$middleware as $mw) {
+			$this->_route->addMiddleware(strtolower($mw));
 		}
+		
+		return $this;
+	}
+
+	public function domain($domain)
+	{
+		foreach ((array)$domain as $dm) {
+			$host = parse_url($dm, PHP_URL_HOST);
+			if ($host !== false) {
+				$this->_route->addDomain($host);
+			}
+		}
+		
+		return $this;
+	}
+
+	public function httpOnly()
+	{
+		$this->_route->setScheme('http');
+		return $this;
+	}
+
+	public function httpsOnly()
+	{
+		$this->_route->setScheme('https');
+		return $this;
+	}
+
+	public function ip($ip)
+	{
+		foreach ((array)$ip as $p) {
+			$this->_route->addIp($p);
+		}
+
+		return $this;
+	}
+
+	public function listen($port)
+	{
+		$this->_route->addPort($port);
+		return $this;
+	}
+
+	public function xhrOnly()
+	{
+		$this->_route->xhrOnly();
+		return $this;
 	}
 }

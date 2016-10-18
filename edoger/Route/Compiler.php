@@ -14,40 +14,63 @@
  *| @author    Qingshan Luo <shanshan.lqs@gmail.com>                                               |
  *+------------------------------------------------------------------------------------------------+
  */
-namespace Edoger\Core;
+namespace Edoger\Route;
 
-// System configuration manager.
-// This is a very independent component, you can make the appropriate changes, 
-// but you have to implement the "Config::get(string $key, mixed $def = null)" method.
-final class Config
+use Edoger\Core\Kernel;
+use Edoegr\Http\Request;
+
+// Routing compiler.
+// Through the compiler, to obtain the matching resources related to the routing.
+class Compiler
 {
-	private $_config = [];
-
-	public function __construct()
+	private $_uri;
+	private $_action;
+	private $_weight = 0;
+	private $_regex = '';
+	
+	public function __construct(&$uri, &$action)
 	{
-		$conf = require ROOT_PATH.'/config/edoger.config.php';
-
-		$this->_config = $conf;
+		$this->_uri		= &$uri;
+		$this->_action	= &$action;
 	}
 
-	public function get(string $key, $def = null)
+	public function weight()
 	{
-		if (isset($this->_config[$key])) {
-			return $this->_config[$key];
+		return $this->_weight;
+	}
+
+	public function parseAction()
+	{
+		if (is_callable($this->_action)) {
+			return $this->_action;
+		}
+
+		if (is_string($this->_action)) {
+			$temp = explode('@', $this->_action);
+		}
+	}
+
+	public function getUriInfo(Request $request)
+	{
+		if ($this->_uri === '/') {
+			return [];
 		} else {
-			if (empty($this->_config)) {
-				return $def;
-			}
-			$config = $this->_config;
-			foreach (explode('.', $key) as $query) {
-				if (isset($config[$query])) {
-					$config = $config[$query];
+			$info = preg_split('/\//', $this->_uri, 0, PREG_SPLIT_NO_EMPTY);
+			$temp = [];
+			foreach ($info as $key => $value) {
+				if (preg_match('/^\:(\w+)(\??)$/', $value, $m)) {
+					$temp[] = [2, $m[1], (bool)$m[2]];
 				} else {
-					$config = $def;
-					break;
+					$temp[] = [1, $value];
 				}
 			}
-			return $config;
+
+			return $temp;
 		}
+	}
+
+	public function callAction()
+	{
+
 	}
 }

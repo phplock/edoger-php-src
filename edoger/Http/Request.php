@@ -16,10 +16,10 @@
  */
 namespace Edoger\Http;
 
+use Edoger\Core\Kernel;
 use Edoger\Http\Input\Input;
 use Edoger\Http\Session\Session;
 use Edoger\Http\Cookie\CookieReader;
-use Edoger\Core\Kernel;
 
 // Request component class.
 final class Request
@@ -63,9 +63,7 @@ final class Request
 	public function cookie()
 	{
 		if (!$this->_cookie) {
-			$this->_cookie = new CookieReader(
-				Kernel::singleton()->config()->get('cookie_secret_key')
-				);
+			$this->_cookie = new CookieReader(Kernel::singleton()->config()->get('cookie_secret_key'));
 		}
 		
 		return $this->_cookie;
@@ -91,10 +89,42 @@ final class Request
 		return $this->_cache['path'];
 	}
 
-	public function url(string $path = '/')
+	public function pathInfo()
+	{
+		if (!isset($this->_cache['pathInfo'])) {
+			$this->_cache['pathInfo'] = preg_split('/\//', $this->path(), 0, PREG_SPLIT_NO_EMPTY);
+		}
+
+		return $this->_cache['pathInfo'];
+	}
+
+	public function pathLength()
+	{
+		if (!isset($this->_cache['pathLength'])) {
+			$this->_cache['pathLength'] = count($this->pathInfo());
+		}
+
+		return $this->_cache['pathLength'];
+	}
+
+	public function pathItem(int $index)
+	{
+		$info = $this->pathInfo();
+		if ($index < 0) {
+			$index += $this->pathLength();
+		}
+
+		return $info[$index] ?? null;
+	}
+
+	public function url(string $path = '')
 	{
 		if (!isset($this->_cache['url'])) {
 			$this->_cache['url'] = $this->scheme().'://'.$this->domain();
+		}
+
+		if ($path && substr($path, 0, 1) !== '/') {
+			$path = '/'.$path;
 		}
 
 		return $this->_cache['url'].$path;

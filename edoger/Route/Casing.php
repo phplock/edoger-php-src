@@ -14,40 +14,39 @@
  *| @author    Qingshan Luo <shanshan.lqs@gmail.com>                                               |
  *+------------------------------------------------------------------------------------------------+
  */
-namespace Edoger\Core;
+namespace Edoger\Route;
 
-// System configuration manager.
-// This is a very independent component, you can make the appropriate changes, 
-// but you have to implement the "Config::get(string $key, mixed $def = null)" method.
-final class Config
+
+class Casing
 {
-	private $_config = [];
+	private $_route;
 
-	public function __construct()
+	public function __construct(&$route)
 	{
-		$conf = require ROOT_PATH.'/config/edoger.config.php';
-
-		$this->_config = $conf;
+		$this->_route = &$route;
 	}
 
-	public function get(string $key, $def = null)
+	public function where($name, $filter)
 	{
-		if (isset($this->_config[$key])) {
-			return $this->_config[$key];
-		} else {
-			if (empty($this->_config)) {
-				return $def;
-			}
-			$config = $this->_config;
-			foreach (explode('.', $key) as $query) {
-				if (isset($config[$query])) {
-					$config = $config[$query];
-				} else {
-					$config = $def;
-					break;
+		if ($this->_route) {
+			$this->_route->setWhere($name, $filter);
+		}
+
+		return $this;
+	}
+
+	public function middleware($middleware)
+	{
+		if ($this->_route) {
+			if (is_string($middleware)) {
+				$this->_route->setMiddleware(strtolower($mw));
+			} elseif (is_array($middleware)) {
+				foreach ($middleware as $mw) {
+					$this->middleware($mw);
 				}
 			}
-			return $config;
 		}
+		
+		return $this;
 	}
 }

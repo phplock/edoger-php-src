@@ -79,8 +79,7 @@ final class Response
 		if (substr($url, 0, 1) === '/') {
 			$url = Kernel::singleton()->app()->request()->url($url);
 		}
-		$this->clean();
-		$this->sendHeader('Location:'.$url);
+		$this->clean()->sendHeader('Location:'.$url);
 		exit(0);
 	}
 
@@ -97,11 +96,6 @@ final class Response
 	{
 		$this->_output = [];
 		return $this;
-	}
-
-	public function end(string $data = '')
-	{
-
 	}
 
 	public function getOutput()

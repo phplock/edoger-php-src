@@ -55,11 +55,13 @@ class Bootstrap
 	{
 		$sid = $kernel->app()->request()->cookie()->get('EDOGER_SID', '');
 		$handler = new EdogerSessionHandler([
-			'timeout' => 86400,
-			'dir' => ROOT_PATH.'/data/session'
+			'timeout'	=> 86400,
+			'dir'		=> ROOT_PATH.'/data/session'
 			]);
 		$session = $kernel->app()->request()->session();
 		$session->start($sid, $handler);
 		$kernel->app()->response()->cookie()->secure('EDOGER_SID', $session->sessionId());
 	}
+
+	
 }
