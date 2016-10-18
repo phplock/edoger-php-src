@@ -16,22 +16,12 @@
  */
 namespace Edoger\Route;
 
-use Closure;
-use Edoger\Core\Kernel;
 
-class Router
+class Casing
 {
-	private $_inGroup 	= false;
-	private $_prefix 	= '';
-	private $_middlewares = [];
-
 	public function __construct()
 	{
 		
 	}
 
-	public static function get($uri, $action)
-	{
-		
-	}
 }

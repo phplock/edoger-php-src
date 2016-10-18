@@ -74,7 +74,7 @@ final class Kernel
 	public function route()
 	{
 		if (!$this->_route) {
-			$this->_route = new RouteManager();
+			$this->_route = new Manager();
 		}
 		return $this->_route;
 	}
