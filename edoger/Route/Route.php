@@ -27,11 +27,6 @@ final class Route
 
 	private $_wheres		= [];
 	private $_middlewares	= [];
-	private $_port			= [];
-	private $_ip			= [];
-	private $_scheme		= [];
-	private $_domain		= [];
-	private $_xhr			= false;
 	
 	private $_compiler		= null;
 
