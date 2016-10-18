@@ -19,21 +19,21 @@ namespace Edoger\Core;
 use Edoger\Log\Logger;
 use Edoger\Debug\Debugger;
 
+// Framework core class, all of the available components are registered in this class.
+// In fact, you rarely have access to this core class directly.
 final class Kernel
 {
-	private static $_instance = null;
-	private static $_application = null;
-	private static $_config = null;
-	private static $_logger = null;
-	private static $_debugger = null;
-	private static $_route = null;
-	private static $_terminated = false;
+	private static $_instance		= null;
+	private static $_application	= null;
+	private static $_config			= null;
+	private static $_logger			= null;
+	private static $_debugger		= null;
+	private static $_route			= null;
+	private static $_terminated		= false;
 	
 	private function __construct()
 	{
-		$conf = require ROOT_PATH.'/config/edoger.config.php';
-
-		self::$_config		= new Config($conf);
+		self::$_config		= new Config();
 		self::$_logger		= new Logger();
 		self::$_debugger	= new Debugger();
 	}
