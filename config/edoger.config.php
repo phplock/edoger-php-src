@@ -25,5 +25,8 @@ $conf['cookie_secure']		= false;
 $conf['cookie_httponly']	= false;
 
 
+$conf['default_controller']	= 'index';
+$conf['default_action']		= 'index';
+
 // -------------------------------------------------------------------------------------------------
 return $conf;

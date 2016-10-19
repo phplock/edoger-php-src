@@ -18,6 +18,7 @@ namespace Edoger\Core;
 
 use Edoger\Log\Logger;
 use Edoger\Debug\Debugger;
+use Edoger\Route\Router;
 
 // Framework core class, all of the available components are registered in this class.
 // In fact, you rarely have access to this core class directly.
@@ -28,7 +29,7 @@ final class Kernel
 	private static $_config			= null;
 	private static $_logger			= null;
 	private static $_debugger		= null;
-	private static $_route			= null;
+	private static $_router			= null;
 	private static $_terminated		= false;
 	
 	private function __construct()
@@ -71,12 +72,12 @@ final class Kernel
 		return self::$_logger;
 	}
 
-	public function route()
+	public function router()
 	{
-		if (!$this->_route) {
-			$this->_route = new Manager();
+		if (!$this->_router) {
+			$this->_router = new Router();
 		}
-		return $this->_route;
+		return $this->_router;
 	}
 
 	public function error($exception)
