@@ -36,18 +36,6 @@ class Router
 		$this->_size = count($this->_info);
 	}
 
-	public function setDefaultControllerName($name)
-	{
-		$this->_defaultController = strtolower($name);
-		return $this;
-	}
-
-	public function setDefaultActionName($name)
-	{
-		$this->_defaultAction = strtolower($name);
-		return $this;
-	}
-
 	public function getControllerName()
 	{
 		return $this->item(0, $this->_defaultController);
