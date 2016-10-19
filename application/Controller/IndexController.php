@@ -16,9 +16,9 @@
  */
 namespace App\Controller;
 
-use Edoger\Controller\Controller;
+use Edoger\Controller\ControllerAbstract;
 
-class IndexController extends Controller
+class IndexController extends ControllerAbstract
 {
 	public function IndexAction()
 	{

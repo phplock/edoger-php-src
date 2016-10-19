@@ -16,9 +16,9 @@
  */
 namespace Edoger\Core;
 
+use App\Bootstrap;
 use Edoger\Http\Request;
 use Edoger\Http\Response;
-use App\Bootstrap;
 use Edoger\Controller\Controller;
 
 final class Application
