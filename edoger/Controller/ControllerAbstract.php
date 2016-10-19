@@ -20,13 +20,23 @@ use Edoger\Core\Kernel;
 
 abstract class ControllerAbstract
 {
-	protected function view()
+	final protected function view()
 	{
 		return Kernel::singleton()->app()->controller()->view();
 	}
 
-	protected function model()
+	final protected function model()
 	{
 		return Kernel::singleton()->app()->controller()->model();
+	}
+
+	final protected function request()
+	{
+		return Kernel::singleton()->app()->request();
+	}
+
+	final protected function response()
+	{
+		return Kernel::singleton()->app()->response();
 	}
 }
