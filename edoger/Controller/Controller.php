@@ -56,9 +56,9 @@ class Controller
 		return $this->_controller[$controller];
 	}
 
-	public function model()
+	public function model($mode)
 	{
-		return $this->_model;
+		return $this->_model->load(ucfirst($mode).'Model');
 	}
 
 	public function view()

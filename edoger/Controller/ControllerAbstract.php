@@ -25,9 +25,9 @@ abstract class ControllerAbstract
 		return Kernel::singleton()->app()->controller()->view();
 	}
 
-	final protected function model()
+	final protected function model($mode)
 	{
-		return Kernel::singleton()->app()->controller()->model();
+		return Kernel::singleton()->app()->controller()->model(strtolower($mode));
 	}
 
 	final protected function request()

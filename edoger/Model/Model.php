@@ -16,11 +16,30 @@
  */
 namespace Edoger\Model;
 
+use Edoger\Core\Kernel;
+use Edoger\Exception\EdogerException;
+
 class Model
 {
-	
+	private $_model = [];
+	private $_namespace;
+
 	public function __construct()
 	{
-		
+		$this->_namespace = Kernel::singleton()->config()->get('model_namespace', '\\');
+	}
+
+	public function load($model)
+	{
+		if (!isset($this->_model[$model])) {
+			$className = $this->_namespace.$model;
+			if (class_exists($className, true)) {
+				$this->_model[$model] = new $className();
+			} else {
+				throw new EdogerException("Model {$model} is not found", EDOGER_ERROR_NOTFOUND_MODEL);
+			}
+		}
+
+		return $this->_model[$model];
 	}
 }
