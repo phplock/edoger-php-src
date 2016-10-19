@@ -14,40 +14,15 @@
  *| @author    Qingshan Luo <shanshan.lqs@gmail.com>                                               |
  *+------------------------------------------------------------------------------------------------+
  */
-namespace Edoger\Controller;
-
-use Edoger\Exception\EdogerException;
-
-class Controller
+namespace Edoger\Model;
+/**
+* 
+*/
+class ModelAbstract
 {
-	private $_modelNamespace = '\\';
-	private $_model = [];
-
-	public function __construct()
-	{
-
-	}
-
-	public function setModelNamespace($namespace)
-	{
-		$this->_modelNamespace = $namespace;
-		return $this;
-	}
-
-	public function model($model)
-	{
-		$model = ucfirst(strtolower($model)).'Model';
-		if (!isset($this->_model[$model])) {
-			$className = $this->_modelNamespace.$model;
-			if (class_exists($className, true)) {
-				$this->_model[$model] = new $className();
-			} else {
-				throw new EdogerException("Model {$model} is not found", EDOGER_ERROR_NOTFOUND_MODEL);
-			}
-		}
-
-		return $this->_model[$model];
-	}
-
 	
+	function __construct()
+	{
+		# code...
+	}
 }

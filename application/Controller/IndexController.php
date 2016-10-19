@@ -16,7 +16,7 @@
  */
 namespace App\Controller;
 
-use Edoegr\Controller\Controller;
+use Edoger\Controller\Controller;
 
 class IndexController extends Controller
 {

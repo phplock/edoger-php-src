@@ -62,6 +62,7 @@ final class Application
 	
 	public function run()
 	{
-
+		$router = Kernel::singleton()->router();
+		
 	}
 }

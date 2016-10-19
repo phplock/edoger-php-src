@@ -16,38 +16,12 @@
  */
 namespace Edoger\Controller;
 
-use Edoger\Exception\EdogerException;
-
-class Controller
+use Edoger\View\View;
+abstract class ControllerAbstract
 {
-	private $_modelNamespace = '\\';
-	private $_model = [];
-
+	private $_view;
 	public function __construct()
 	{
-
+		$this->_view = new View();
 	}
-
-	public function setModelNamespace($namespace)
-	{
-		$this->_modelNamespace = $namespace;
-		return $this;
-	}
-
-	public function model($model)
-	{
-		$model = ucfirst(strtolower($model)).'Model';
-		if (!isset($this->_model[$model])) {
-			$className = $this->_modelNamespace.$model;
-			if (class_exists($className, true)) {
-				$this->_model[$model] = new $className();
-			} else {
-				throw new EdogerException("Model {$model} is not found", EDOGER_ERROR_NOTFOUND_MODEL);
-			}
-		}
-
-		return $this->_model[$model];
-	}
-
-	
 }
