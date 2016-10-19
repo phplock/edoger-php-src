@@ -44,16 +44,6 @@ final class Response
 		return $this;
 	}
 
-	public function sendFile(string $path)
-	{
-
-	}
-
-	public function sendView()
-	{
-
-	}
-
 	public function sendHeader(string $header, bool $replace = true, int $code = 0)
 	{
 		if ($code > 0) {

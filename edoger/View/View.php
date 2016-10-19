@@ -16,27 +16,75 @@
  */
 namespace Edoger\View;
 
+use Edoger\Core\Kernel;
+use Edoger\Exception\EdogerException;
 
 class View
 {
 	private $_variables = [];
+	private $_viewFile = '';
+	private $_directory;
+	private $_extensionName;
+	private $_defaultView;
 
 	public function __construct()
 	{
-		
+		$config = Kernel::singleton()->config();
+
+		$this->_directory = $config->get('view_directory', '');
+		$this->_extensionName = $config->get('view_extension_name', 'phtml');
+		$this->_defaultView = $config->get('default_view', 'index');
 	}
 
-	public function assign(array $values)
+	public function assign($name, $value = null)
 	{
-		foreach ($values as $key => $value) {
-			$this->_variables[$key] = $value;
+		if (is_array($name)) {
+			foreach ($name as $key => $value) {
+				$this->_variables[$key] = $value;
+			}
+		} else {
+			$this->_variables[$name] = $value;
 		}
 		
 		return $this;
 	}
 
-	public function display(array $variables = [])
+	public function clean()
 	{
-		
+		$this->_variables = [];
+		return $this;
+	}
+
+	public function remove($name)
+	{
+		if (array_key_exists($name, $this->_variables)) {
+			unset($this->_variables[$name]);
+		}
+
+		return $this;
+	}
+
+	public function display($name = '')
+	{
+		if ($name === '') {
+			$name = $this->_defaultView;
+		}
+
+		$this->_viewFile = $this->_directory.'/'.strtolower(
+			substr(Kernel::singleton()->router()->getControllerName(), 0, -10)
+			).'/'.$name.'.'.$this->_extensionName;
+
+		unset($name);
+
+		if (file_exists($this->_viewFile)) {
+			if (!empty($this->_variables)) {
+				extract($this->_variables, EXTR_OVERWRITE);
+			}
+			ob_start();
+			require $this->_viewFile;
+			Kernel::singleton()->app()->response()->send(ob_get_clean());
+		} else {
+			throw new EdogerException("View {$this->_viewFile} is not found", EDOGER_ERROR_NOTFOUND_VIEW);
+		}
 	}
 }

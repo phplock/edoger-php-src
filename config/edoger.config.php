@@ -18,17 +18,14 @@ $conf = [];
 // -------------------------------------------------------------------------------------------------
 
 $conf['cookie_secret_key']		= 'ORqCwo4wmMNJhutnB4CSYq6m9KqQAvoH';
-$conf['cookie_expire']			= 86400;
-$conf['cookie_path']			= '/';
-$conf['cookie_domain']			= '';
-$conf['cookie_secure']			= false;
-$conf['cookie_httponly']		= false;
 
 $conf['default_controller']		= 'index';
 $conf['default_action']			= 'index';
+$conf['default_view']			= 'index';
 
 $conf['model_namespace']		= '\\App\\Model\\';
 $conf['controller_namespace']	= '\\App\\Controller\\';
+
 $conf['view_directory']			= APP_PATH.'/View';
 $conf['view_extension_name']	= 'phtml';
 

@@ -19,18 +19,18 @@ namespace Edoger\Http\Cookie;
 class CookieAuthor
 {
 	private $_secretKey;
-	private $_option = [];
+	private $_option = [
+		'expire'	=> 7200,
+		'path'		=> '/',
+		'domain'	=> '',
+		'secure'	=> false,
+		'httponly'	=> false
+	];
 	private $_names = [];
 
 	public function __construct(string $secretKey = '')
 	{
 		$this->_secretKey = $secretKey;
-
-		$this->_option['expire']	= 86400;
-		$this->_option['path']		= '/';
-		$this->_option['domain']	= '';
-		$this->_option['secure']	= false;
-		$this->_option['httponly']	= false;
 
 		if (!empty($_COOKIE)) {
 			foreach (array_keys($_COOKIE) as $name) {
