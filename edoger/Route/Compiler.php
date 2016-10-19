@@ -16,6 +16,7 @@
  */
 namespace Edoger\Route;
 
+use Closure;
 use Edoger\Core\Kernel;
 use Edoegr\Http\Request;
 
@@ -28,10 +29,9 @@ class Compiler
 	private $_weight = 0;
 	private $_regex = '';
 	
-	public function __construct(&$uri, &$action)
+	public function __construct()
 	{
-		$this->_uri		= &$uri;
-		$this->_action	= &$action;
+		
 	}
 
 	public function weight()
@@ -39,8 +39,11 @@ class Compiler
 		return $this->_weight;
 	}
 
-	public function parseAction()
+	public function parseAction($action)
 	{
+		if (is_object($this->_action) && $this->_action instanceof Closure) {
+			# code...
+		}
 		if (is_callable($this->_action)) {
 			return $this->_action;
 		}

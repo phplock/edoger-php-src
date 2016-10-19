@@ -14,9 +14,15 @@
  *| @author    Qingshan Luo <shanshan.lqs@gmail.com>                                               |
  *+------------------------------------------------------------------------------------------------+
  */
-namespace Edoegr\Controller;
+namespace App\Controller;
 
-interface ControllerInterface
+use Edoegr\Controller\Controller;
+
+class IndexController extends Controller
 {
-	
+	public function IndexAction()
+	{
+		$this->view()->assign('hello', 'world');
+		$this->view()->display('welcome');
+	}
 }

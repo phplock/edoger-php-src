@@ -32,6 +32,6 @@ class Router
 
 	public static function get($uri, $action)
 	{
-		
+		Kernel::singleton()->route()->add(['GET'], $uri, $action);
 	}
 }

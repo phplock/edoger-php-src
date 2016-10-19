@@ -35,13 +35,20 @@ final class Route
 		$this->_action	= $action;
 	}
 
-	public function getCompiler()
+	public function getUri()
 	{
-		if (!$this->_compiler) {
-			$this->_compiler = new Compiler($this->_uri, $this->_action);
-		}
+		return $this->_uri;
+	}
 
-		return $this->_compiler;
+	public function getAction()
+	{
+		return $this->_action;
+	}
+
+	public function setAction(callable $action)
+	{
+		$this->_action = $action;
+		return $this;
 	}
 
 	public function getMethod()
