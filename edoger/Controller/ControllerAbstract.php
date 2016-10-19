@@ -24,4 +24,9 @@ abstract class ControllerAbstract
 	{
 		return Kernel::singleton()->app()->controller()->view();
 	}
+
+	protected function model()
+	{
+		return Kernel::singleton()->app()->controller()->model();
+	}
 }
