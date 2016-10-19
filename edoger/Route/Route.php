@@ -23,24 +23,16 @@ final class Route
 	private $_methods;
 	private $_uri;
 	private $_action;
-	private $_node;
 
-	private $_wheres		= [];
-	private $_middlewares	= [];
-	
+	private $_where			= [];
+	private $_middleware	= [];
 	private $_compiler		= null;
 
 	public function __construct(array $method, $uri, $action)
 	{
-		$this->_methods	= array_map('strtolower', $method);
-		$this->_uri		= '/'.trim($uri, '/');
+		$this->_methods	= $method;
+		$this->_uri		= $uri;
 		$this->_action	= $action;
-		$this->_node	= new Node($this);
-	}
-
-	public function node()
-	{
-		return $this->_node;
 	}
 
 	public function getCompiler()
@@ -52,18 +44,34 @@ final class Route
 		return $this->_compiler;
 	}
 
-	public function getMethods()
+	public function getMethod()
 	{
 		return $this->_methods;
 	}
 
-	public function getWheres()
+	public function getWhere()
 	{
-		return $this->_wheres;
+		return $this->_where;
 	}
 
-	public function getMiddlewares()
+	public function setWhere($name, $filter)
 	{
-		return $this->_middlewares;
+		if (!isset($this->_where[$name])) {
+			$this->_where[$name] = [];
+		}
+
+		$this->_where[$name][] = $filter;
+		return $this;
+	}
+
+	public function getMiddleware()
+	{
+		return $this->_middleware;
+	}
+
+	public function setMiddleware($mw)
+	{
+		$this->_middleware[] = $mw;
+		return $this;
 	}
 }
