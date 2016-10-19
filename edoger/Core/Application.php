@@ -16,14 +16,17 @@
  */
 namespace Edoger\Core;
 
+use App\Bootstrap;
 use Edoger\Http\Request;
 use Edoger\Http\Response;
-use App\Bootstrap;
+use Edoger\Controller\Controller;
 
 final class Application
 {
 	private $_request;
 	private $_response;
+	private $_controller = null;
+
 	public function __construct()
 	{
 		$this->_request		= new Request();
@@ -55,6 +58,15 @@ final class Application
 		return $this->_response;
 	}
 
+	public function controller()
+	{
+		if (!$this->_controller) {
+			$this->_controller = new Controller();
+		}
+
+		return $this->_controller;
+	}
+
 	public function error($error = null)
 	{
 
@@ -62,6 +74,7 @@ final class Application
 	
 	public function run()
 	{
+		$router = Kernel::singleton()->router();
 
 	}
 }

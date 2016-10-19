@@ -14,20 +14,29 @@
  *| @author    Qingshan Luo <shanshan.lqs@gmail.com>                                               |
  *+------------------------------------------------------------------------------------------------+
  */
-$conf = [];
-// -------------------------------------------------------------------------------------------------
+namespace Edoger\Controller;
 
-$conf['cookie_secret_key']		= 'ORqCwo4wmMNJhutnB4CSYq6m9KqQAvoH';
+use Edoger\Core\Kernel;
 
-$conf['default_controller']		= 'index';
-$conf['default_action']			= 'index';
-$conf['default_view']			= 'index';
+abstract class ControllerAbstract
+{
+	final protected function view()
+	{
+		return Kernel::singleton()->app()->controller()->view();
+	}
 
-$conf['model_namespace']		= '\\App\\Model\\';
-$conf['controller_namespace']	= '\\App\\Controller\\';
+	final protected function model($mode)
+	{
+		return Kernel::singleton()->app()->controller()->model(strtolower($mode));
+	}
 
-$conf['view_directory']			= APP_PATH.'/View';
-$conf['view_extension_name']	= 'phtml';
+	final protected function request()
+	{
+		return Kernel::singleton()->app()->request();
+	}
 
-// -------------------------------------------------------------------------------------------------
-return $conf;
+	final protected function response()
+	{
+		return Kernel::singleton()->app()->response();
+	}
+}

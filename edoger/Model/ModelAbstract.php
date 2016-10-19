@@ -14,20 +14,13 @@
  *| @author    Qingshan Luo <shanshan.lqs@gmail.com>                                               |
  *+------------------------------------------------------------------------------------------------+
  */
-$conf = [];
-// -------------------------------------------------------------------------------------------------
+namespace Edoger\Model;
 
-$conf['cookie_secret_key']		= 'ORqCwo4wmMNJhutnB4CSYq6m9KqQAvoH';
-
-$conf['default_controller']		= 'index';
-$conf['default_action']			= 'index';
-$conf['default_view']			= 'index';
-
-$conf['model_namespace']		= '\\App\\Model\\';
-$conf['controller_namespace']	= '\\App\\Controller\\';
-
-$conf['view_directory']			= APP_PATH.'/View';
-$conf['view_extension_name']	= 'phtml';
-
-// -------------------------------------------------------------------------------------------------
-return $conf;
+class ModelAbstract
+{
+	
+	public function __construct()
+	{
+		
+	}
+}

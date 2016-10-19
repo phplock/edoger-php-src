@@ -32,17 +32,7 @@ final class Response
 	public function cookie()
 	{
 		if (!$this->_cookie) {
-			$conf = Kernel::singleton()->config();
-			$this->_cookie = new CookieAuthor(
-				$conf->get('cookie_secret_key'),
-				[
-					'expire'	=> $conf->get('cookie_expire'),
-					'path'		=> $conf->get('cookie_path'),
-					'domain'	=> $conf->get('cookie_domain'),
-					'secure'	=> $conf->get('cookie_secure'),
-					'httponly'	=> $conf->get('cookie_httponly')
-				]
-				);
+			$this->_cookie = new CookieAuthor(Kernel::singleton()->config()->get('cookie_secret_key'));
 		}
 
 		return $this->_cookie;
@@ -52,16 +42,6 @@ final class Response
 	{
 		$this->_output[] = $data;
 		return $this;
-	}
-
-	public function sendFile(string $path)
-	{
-
-	}
-
-	public function sendView()
-	{
-
 	}
 
 	public function sendHeader(string $header, bool $replace = true, int $code = 0)
@@ -79,8 +59,7 @@ final class Response
 		if (substr($url, 0, 1) === '/') {
 			$url = Kernel::singleton()->app()->request()->url($url);
 		}
-		$this->clean();
-		$this->sendHeader('Location:'.$url);
+		$this->clean()->sendHeader('Location:'.$url);
 		exit(0);
 	}
 
@@ -97,11 +76,6 @@ final class Response
 	{
 		$this->_output = [];
 		return $this;
-	}
-
-	public function end(string $data = '')
-	{
-
 	}
 
 	public function getOutput()

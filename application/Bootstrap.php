@@ -49,17 +49,32 @@ class Bootstrap
 		$kernel->logger()->setHandler($handler);
 	}
 
+	// Set default options for sending cookie.
+	// If your session is dependent on cookie, this setting may affect your session.
+	public function initCookie(Kernel $kernel)
+	{
+		$kernel->app()->response()->cookie()->setOptions([
+			'expire'	=> 86400,
+			'path'		=> '/',
+			'domain'	=> '',
+			'secure'	=> false,
+			'httponly'	=> false
+			]);
+	}
+
 	// Set user session.
 	// We get the session ID through cookie, you can change this behavior.
 	public function initSession(Kernel $kernel)
 	{
 		$sid = $kernel->app()->request()->cookie()->get('EDOGER_SID', '');
 		$handler = new EdogerSessionHandler([
-			'timeout' => 86400,
-			'dir' => ROOT_PATH.'/data/session'
+			'timeout'	=> 86400,
+			'dir'		=> ROOT_PATH.'/data/session'
 			]);
 		$session = $kernel->app()->request()->session();
 		$session->start($sid, $handler);
 		$kernel->app()->response()->cookie()->secure('EDOGER_SID', $session->sessionId());
 	}
+
+	
 }

@@ -14,20 +14,15 @@
  *| @author    Qingshan Luo <shanshan.lqs@gmail.com>                                               |
  *+------------------------------------------------------------------------------------------------+
  */
-$conf = [];
-// -------------------------------------------------------------------------------------------------
+namespace App\Controller;
 
-$conf['cookie_secret_key']		= 'ORqCwo4wmMNJhutnB4CSYq6m9KqQAvoH';
+use Edoger\Controller\ControllerAbstract;
 
-$conf['default_controller']		= 'index';
-$conf['default_action']			= 'index';
-$conf['default_view']			= 'index';
-
-$conf['model_namespace']		= '\\App\\Model\\';
-$conf['controller_namespace']	= '\\App\\Controller\\';
-
-$conf['view_directory']			= APP_PATH.'/View';
-$conf['view_extension_name']	= 'phtml';
-
-// -------------------------------------------------------------------------------------------------
-return $conf;
+class IndexController extends ControllerAbstract
+{
+	public function IndexAction()
+	{
+		$this->view()->assign('hello', 'world');
+		$this->view()->display('welcome');
+	}
+}

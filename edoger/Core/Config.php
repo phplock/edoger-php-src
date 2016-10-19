@@ -16,14 +16,18 @@
  */
 namespace Edoger\Core;
 
-// Configuration management component.
+// System configuration manager.
+// This is a very independent component, you can make the appropriate changes, 
+// but you have to implement the "Config::get(string $key, mixed $def = null)" method.
 final class Config
 {
 	private $_config = [];
 
-	public function __construct(array $config)
+	public function __construct()
 	{
-		$this->_config = $config;
+		$conf = require ROOT_PATH.'/config/edoger.config.php';
+
+		$this->_config = $conf;
 	}
 
 	public function get(string $key, $def = null)
@@ -45,10 +49,5 @@ final class Config
 			}
 			return $config;
 		}
-	}
-
-	public function has(string $key)
-	{
-		return $this->get($key) !== null;
 	}
 }

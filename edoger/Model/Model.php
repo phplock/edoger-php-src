@@ -14,20 +14,32 @@
  *| @author    Qingshan Luo <shanshan.lqs@gmail.com>                                               |
  *+------------------------------------------------------------------------------------------------+
  */
-$conf = [];
-// -------------------------------------------------------------------------------------------------
+namespace Edoger\Model;
 
-$conf['cookie_secret_key']		= 'ORqCwo4wmMNJhutnB4CSYq6m9KqQAvoH';
+use Edoger\Core\Kernel;
+use Edoger\Exception\EdogerException;
 
-$conf['default_controller']		= 'index';
-$conf['default_action']			= 'index';
-$conf['default_view']			= 'index';
+class Model
+{
+	private $_model = [];
+	private $_namespace;
 
-$conf['model_namespace']		= '\\App\\Model\\';
-$conf['controller_namespace']	= '\\App\\Controller\\';
+	public function __construct()
+	{
+		$this->_namespace = Kernel::singleton()->config()->get('model_namespace', '\\');
+	}
 
-$conf['view_directory']			= APP_PATH.'/View';
-$conf['view_extension_name']	= 'phtml';
+	public function load($model)
+	{
+		if (!isset($this->_model[$model])) {
+			$className = $this->_namespace.$model;
+			if (class_exists($className, true)) {
+				$this->_model[$model] = new $className();
+			} else {
+				throw new EdogerException("Model {$model} is not found", EDOGER_ERROR_NOTFOUND_MODEL);
+			}
+		}
 
-// -------------------------------------------------------------------------------------------------
-return $conf;
+		return $this->_model[$model];
+	}
+}

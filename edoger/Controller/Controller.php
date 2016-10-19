@@ -14,20 +14,49 @@
  *| @author    Qingshan Luo <shanshan.lqs@gmail.com>                                               |
  *+------------------------------------------------------------------------------------------------+
  */
-$conf = [];
-// -------------------------------------------------------------------------------------------------
+namespace Edoger\Controller;
 
-$conf['cookie_secret_key']		= 'ORqCwo4wmMNJhutnB4CSYq6m9KqQAvoH';
+use Edoger\View\View;
+use Edoger\Model\Model;
+use Edoger\Core\Kernel;
+use Edoger\Exception\EdogerException;
 
-$conf['default_controller']		= 'index';
-$conf['default_action']			= 'index';
-$conf['default_view']			= 'index';
+class Controller
+{
+	private $_view;
+	private $_model;
+	private $_controller = [];
+	private $_namespace;
 
-$conf['model_namespace']		= '\\App\\Model\\';
-$conf['controller_namespace']	= '\\App\\Controller\\';
+	public function __construct()
+	{
+		$this->_view		= new View();
+		$this->_model		= new Model();
+		$this->_namespace	= Kernel::singleton()->config()->get('controller_namespace', '\\');
+	}
 
-$conf['view_directory']			= APP_PATH.'/View';
-$conf['view_extension_name']	= 'phtml';
+	public function load($controller)
+	{
+		$controller = ucfirst(strtolower($controller)).'Controller';
+		if (!isset($this->_controller[$controller])) {
+			$className = $this->_namespace.$controller;
+			if (class_exists($className)) {
+				$this->_controller[$controller] = new $className();
+			} else {
+				throw new EdogerException("Controller {$controller} is not found", EDOGER_ERROR_NOTFOUND_CONTROLLER);
+			}
+		}
+		
+		return $this->_controller[$controller];
+	}
 
-// -------------------------------------------------------------------------------------------------
-return $conf;
+	public function model($mode)
+	{
+		return $this->_model->load(ucfirst($mode).'Model');
+	}
+
+	public function view()
+	{
+		return $this->_view;
+	}
+}

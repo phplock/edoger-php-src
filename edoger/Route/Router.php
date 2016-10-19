@@ -14,9 +14,56 @@
  *| @author    Qingshan Luo <shanshan.lqs@gmail.com>                                               |
  *+------------------------------------------------------------------------------------------------+
  */
-namespace Edoger\View;
+namespace Edoger\Route;
 
-interface ViewInterface
+use Edoger\Core\Kernel;
+
+class Router
 {
-	
+	private $_path;
+	private $_info;
+	private $_size;
+	private $_defaultController;
+	private $_defaultAction;
+
+	public function __construct()
+	{
+		$config = Kernel::singleton()->config();
+		$this->_defaultController = $config->get('default_controller', 'index');
+		$this->_defaultAction = $config->get('default_action', 'index');
+		$this->_path = Kernel::singleton()->app()->request()->path();
+		$this->_info = preg_split('/\//', $this->_path, 0, PREG_SPLIT_NO_EMPTY);
+		$this->_size = count($this->_info);
+	}
+
+	public function setDefaultControllerName($name)
+	{
+		$this->_defaultController = strtolower($name);
+		return $this;
+	}
+
+	public function setDefaultActionName($name)
+	{
+		$this->_defaultAction = strtolower($name);
+		return $this;
+	}
+
+	public function getControllerName()
+	{
+		return $this->item(0, $this->_defaultController);
+	}
+
+	public function getActionName()
+	{
+		return $this->item(1, $this->_defaultAction);
+	}
+
+	public function item($index, $def = null)
+	{
+		if ($index < 0) {
+			$index += $this->_size;
+		}
+
+		return isset($this->_info[$index]) ? $this->_info[$index] : $def;
+	}
 }
