@@ -34,5 +34,15 @@ $conf['controller_namespace']	= '\\App\\Controller\\';
 $conf['view_directory']			= APP_PATH.'/View';
 $conf['view_extension_name']	= 'phtml';
 
+// Database configuration information.
+// If you need to use the database, then these must be configured.
+$conf['mysql_host']				= '';
+$conf['mysql_port']				= '';
+$conf['mysql_socket']			= '';
+$conf['mysql_dbname']			= '';
+$conf['mysql_username']			= '';
+$conf['mysql_password']			= '';
+$conf['mysql_prefix']			= '';
+
 // -------------------------------------------------------------------------------------------------
 return $conf;

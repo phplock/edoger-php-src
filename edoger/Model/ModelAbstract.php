@@ -16,11 +16,17 @@
  */
 namespace Edoger\Model;
 
-class ModelAbstract
+abstract class ModelAbstract
 {
-	
-	public function __construct()
+	private $_table = null;
+
+	public function __construct($table)
 	{
-		
+		$this->_table = $table;
+	}
+
+	public function setTable($table)
+	{
+
 	}
 }
