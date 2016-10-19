@@ -74,10 +74,10 @@ final class Kernel
 
 	public function router()
 	{
-		if (!$this->_router) {
-			$this->_router = new Router();
+		if (!self::$_router) {
+			self::$_router = new Router();
 		}
-		return $this->_router;
+		return self::$_router;
 	}
 
 	public function error($exception)

@@ -32,8 +32,8 @@ class Router
 		$this->_defaultController = $config->get('default_controller', 'index');
 		$this->_defaultAction = $config->get('default_action', 'index');
 		$this->_path = Kernel::singleton()->app()->request()->path();
-		$this->_info = preg_split('/\//', $path, 0, PREG_SPLIT_NO_EMPTY);
-		$this->_size = count($info);
+		$this->_info = preg_split('/\//', $this->_path, 0, PREG_SPLIT_NO_EMPTY);
+		$this->_size = count($this->_info);
 	}
 
 	public function setDefaultControllerName($name)

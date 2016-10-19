@@ -15,14 +15,12 @@
  *+------------------------------------------------------------------------------------------------+
  */
 namespace Edoger\Model;
-/**
-* 
-*/
+
 class ModelAbstract
 {
 	
-	function __construct()
+	public function __construct()
 	{
-		# code...
+		
 	}
 }
