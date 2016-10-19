@@ -22,7 +22,6 @@ class IndexController extends ControllerAbstract
 {
 	public function IndexAction()
 	{
-		$this->view()->assign('hello', 'world');
-		$this->view()->display('welcome');
+		$this->view()->assign('hello', 'world')->display();
 	}
 }

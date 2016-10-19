@@ -75,6 +75,8 @@ final class Application
 	public function run()
 	{
 		$router = Kernel::singleton()->router();
-
+		$controller = $this->controller()->load($router->getControllerName());
+		$action = ucfirst(strtolower($router->getActionName())).'Action';
+		call_user_func([$controller, $action]);
 	}
 }

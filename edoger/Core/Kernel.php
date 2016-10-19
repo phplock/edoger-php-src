@@ -93,14 +93,6 @@ final class Kernel
 		if (!self::$_terminated) {
 			self::$_terminated = true;
 
-			$response = $this->app()->response();
-			
-			
-
-
-
-			$response->send($this->app()->request()->path());
-			
 			echo implode($this->app()->response()->getOutput());
 		}
 	}
