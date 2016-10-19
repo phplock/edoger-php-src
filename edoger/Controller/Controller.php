@@ -18,6 +18,7 @@ namespace Edoger\Controller;
 
 use Edoger\View\View;
 use Edoger\Model\Model;
+use Edoger\Core\Kernel;
 use Edoger\Exception\EdogerException;
 
 class Controller
@@ -25,25 +26,18 @@ class Controller
 	private $_view;
 	private $_model;
 	private $_controller = [];
-	private $_namespace = '\\';
+	private $_namespace;
 
 	public function __construct()
 	{
-		$this->_view	= new View();
-		$this->_model	= new Model();
-	}
-
-	public function namespace($namespace = '')
-	{
-		if ($namespace) {
-			$this->_namespace = $namespace;
-		}
-
-		return $this->_namespace;
+		$this->_view		= new View();
+		$this->_model		= new Model();
+		$this->_namespace	= Kernel::singleton()->config()->get('controller_namespace', '\\');
 	}
 
 	public function load($controller)
 	{
+		$controller = ucfirst(strtolower($controller)).'Controller';
 		if (!isset($this->_controller[$controller])) {
 			$className = $this->_namespace.$controller;
 			if (class_exists($className)) {

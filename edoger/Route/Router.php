@@ -50,12 +50,12 @@ class Router
 
 	public function getControllerName()
 	{
-		return ucfirst($this->item(0, $this->_defaultController)).'Controller';
+		return $this->item(0, $this->_defaultController);
 	}
 
 	public function getActionName()
 	{
-		return ucfirst($this->item(1, $this->_defaultAction)).'Action';
+		return $this->item(1, $this->_defaultAction);
 	}
 
 	public function item($index, $def = null)

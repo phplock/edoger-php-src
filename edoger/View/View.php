@@ -70,11 +70,10 @@ class View
 			$name = $this->_defaultView;
 		}
 
-		$this->_viewFile = $this->_directory.'/'.strtolower(
-			substr(Kernel::singleton()->router()->getControllerName(), 0, -10)
-			).'/'.$name.'.'.$this->_extensionName;
+		$controller = ucfirst(strtolower(Kernel::singleton()->router()->getControllerName()));
+		$this->_viewFile = $this->_directory.'/'.$controller.'/'.$name.'.'.$this->_extensionName;
 
-		unset($name);
+		unset($name, $controller);
 
 		if (file_exists($this->_viewFile)) {
 			if (!empty($this->_variables)) {
