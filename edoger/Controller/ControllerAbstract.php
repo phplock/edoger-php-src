@@ -16,12 +16,12 @@
  */
 namespace Edoger\Controller;
 
-use Edoger\View\View;
+use Edoger\Core\Kernel;
+
 abstract class ControllerAbstract
 {
-	private $_view;
-	public function __construct()
+	protected function view()
 	{
-		$this->_view = new View();
+		return Kernel::singleton()->app()->controller()->view();
 	}
 }

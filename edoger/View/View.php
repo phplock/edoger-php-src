@@ -17,14 +17,13 @@
 namespace Edoger\View;
 
 
-class View implements ViewInterface
+class View
 {
-	private $_file;
 	private $_variables = [];
-	private $_view = '';
-	public function __construct(string $file)
+
+	public function __construct()
 	{
-		$this->_file = $file;
+		
 	}
 
 	public function assign(array $values)
@@ -36,48 +35,8 @@ class View implements ViewInterface
 		return $this;
 	}
 
-	public function delete(string $key)
-	{
-		if (array_key_exists($key, $this->_variables)) {
-			unset($this->_variables[$key]);
-		}
-
-		return $this;
-	}
-
-	public function set(string $key, $value)
-	{
-		$this->_variables[$key] = $value;
-		return $this;
-	}
-
-	public function get(string $key)
-	{
-		return $this->_variables[$key] ?? null;
-	}
-
-	public function getAll()
-	{
-		return $this->_variables;
-	}
-
 	public function display(array $variables = [])
 	{
-		if (!file_exists($this->_file)) {
-			
-		}
 		
-		if (!empty($variables)) {
-			
-		}
-
-		ob_start();
-		require $this->_file;
-		$this->_view = ob_get_clean();
-	}
-
-	public function flush()
-	{
-
 	}
 }

@@ -16,38 +16,53 @@
  */
 namespace Edoger\Controller;
 
+use Edoger\View\View;
+use Edoger\Model\Model;
 use Edoger\Exception\EdogerException;
 
 class Controller
 {
-	private $_modelNamespace = '\\';
-	private $_model = [];
+	private $_view;
+	private $_model;
+	private $_controller = [];
+	private $_namespace = '\\';
 
 	public function __construct()
 	{
-
+		$this->_view	= new View();
+		$this->_model	= new Model();
 	}
 
-	public function setModelNamespace($namespace)
+	public function namespace($namespace = '')
 	{
-		$this->_modelNamespace = $namespace;
-		return $this;
-	}
-
-	public function model($model)
-	{
-		$model = ucfirst(strtolower($model)).'Model';
-		if (!isset($this->_model[$model])) {
-			$className = $this->_modelNamespace.$model;
-			if (class_exists($className, true)) {
-				$this->_model[$model] = new $className();
-			} else {
-				throw new EdogerException("Model {$model} is not found", EDOGER_ERROR_NOTFOUND_MODEL);
-			}
+		if ($namespace) {
+			$this->_namespace = $namespace;
 		}
 
-		return $this->_model[$model];
+		return $this->_namespace;
 	}
 
-	
+	public function load($controller)
+	{
+		if (!isset($this->_controller[$controller])) {
+			$className = $this->_namespace.$controller;
+			if (class_exists($className)) {
+				$this->_controller[$controller] = new $className();
+			} else {
+				throw new EdogerException("Controller {$controller} is not found", EDOGER_ERROR_NOTFOUND_CONTROLLER);
+			}
+		}
+		
+		return $this->_controller[$controller];
+	}
+
+	public function model()
+	{
+		return $this->_model;
+	}
+
+	public function view()
+	{
+		return $this->_view;
+	}
 }
