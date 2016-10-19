@@ -32,17 +32,7 @@ final class Response
 	public function cookie()
 	{
 		if (!$this->_cookie) {
-			$conf = Kernel::singleton()->config();
-			$this->_cookie = new CookieAuthor(
-				$conf->get('cookie_secret_key'),
-				[
-					'expire'	=> $conf->get('cookie_expire'),
-					'path'		=> $conf->get('cookie_path'),
-					'domain'	=> $conf->get('cookie_domain'),
-					'secure'	=> $conf->get('cookie_secure'),
-					'httponly'	=> $conf->get('cookie_httponly')
-				]
-				);
+			$this->_cookie = new CookieAuthor(Kernel::singleton()->config()->get('cookie_secret_key'));
 		}
 
 		return $this->_cookie;
