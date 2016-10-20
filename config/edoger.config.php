@@ -26,9 +26,10 @@ $conf['default_controller']		= 'index';
 $conf['default_action']			= 'index';
 $conf['default_view']			= 'index';
 
-// Controller and model namespace name.
+// Controller and model and user extend namespace name.
 $conf['model_namespace']		= '\\App\\Model\\';
 $conf['controller_namespace']	= '\\App\\Controller\\';
+$conf['user_extend_namespace']	= '\\App\\Extend\\';
 
 // View directory and view extension name.
 $conf['view_directory']			= APP_PATH.'/View';
