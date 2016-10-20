@@ -23,7 +23,6 @@ use Edoger\Exception\EdogerException;
 class MysqliDriver implements DriverInterface
 {
 	private $_mysqli = null;
-
 	private $_host;
 	private $_port;
 	private $_socket;
@@ -32,7 +31,6 @@ class MysqliDriver implements DriverInterface
 	private $_username;
 	private $_password;
 	private $_dsn;
-
 	private $_errorCode = 0;
 	private $_errorMessage = '';
 
@@ -114,5 +112,22 @@ class MysqliDriver implements DriverInterface
 	public function getConnected()
 	{
 		return $this->_mysqli;
+	}
+
+	public function getErrorCode()
+	{
+		return $this->_errorCode;
+	}
+
+	public function getErrorMessage()
+	{
+		return $this->_errorMessage;
+	}
+
+	public function errorClean()
+	{
+		$this->_errorCode = 0;
+		$this->_errorMessage = '';
+		return $this;
 	}
 }

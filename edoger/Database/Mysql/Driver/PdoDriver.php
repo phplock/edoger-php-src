@@ -24,7 +24,6 @@ use Edoger\Exception\EdogerException;
 class PdoDriver implements DriverInterface
 {
 	private $_pdo = null;
-
 	private $_host;
 	private $_port;
 	private $_socket;
@@ -32,9 +31,6 @@ class PdoDriver implements DriverInterface
 	private $_charset;
 	private $_username;
 	private $_password;
-
-	private $_online = false;
-
 	private $_errorCode = 0;
 	private $_errorMessage = '';
 
@@ -110,5 +106,22 @@ class PdoDriver implements DriverInterface
 	public function getConnected()
 	{
 		return $this->_pdo;
+	}
+
+	public function getErrorCode()
+	{
+		return $this->_errorCode;
+	}
+
+	public function getErrorMessage()
+	{
+		return $this->_errorMessage;
+	}
+
+	public function errorClean()
+	{
+		$this->_errorCode = 0;
+		$this->_errorMessage = '';
+		return $this;
 	}
 }
