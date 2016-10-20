@@ -37,6 +37,8 @@ $conf['view_extension_name']	= 'phtml';
 
 // Database configuration information.
 // If you need to use the database, then these must be configured.
+$conf['mysql_driver']			= 'pdo';
+
 $conf['mysql_host']				= '';
 $conf['mysql_port']				= '';
 $conf['mysql_socket']			= '';
@@ -44,6 +46,7 @@ $conf['mysql_dbname']			= '';
 $conf['mysql_charset']			= '';
 $conf['mysql_username']			= '';
 $conf['mysql_password']			= '';
+
 $conf['mysql_prefix']			= '';
 
 // -------------------------------------------------------------------------------------------------
