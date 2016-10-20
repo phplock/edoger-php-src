@@ -19,14 +19,17 @@ namespace Edoger\Model;
 abstract class ModelAbstract
 {
 	private $_table = null;
+	private $_field = [];
 
-	public function __construct($table)
+	protected function setTable($table)
 	{
 		$this->_table = $table;
+		return $this;
 	}
 
-	public function setTable($table)
+	protected function setFiled($field, $type)
 	{
-
+		$this->_field[$field] = $type;
+		return $this;
 	}
 }
