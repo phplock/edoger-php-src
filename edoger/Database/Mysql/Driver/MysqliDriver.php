@@ -30,9 +30,6 @@ class MysqliDriver implements DriverInterface
 	private $_charset;
 	private $_username;
 	private $_password;
-	private $_dsn;
-	private $_errorCode = 0;
-	private $_errorMessage = '';
 
 	public function __construct()
 	{
@@ -116,18 +113,57 @@ class MysqliDriver implements DriverInterface
 
 	public function getErrorCode()
 	{
-		return $this->_errorCode;
+		return $this->_mysqli->errno;
+	}
+
+	public function getErrorState()
+	{
+		return $this->_mysqli->sqlstate;
 	}
 
 	public function getErrorMessage()
 	{
-		return $this->_errorMessage;
+		return $this->_mysqli->error;
 	}
 
-	public function errorClean()
+	public function inTransaction()
 	{
-		$this->_errorCode = 0;
-		$this->_errorMessage = '';
-		return $this;
+		$reslut = $this->_mysqli->query('SELECT @@autocommit AS inTransaction');
+		if ($reslut) {
+			$row = $reslut->fetch_row();
+			return !$row['inTransaction'];
+		} else {
+			return false;
+		}
+	}
+
+	public function beginTransaction()
+	{
+		return $this->_mysqli->autocommit(false);
+	}
+
+	public function commit()
+	{
+		return $this->_mysqli->commit();
+	}
+
+	public function rollback()
+	{
+		return $this->_mysqli->rollback();
+	}
+
+	public function execute($statement, array $params = [])
+	{
+
+	}
+
+	public function query($statement, array $params = [])
+	{
+		
+	}
+
+	public function getLastInsertId()
+	{
+		return $this->_mysqli->insert_id;
 	}
 }

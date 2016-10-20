@@ -31,8 +31,6 @@ class PdoDriver implements DriverInterface
 	private $_charset;
 	private $_username;
 	private $_password;
-	private $_errorCode = 0;
-	private $_errorMessage = '';
 
 	public function __construct()
 	{
@@ -110,18 +108,53 @@ class PdoDriver implements DriverInterface
 
 	public function getErrorCode()
 	{
-		return $this->_errorCode;
+		$temp = $this->_pdo->errorInfo();
+		return $temp ? $temp[1] : 0;
+	}
+
+	public function getErrorState()
+	{
+		return $this->_pdo->errorCode();
 	}
 
 	public function getErrorMessage()
 	{
-		return $this->_errorMessage;
+		$temp = $this->_pdo->errorInfo();
+		return $temp ? $temp[2] : '';
 	}
 
-	public function errorClean()
+	public function inTransaction()
 	{
-		$this->_errorCode = 0;
-		$this->_errorMessage = '';
-		return $this;
+		return $this->_pdo->inTransaction();
+	}
+
+	public function beginTransaction()
+	{
+		return $this->_pdo->beginTransaction();
+	}
+
+	public function commit()
+	{
+		return $this->_pdo->commit();
+	}
+
+	public function rollback()
+	{
+		return $this->_pdo->rollback();
+	}
+
+	public function execute($statement, array $params = [])
+	{
+
+	}
+
+	public function query($statement, array $params = [])
+	{
+		
+	}
+
+	public function getLastInsertId()
+	{
+		return $this->_pdo->lastInsertId();
 	}
 }

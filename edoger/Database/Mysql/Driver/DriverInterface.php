@@ -28,13 +28,16 @@ interface DriverInterface
 	public function getClientVersion();
 	public function getConnected();
 	public function getErrorCode();
+	public function getErrorState();
 	public function getErrorMessage();
-	public function errorClean();
 
 	public function inTransaction();
 	public function beginTransaction();
-	public function sendTransaction();
-	public function stopTransaction();
+	public function commit();
+	public function rollback();
 
 	public function execute($statement, array $params = []);
+	public function query($statement, array $params = []);
+
+	public function getLastInsertId();
 }
