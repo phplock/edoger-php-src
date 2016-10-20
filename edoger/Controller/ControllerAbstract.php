@@ -17,6 +17,7 @@
 namespace Edoger\Controller;
 
 use Edoger\Core\Kernel;
+use Edoger\Exception\EdogerException;
 
 abstract class ControllerAbstract
 {
@@ -38,5 +39,10 @@ abstract class ControllerAbstract
 	final protected function response()
 	{
 		return Kernel::singleton()->app()->response();
+	}
+
+	final public function __call($method, $params)
+	{
+		throw new EdogerException("Undefined method {$method} in controller", EDOGER_ERROR_METHOD);
 	}
 }
