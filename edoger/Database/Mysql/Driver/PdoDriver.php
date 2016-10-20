@@ -32,7 +32,6 @@ class PdoDriver implements DriverInterface
 	private $_charset;
 	private $_username;
 	private $_password;
-	
 	private $_dsn;
 
 	private $_online = false;
@@ -42,7 +41,7 @@ class PdoDriver implements DriverInterface
 
 	public function __construct()
 	{
-		$config		= Kernel::singleton()->config();
+		$config = Kernel::singleton()->config();
 		
 		$this->_host		= $config->get('mysql_host');
 		$this->_port		= $config->get('mysql_port');
@@ -52,13 +51,21 @@ class PdoDriver implements DriverInterface
 		$this->_username	= $config->get('mysql_username');
 		$this->_password	= $config->get('mysql_password');
 
-		if ($socket) {
-			$dsn = 'mysql:unix_socket='.$socket;
+		if ($this->_socket) {
+			$dsn = 'mysql:unix_socket='.$this->_socket;
 		} else {
-			$dsn = 'mysql:host='.$host.';port='.$port;
+			$dsn = 'mysql:host='.$this->_host.';port='.$this->_port;
 		}
 
-		$this->_dsn = $dsn.';dbname='.$dbname.';charset='.$charset;
+		if ($this->_dbname) {
+			$dsn .= ';dbname='.$this->_dbname;
+		}
+
+		if ($this->_charset) {
+			$dsn .= ';charset='.$charset;
+		}
+		
+		$this->_dsn = $dsn;
 	}
 
 	public function connect()
@@ -72,6 +79,36 @@ class PdoDriver implements DriverInterface
 		}
 
 		return true;
+	}
+
+	public function getHost()
+	{
+		return $this->_host;
+	}
+
+	public function getPort()
+	{
+		return $this->_port;
+	}
+
+	public function getSocket()
+	{
+		return $this->_socket;
+	}
+
+	public function getDbname()
+	{
+		return $this->_dbname;
+	}
+
+	public function getCharset()
+	{
+		return $this->_charset;
+	}
+
+	public function getUsername()
+	{
+		return $this->_username;
 	}
 
 	public function getConnected()
