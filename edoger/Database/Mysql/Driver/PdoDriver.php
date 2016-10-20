@@ -61,46 +61,6 @@ class PdoDriver implements DriverInterface
 		}
 	}
 
-	public function getHost()
-	{
-		return $this->_host;
-	}
-
-	public function getPort()
-	{
-		return $this->_port;
-	}
-
-	public function getSocket()
-	{
-		return $this->_socket;
-	}
-
-	public function getDbname()
-	{
-		return $this->_dbname;
-	}
-
-	public function getCharset()
-	{
-		return $this->_charset;
-	}
-
-	public function getUser()
-	{
-		return $this->_username;
-	}
-
-	public function getServerVersion()
-	{
-		return $this->_pdo->getAttribute(PDO::ATTR_SERVER_VERSION);
-	}
-
-	public function getClientVersion()
-	{
-		return $this->_pdo->getAttribute(PDO::ATTR_CLIENT_VERSION);
-	}
-
 	public function getConnected()
 	{
 		return $this->_pdo;
@@ -150,7 +110,7 @@ class PdoDriver implements DriverInterface
 
 	public function query($statement, array $params = [])
 	{
-		
+
 	}
 
 	public function getLastInsertId()

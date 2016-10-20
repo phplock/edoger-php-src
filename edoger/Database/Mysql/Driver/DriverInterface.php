@@ -18,14 +18,6 @@ namespace Edoger\Database\Mysql\Driver;
 
 interface DriverInterface
 {
-	public function getHost();
-	public function getPort();
-	public function getSocket();
-	public function getDbname();
-	public function getCharset();
-	public function getUser();
-	public function getServerVersion();
-	public function getClientVersion();
 	public function getConnected();
 	public function getErrorCode();
 	public function getErrorState();
