@@ -16,14 +16,13 @@
  */
 namespace Edoger\Database\Mysql\Driver;
 
-use PDO;
-use PDOException;
+use mysqli;
 use Edoger\Core\Kernel;
 use Edoger\Exception\EdogerException;
 
-class PdoDriver implements DriverInterface
+class MysqliDriver implements DriverInterface
 {
-	private $_pdo = null;
+	private $_mysqli = null;
 
 	private $_host;
 	private $_port;
@@ -32,8 +31,7 @@ class PdoDriver implements DriverInterface
 	private $_charset;
 	private $_username;
 	private $_password;
-
-	private $_online = false;
+	private $_dsn;
 
 	private $_errorCode = 0;
 	private $_errorMessage = '';
@@ -51,19 +49,25 @@ class PdoDriver implements DriverInterface
 		$this->_password	= $config->get('mysql_password');
 
 		if ($this->_socket) {
-			$dsn = 'mysql:unix_socket='.$this->_socket.';dbname='.$this->_dbname;
-		} else {
-			$dsn = 'mysql:host='.$this->_host.';port='.$this->_port.';dbname='.$this->_dbname;
+			$this->_host = '';
+			$this->_port = 0;
+		}
+
+		$this->_mysqli = new mysqli(
+			$this->_host,
+			$this->_username,
+			$this->_password,
+			$this->_dbname,
+			$this->_port,
+			$this->_socket
+			);
+
+		if ($this->_mysqli->connect_errno) {
+			throw new EdogerException($this->_mysqli->connect_error, EDOGER_ERROR_CONNECT);
 		}
 
 		if ($this->_charset) {
-			$dsn .= ';charset='.$charset;
-		}
-
-		try {
-			$this->_pdo = new PDO($this->_dsn, $this->_username, $this->_password);
-		} catch(PDOException $e) {
-			throw new EdogerException($e->getMessage(), EDOGER_ERROR_CONNECT, $e);
+			$this->_mysqli->set_charset($this->_charset);
 		}
 	}
 
@@ -99,16 +103,16 @@ class PdoDriver implements DriverInterface
 
 	public function getServerVersion()
 	{
-		return $this->_pdo->getAttribute(PDO::ATTR_SERVER_VERSION);
+		return $this->_mysqli->server_info;
 	}
 
 	public function getClientVersion()
 	{
-		return $this->_pdo->getAttribute(PDO::ATTR_CLIENT_VERSION);
+		return $this->_mysqli->get_client_info();
 	}
 
 	public function getConnected()
 	{
-		return $this->_pdo;
+		return $this->_mysqli;
 	}
 }

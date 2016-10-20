@@ -23,22 +23,20 @@ interface DriverInterface
 	public function getSocket();
 	public function getDbname();
 	public function getCharset();
-	public function getUsername();
-
-	public function setCharset($charset);
-	public function setDbname($dbname);
-
-	public function isOnline();
-
-	public function connect();
-	public function close();
-	public function version();
+	public function getUser();
+	public function getServerVersion();
+	public function getClientVersion();
 
 	public function getConnected();
 
-	public function errorCode();
-	public function errorMessage();
+	public function getErrorCode();
+	public function getErrorMessage();
+
 	public function errorClean();
+
+	public function isOnline();
+
+	
 
 	public function inTransaction();
 	public function beginTransaction();
