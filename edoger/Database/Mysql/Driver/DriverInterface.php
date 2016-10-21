@@ -20,7 +20,6 @@ interface DriverInterface
 {
 	public function getConnected();
 	public function getErrorCode();
-	public function getErrorState();
 	public function getErrorMessage();
 
 	public function inTransaction();
