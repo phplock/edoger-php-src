@@ -9,26 +9,23 @@
  *| @license   MIT                                                                                 |
  *| @link      https://www.edoger.com/                                                             |
  *| @copyright Copyright (c) 2014 - 2016, QingShan Luo                                             |
- *| @version   1.0.0 Alpha                                                                         |
  *+------------------------------------------------------------------------------------------------+
  *| @author    Qingshan Luo <shanshan.lqs@gmail.com>                                               |
  *+------------------------------------------------------------------------------------------------+
  */
 
-// Basic constants.
-define('ROOT_PATH', dirname(__DIR__));
-define('EDOGER_PATH', ROOT_PATH.'/edoger');
-define('APP_PATH', ROOT_PATH.'/application');
+// Create an application instance.
+// Initialize the system environment.
+$app = require __DIR__ . '/../edoegr/launcher.php';
 
-// Load automatic loader.
-require EDOGER_PATH.'/autoload.php';
+// Create this request object.
+$request = $app->make(
+    Edoger\Http\Request::class
+);
 
-// Load startup script.
-// Create and get an instance of the core object of the framework.
-$kernel = require EDOGER_PATH.'/launcher.php';
+// Capture response and output to the client.
+$response = $app->capture($request);
+$response->flush();
 
-// Create an application instance and start the application instance immediately.
-$kernel->app()->bootstrap()->run();
-
-// End.
-$kernel->termination();
+// Recycle resources and trigger follow-up tasks.
+$app->end($request, $response);
