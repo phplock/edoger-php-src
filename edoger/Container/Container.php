@@ -9,34 +9,19 @@
  *| @license   MIT                                                                                 |
  *| @link      https://www.edoger.com/                                                             |
  *| @copyright Copyright (c) 2014 - 2016, QingShan Luo                                             |
- *| @version   1.0.0 Alpha                                                                         |
  *+------------------------------------------------------------------------------------------------+
  *| @author    Qingshan Luo <shanshan.lqs@gmail.com>                                               |
  *+------------------------------------------------------------------------------------------------+
  */
+namespace Edoger\Container;
 
-// Automatic loader.
-final class EdogerAutoload
+//CreateException
+class Container
 {
-	public static function load(string $name)
-	{
-		if (preg_match('/^Edoger\\\\/', $name)) {
+    protected $instances = [];
 
-			// Automatic loading the edoger PHP framework files.
-			$path = EDOGER_PATH.ltrim(str_replace('\\', '/', $name), 'Edoger').'.php';
-			if (file_exists($path)) {
-				require $path;
-			}
-		} elseif (preg_match('/^App\\\\/', $name)) {
+    protected function create(string $abstracts, array $arguments = [])
+    {
 
-			// Automatically loading application files.
-			$path = APP_PATH.ltrim(str_replace('\\', '/', $name), 'App').'.php';
-			if (file_exists($path)) {
-				require $path;
-			}
-		}
-	}
+    }
 }
-
-// Registered automatic loader.
-spl_autoload_register([EdogerAutoload::class, 'load']);
