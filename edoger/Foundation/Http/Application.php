@@ -12,34 +12,42 @@
  *| @author    Qingshan Luo <shanshan.lqs@gmail.com>                                               |
  *+------------------------------------------------------------------------------------------------+
  */
+namespace Edoger\Foundation\Http;
 
-// ----------------------------------------------
-// The root directory of the project.
-define('ROOT_DIR', realpath(__DIR__ . '/../'));
+use Edoger\Container\Container;
 
-// ----------------------------------------------
-// Create an application instance.
-$app = new Edoger\Kernel\Application(
+class Application extends Container
+{
+    protected static $application;
+    protected static $configuration;
+    protected static $helpers = [];
 
-    // Configuration manager.
-    // It can be completely customized.
-    new Edoger\Config\Config(
+    public static function app()
+    {
+        return static::$application;
+    }
 
-        // Loading the application configuration file,
-        // the configuration file must return an array.
-        require (ROOT_DIR . '/config/application.config.php')
-    )
-);
+    public static function config()
+    {
+        return static::$configuration;
+    }
 
-// ----------------------------------------------
-// Build request component.
-$app->singleton(
-    Edoger\Http\Request::class,
-    'request'
-);
+    public function helper($helper)
+    {
+        $helper = strtolower($helper);
+        if (isset(static::$helpers[$helper])) {
+            return true;
+        }
 
-// ----------------------------------------------
-$app->helper('application');
-
-// ----------------------------------------------
-return $app;
+        $file = ROOT_DIR . '/edoger/Helpers/' . $helper . '.php';
+        if (file_exists($file)) {
+            static::$helpers[$helper] = true;
+            require $file;
+            return true;
+        } else {
+            throw new \RuntimeException(
+                "Helper library {$helper} does not exist."
+            );
+        }
+    }
+}

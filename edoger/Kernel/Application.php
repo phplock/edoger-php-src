@@ -12,34 +12,18 @@
  *| @author    Qingshan Luo <shanshan.lqs@gmail.com>                                               |
  *+------------------------------------------------------------------------------------------------+
  */
+namespace Edoger\Kernel;
 
-// ----------------------------------------------
-// The root directory of the project.
-define('ROOT_DIR', realpath(__DIR__ . '/../'));
+use Edoger\Foundation\Config\ConfigInterface;
+use Edoger\Foundation\Http\Application as Kernel;
+use Edoger\Foundation\Kernel\ApplicationInterface;
 
-// ----------------------------------------------
-// Create an application instance.
-$app = new Edoger\Kernel\Application(
+class Application extends Kernel implements ApplicationInterface
+{
 
-    // Configuration manager.
-    // It can be completely customized.
-    new Edoger\Config\Config(
-
-        // Loading the application configuration file,
-        // the configuration file must return an array.
-        require (ROOT_DIR . '/config/application.config.php')
-    )
-);
-
-// ----------------------------------------------
-// Build request component.
-$app->singleton(
-    Edoger\Http\Request::class,
-    'request'
-);
-
-// ----------------------------------------------
-$app->helper('application');
-
-// ----------------------------------------------
-return $app;
+    public function __construct(ConfigInterface $config)
+    {
+        static::$application   = &$this;
+        static::$configuration = $config;
+    }
+}
