@@ -15,6 +15,10 @@
  */
 namespace Edoger\Loader;
 
+/**
+ * Edoger automatic loader.
+ * Automatically load class files with the PSR-4 specification.
+ */
 class Autoloader
 {
     protected static $rules      = [];
@@ -29,7 +33,7 @@ class Autoloader
 
         foreach (self::$rules as $rule) {
             if (preg_match($rule[0], $class, $match)) {
-                $file = $rule[1] . str_replace('\\', '/', $match[1]) . '.php';
+                $file = $rule[1] . $match[1] . '.php';
                 if (file_exists($file)) {
                     require $file;
                     return;
@@ -50,7 +54,6 @@ class Autoloader
         }
 
         self::$rules[] = ['/^' . preg_quote($namespace) . '(.*)/', $rootpath];
-        return true;
     }
 
     public static function register()
