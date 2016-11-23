@@ -13,19 +13,15 @@
  *| @author    Qingshan Luo <shanshan.lqs@gmail.com>                                               |
  *+------------------------------------------------------------------------------------------------+
  */
-define('ROOT_PATH', dirname(str_replace('\\', '/', __DIR__)));
+namespace Edoger\Container;
 
-// Load automatic loader.
-require ROOT_PATH . '/edoger/Loader/Autoloader.php';
+//CreateException
+class Container
+{
+    protected $instances = [];
 
-Edoger\Loader\Autoloader::addRule('Edoger', ROOT_PATH . '/edoger');
-Edoger\Loader\Autoloader::addRule('App', ROOT_PATH . '/application');
-Edoger\Loader\Autoloader::register();
+    protected function create(string $abstracts, array $arguments = [])
+    {
 
-$app = new Edoger\Foundation\Application(
-
-    // Application root directory.
-    ROOT_PATH . '/application'
-);
-
-return $app;
+    }
+}

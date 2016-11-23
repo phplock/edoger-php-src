@@ -2,6 +2,6 @@
 
 A simple and efficient PHP framework.
 
-# Version #
+## Version ##
 
 1.0.0 Alpha

@@ -30,6 +30,7 @@ final class Kernel
 	private static $_logger			= null;
 	private static $_debugger		= null;
 	private static $_router			= null;
+	private static $_extend			= null;
 	private static $_terminated		= false;
 	
 	private function __construct()
@@ -60,6 +61,15 @@ final class Kernel
 	public function config()
 	{
 		return self::$_config;
+	}
+
+	public function extend()
+	{
+		if (!self::$_extend) {
+			self::$_extend = new Extend();
+		}
+
+		return self::$_extend;
 	}
 
 	public function debugger()

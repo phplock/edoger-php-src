@@ -9,23 +9,26 @@
  *| @license   MIT                                                                                 |
  *| @link      https://www.edoger.com/                                                             |
  *| @copyright Copyright (c) 2014 - 2016, QingShan Luo                                             |
+ *| @version   1.0.0 Alpha                                                                         |
  *+------------------------------------------------------------------------------------------------+
  *| @author    Qingshan Luo <shanshan.lqs@gmail.com>                                               |
  *+------------------------------------------------------------------------------------------------+
  */
-define('ROOT_PATH', dirname(str_replace('\\', '/', __DIR__)));
+namespace Edoger\Database\Mysql\Driver;
 
-// Load automatic loader.
-require ROOT_PATH . '/edoger/Loader/Autoloader.php';
+interface DriverInterface
+{
+	public function getConnected();
+	public function getErrorCode();
+	public function getErrorMessage();
 
-Edoger\Loader\Autoloader::addRule('Edoger', ROOT_PATH . '/edoger');
-Edoger\Loader\Autoloader::addRule('App', ROOT_PATH . '/application');
-Edoger\Loader\Autoloader::register();
+	public function inTransaction();
+	public function beginTransaction();
+	public function commit();
+	public function rollback();
 
-$app = new Edoger\Foundation\Application(
+	public function execute($statement, array $params = []);
+	public function query($statement, array $params = []);
 
-    // Application root directory.
-    ROOT_PATH . '/application'
-);
-
-return $app;
+	public function getLastInsertId();
+}

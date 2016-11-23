@@ -9,23 +9,51 @@
  *| @license   MIT                                                                                 |
  *| @link      https://www.edoger.com/                                                             |
  *| @copyright Copyright (c) 2014 - 2016, QingShan Luo                                             |
+ *| @version   1.0.0 Alpha                                                                         |
  *+------------------------------------------------------------------------------------------------+
  *| @author    Qingshan Luo <shanshan.lqs@gmail.com>                                               |
  *+------------------------------------------------------------------------------------------------+
  */
-define('ROOT_PATH', dirname(str_replace('\\', '/', __DIR__)));
+namespace Edoger\Database\Mysql;
 
-// Load automatic loader.
-require ROOT_PATH . '/edoger/Loader/Autoloader.php';
+use PDO;
+use PDOException;
+use Edoger\Core\Kernel;
+use Edoger\Exception\EdogerException;
 
-Edoger\Loader\Autoloader::addRule('Edoger', ROOT_PATH . '/edoger');
-Edoger\Loader\Autoloader::addRule('App', ROOT_PATH . '/application');
-Edoger\Loader\Autoloader::register();
+class MysqlConnect
+{
+	private $_pdo;
 
-$app = new Edoger\Foundation\Application(
+	public function __construct()
+	{
+		$config		= Kernel::singleton()->config();
+		
+		$host		= $config->get('mysql_host');
+		$port		= $config->get('mysql_port');
+		$socket		= $config->get('mysql_socket');
+		$dbname		= $config->get('mysql_dbname');
+		$charset	= $config->get('mysql_charset');
+		$username	= $config->get('mysql_username');
+		$password	= $config->get('mysql_password');
 
-    // Application root directory.
-    ROOT_PATH . '/application'
-);
+		if ($socket) {
+			$dsn = 'mysql:unix_socket='.$socket;
+		} else {
+			$dsn = 'mysql:host='.$host.';port='.$port;
+		}
 
-return $app;
+		$dsn .= ';dbname='.$dbname.';charset='.$charset;
+
+		try {
+			$this->_pdo = new PDO($dsn, $username, $password);
+		} catch(PDOException $e) {
+			throw new EdogerException($e->getMessage(), EDOGER_ERROR_CONNECT, $e);
+		}
+	}
+
+	public function getConnected()
+	{
+		return $this->_pdo;
+	}
+}

@@ -9,23 +9,24 @@
  *| @license   MIT                                                                                 |
  *| @link      https://www.edoger.com/                                                             |
  *| @copyright Copyright (c) 2014 - 2016, QingShan Luo                                             |
+ *| @version   1.0.0 Alpha                                                                         |
  *+------------------------------------------------------------------------------------------------+
  *| @author    Qingshan Luo <shanshan.lqs@gmail.com>                                               |
  *+------------------------------------------------------------------------------------------------+
  */
-define('ROOT_PATH', dirname(str_replace('\\', '/', __DIR__)));
+namespace App\Controller;
 
-// Load automatic loader.
-require ROOT_PATH . '/edoger/Loader/Autoloader.php';
+use Edoger\Controller\ControllerAbstract;
 
-Edoger\Loader\Autoloader::addRule('Edoger', ROOT_PATH . '/edoger');
-Edoger\Loader\Autoloader::addRule('App', ROOT_PATH . '/application');
-Edoger\Loader\Autoloader::register();
+class TestController extends ControllerAbstract
+{
+	public function IndexAction()
+	{
+		$this->view()->assign('hello', 'world')->display();
+	}
 
-$app = new Edoger\Foundation\Application(
-
-    // Application root directory.
-    ROOT_PATH . '/application'
-);
-
-return $app;
+	public function HelloAction()
+	{
+		$this->view()->assign('say', 'hello')->display('hello');
+	}
+}

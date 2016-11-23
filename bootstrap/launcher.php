@@ -5,7 +5,6 @@
  *+------------------------------------------------------------------------------------------------+
  *| A simple and efficient PHP framework.                                                          |
  *+------------------------------------------------------------------------------------------------+
- *| @package   edoger-php-src                                                                      |
  *| @license   MIT                                                                                 |
  *| @link      https://www.edoger.com/                                                             |
  *| @copyright Copyright (c) 2014 - 2016, QingShan Luo                                             |
@@ -13,19 +12,31 @@
  *| @author    Qingshan Luo <shanshan.lqs@gmail.com>                                               |
  *+------------------------------------------------------------------------------------------------+
  */
-define('ROOT_PATH', dirname(str_replace('\\', '/', __DIR__)));
 
-// Load automatic loader.
-require ROOT_PATH . '/edoger/Loader/Autoloader.php';
+// ----------------------------------------------
+// The root directory of the project.
+define('ROOT_DIR', realpath(__DIR__ . '/../'));
 
-Edoger\Loader\Autoloader::addRule('Edoger', ROOT_PATH . '/edoger');
-Edoger\Loader\Autoloader::addRule('App', ROOT_PATH . '/application');
-Edoger\Loader\Autoloader::register();
+// ----------------------------------------------
+// Create an application instance.
+$app = new Edoger\Kernel\Application(
 
-$app = new Edoger\Foundation\Application(
+    // Configuration manager.
+    // It can be completely customized.
+    new Edoger\Config\Config(
 
-    // Application root directory.
-    ROOT_PATH . '/application'
+        // Loading the application configuration file,
+        // the configuration file must return an array.
+        require (ROOT_DIR . '/config/application.config.php')
+    )
 );
 
+// ----------------------------------------------
+// Build request component.
+$app->singleton(
+    Edoger\Http\Request::class,
+    'request'
+);
+
+// ----------------------------------------------
 return $app;
