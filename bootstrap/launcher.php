@@ -14,41 +14,29 @@
  */
 
 // ----------------------------------------------
-// Load automatic loader.
-// By default, the use of system loader.
-// If need to use custom loader, please add 'Edoger' and 'App' namespace class loading rules.
-// We use PSR-4 specification.
-require __DIR__ . '/../bootstrap/autoload.php';
+// The root directory of the project.
+define('ROOT_DIR', realpath(__DIR__ . '/../'));
 
 // ----------------------------------------------
-// The startup script will create a basic application instance.
-// Application program to expand its own through the bootstrap.
-// The initial application instance only binds the request instance.
-$app = require __DIR__ . '/../bootstrap/launcher.php';
+// Create an application instance.
+$app = new Edoger\Kernel\Application(
 
-// ----------------------------------------------
-// Extended application instance.
-// This is an optional call, if not done, the application appears to be very monotonous.
-// It is worth noting that you should not handle any business logic in the bootstrap,
-// and we should keep the code clean and tidy.
-$app->bootstrap();
+    // Configuration manager.
+    // It can be completely customized.
+    new Edoger\Config\Config(
 
-// ----------------------------------------------
-// Handle the request, and create the response.
-// Response will collect all the output data, and make the necessary adjustments.
-$response = $app->capture(
-
-    // Standard response class.
-    // It's completely customizable.
-    App\Http\Response::class,
-
-    $app->request
+        // Loading the application configuration file,
+        // the configuration file must return an array.
+        require (ROOT_DIR . '/config/application.config.php')
+    )
 );
 
 // ----------------------------------------------
-// Send all data to client.
-$response->flush();
+// Build request component.
+$app->singleton(
+    Edoger\Http\Request::class,
+    'request'
+);
 
 // ----------------------------------------------
-// Perform some follow-up work.
-$app->end($response);
+return $app;
