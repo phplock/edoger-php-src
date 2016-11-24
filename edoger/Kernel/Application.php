@@ -18,6 +18,7 @@ use Edoger\Config\Config;
 
 class Application extends Kernel
 {
+    const VERSION = '1.0.0';
 
     public function __construct(Config $config)
     {
@@ -26,5 +27,10 @@ class Application extends Kernel
 
         $this->instance(Application::class, $this);
         $this->instance(get_class($config), $config);
+    }
+
+    public function version()
+    {
+        return static::VERSION;
     }
 }
