@@ -34,8 +34,8 @@ $app = new Edoger\Kernel\Application(
 // ----------------------------------------------
 // Build request component.
 $app->singleton(
-    Edoger\Http\Request::class,
-    'request'
+    Edoger\Foundation\Http\Request::class,
+    Edoger\Http\Request::class
 );
 
 // ----------------------------------------------

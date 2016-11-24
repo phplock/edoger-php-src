@@ -14,9 +14,7 @@
  */
 namespace Edoger\Config;
 
-use Edoger\Foundation\Config\ConfigInterface;
-
-class Config implements ConfigInterface
+class Config
 {
     protected $items;
 

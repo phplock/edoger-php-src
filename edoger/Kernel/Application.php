@@ -14,16 +14,17 @@
  */
 namespace Edoger\Kernel;
 
-use Edoger\Foundation\Config\ConfigInterface;
-use Edoger\Foundation\Http\Application as Kernel;
-use Edoger\Foundation\Kernel\ApplicationInterface;
+use Edoger\Config\Config;
 
-class Application extends Kernel implements ApplicationInterface
+class Application extends Kernel
 {
 
-    public function __construct(ConfigInterface $config)
+    public function __construct(Config $config)
     {
         static::$application   = &$this;
         static::$configuration = $config;
+
+        $this->instance(Application::class, $this);
+        $this->instance(get_class($config), $config);
     }
 }

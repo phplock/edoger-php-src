@@ -14,7 +14,7 @@
  */
 namespace Edoger\Foundation\Config;
 
-interface ConfigInterface
+interface Config
 {
     public function get($key, $default = null);
     public function set($key, $value, $cover = true);
