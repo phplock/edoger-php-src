@@ -12,34 +12,44 @@
  *| @author    Qingshan Luo <shanshan.lqs@gmail.com>                                               |
  *+------------------------------------------------------------------------------------------------+
  */
+namespace Edoger\Kernel;
 
-// ----------------------------------------------
-// The root directory of the project.
-define('ROOT_DIR', realpath(__DIR__ . '/../'));
+use Edoger\Container\Container;
+use Edoger\Exceptions\RuntimeException;
 
-// ----------------------------------------------
-// Create an application instance.
-$app = new Edoger\Kernel\Application(
+class Application extends Container
+{
+    protected static $application;
+    protected static $configuration;
 
-    // Configuration manager.
-    // It can be completely customized.
-    new Edoger\Config\Config(
+    protected static $helpers = [];
 
-        // Loading the application configuration file,
-        // the configuration file must return an array.
-        require (ROOT_DIR . '/config/application.config.php')
-    )
-);
+    public static function app()
+    {
+        return static::$application;
+    }
 
-// ----------------------------------------------
-// Build request component.
-$app->singleton(
-    Edoger\Foundation\Http\Request::class,
-    Edoger\Http\Request::class
-);
+    public static function config()
+    {
+        return static::$configuration;
+    }
 
-// ----------------------------------------------
-$app->helper('application');
+    public function helper($helper)
+    {
+        $helper = strtolower($helper);
+        if (isset(static::$helpers[$helper])) {
+            return true;
+        }
 
-// ----------------------------------------------
-return $app;
+        $file = ROOT_DIR . '/edoger/Helpers/' . $helper . '.php';
+        if (file_exists($file)) {
+            static::$helpers[$helper] = true;
+            require $file;
+            return true;
+        }
+
+        throw new RuntimeException(
+            "Helper library {$helper} does not exist."
+        );
+    }
+}

@@ -12,34 +12,43 @@
  *| @author    Qingshan Luo <shanshan.lqs@gmail.com>                                               |
  *+------------------------------------------------------------------------------------------------+
  */
+namespace Edoger\Config;
 
-// ----------------------------------------------
-// The root directory of the project.
-define('ROOT_DIR', realpath(__DIR__ . '/../'));
+class Config
+{
+    protected $items;
 
-// ----------------------------------------------
-// Create an application instance.
-$app = new Edoger\Kernel\Application(
+    public function __construct(array $items)
+    {
+        $this->items = $items;
+    }
 
-    // Configuration manager.
-    // It can be completely customized.
-    new Edoger\Config\Config(
+    public function get($key, $default = null)
+    {
+        if (isset($this->items[$key])) {
+            return $this->items[$key];
+        } else {
+            return $default;
+        }
+    }
 
-        // Loading the application configuration file,
-        // the configuration file must return an array.
-        require (ROOT_DIR . '/config/application.config.php')
-    )
-);
+    public function set($key, $value, $cover = true)
+    {
+        if ($cover || !isset($this->items[$key])) {
+            $this->items[$key] = $value;
+            return true;
+        } else {
+            return false;
+        }
+    }
 
-// ----------------------------------------------
-// Build request component.
-$app->singleton(
-    Edoger\Foundation\Http\Request::class,
-    Edoger\Http\Request::class
-);
+    public function has($key)
+    {
+        return isset($this->items[$key]);
+    }
 
-// ----------------------------------------------
-$app->helper('application');
-
-// ----------------------------------------------
-return $app;
+    public function all()
+    {
+        return $this->items;
+    }
+}

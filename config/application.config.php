@@ -13,33 +13,8 @@
  *+------------------------------------------------------------------------------------------------+
  */
 
-// ----------------------------------------------
-// The root directory of the project.
-define('ROOT_DIR', realpath(__DIR__ . '/../'));
+// The application configuration items.
+return [
 
-// ----------------------------------------------
-// Create an application instance.
-$app = new Edoger\Kernel\Application(
-
-    // Configuration manager.
-    // It can be completely customized.
-    new Edoger\Config\Config(
-
-        // Loading the application configuration file,
-        // the configuration file must return an array.
-        require (ROOT_DIR . '/config/application.config.php')
-    )
-);
-
-// ----------------------------------------------
-// Build request component.
-$app->singleton(
-    Edoger\Foundation\Http\Request::class,
-    Edoger\Http\Request::class
-);
-
-// ----------------------------------------------
-$app->helper('application');
-
-// ----------------------------------------------
-return $app;
+    'log_level' => 'debug',
+];
