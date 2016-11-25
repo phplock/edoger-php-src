@@ -34,7 +34,12 @@ $app = new Edoger\Kernel\Application(
 // ----------------------------------------------
 // Build request component.
 $app->singleton(
+
+    // This abstract class implements only the basic method.
+    // Any request class should extends this abstract class.
     Edoger\Foundation\Http\Request::class,
+
+    // Request class for the framework.
     Edoger\Http\Request::class
 );
 
