@@ -14,10 +14,9 @@
  */
 namespace Edoger\Kernel;
 
-use Edoger\Container\Container;
 use Edoger\Exceptions\RuntimeException;
 
-class Application extends Container
+class Application
 {
     protected static $application;
     protected static $configuration;
