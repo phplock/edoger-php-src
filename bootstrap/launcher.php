@@ -33,18 +33,24 @@ $app = new Edoger\Kernel\Application(
 
 // ----------------------------------------------
 // Build request component.
+// Using the singleton method to register a shared component,
+// the component constructor accepts an application instance as the only parameter.
 $app->singleton(
 
     // This abstract class implements only the basic method.
     // Any request class should extends this abstract class.
-    Edoger\Foundation\Http\Request::class,
+    Edoger\Http\Request::class,
 
-    // Request class for the framework.
-    Edoger\Http\Request::class
+    // Alias name.
+    // Use $app->request can get the request instance in any components.
+    'request'
 );
 
 // ----------------------------------------------
+// Load application helper functions.
+// Use app() can get the application instance in any where.
 $app->helper('application');
 
 // ----------------------------------------------
+// Return application instance.
 return $app;

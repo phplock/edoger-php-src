@@ -77,6 +77,11 @@ class Application extends Kernel
         return $object;
     }
 
+    public function end(Response $response)
+    {
+        //
+    }
+
     public static function version()
     {
         return static::VERSION;
