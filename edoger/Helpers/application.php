@@ -17,6 +17,6 @@ if (!function_exists('app')) {
 
     function app()
     {
-        return Edoger\Foundation\Http\Application::app();
+        return Edoger\Kernel\Kernel::app();
     }
 }

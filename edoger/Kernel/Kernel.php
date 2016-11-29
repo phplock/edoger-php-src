@@ -16,7 +16,7 @@ namespace Edoger\Kernel;
 
 use Edoger\Exceptions\RuntimeException;
 
-class Application
+class Kernel
 {
     protected static $application;
     protected static $configuration;
